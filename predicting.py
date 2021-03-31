@@ -92,13 +92,13 @@ size = 256
 bs = 32
 
 
+######################################################################################################
 def get_file_name():return original_file_names
 name2id= {'NoEPI': 0, 'EPI': 1}
 
 ### FILTER ###
 void_code = name2id['EPI']
-
-if not os.path.exists('/content/filtered/'):
+if not os.path.exists('/content/filtered/') and len(FILTER_DIR_names)!=NUM_FILTERED:
 # %%
   MessageTools.show_yellow("Generating filtered slides ....")
   # # Generating output 
@@ -141,6 +141,7 @@ os.environ["WANDB_API_KEY"] = '4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8'
 
 CUDA_LAUNCH_BLOCKING=1
 
+######################################################################################################
 
 def get_y_fake(im_f):
   return im_f
@@ -174,6 +175,7 @@ except Exception as e:
 def get_unique(n):
     return np.unique(n)
 
+######################################################################################################
 MessageTools.show_yellow(f"Generating input for slide")
 
 get_ipython().system('rm /content/filtered/input/*')
@@ -232,6 +234,7 @@ except Exception as e:
 
 # %% [markdown]
 # Predict on input tiles 
+######################################################################################################
 
 # %%
 MessageTools.show_yellow("Running predictions ...")
@@ -243,6 +246,7 @@ for i in range(len(sorted(glob("/content/filtered/input/*")))):
     print(i)
   np_to_pil(np.array(get_test_preds(i,learner=new_learner,bk=TARG_PRED,input_path="/content/filtered/input")).astype('bool')).save(f'/content/output/{os.path.basename(sorted(glob("/content/filtered/input/*"))[i])}')
 
+######################################################################################################
 # %%
 MessageTools.show_succ("Preds Done .. stitching")
 # %%
