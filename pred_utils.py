@@ -11,7 +11,7 @@ def pred_img(i,input_images_path="/content/input"):
 
 def get_pred_on_test(im_index,new_learner,input_images_path="/content/input"):
   test_dl=new_learner.dls.test_dl([Path(sorted(glob(f"{input_images_path}/*"))[im_index])])
-
+  # TODO: use batch preds instead of invidual 
   preds = new_learner.get_preds(dl=test_dl)
 
   return preds

@@ -112,7 +112,8 @@ def get_num_norm(path):
   return fn
 def get_num(path):# print(os.path.basename(path).split("_"))
     if (len(os.path.basename(path).split("_"))==1):
-      MessageTools.show_yellow("using the normal path num retrival")
+      if globals.VERBOSE > 0:
+        MessageTools.show_yellow("using the normal path num retrival")
       return get_num_norm(path)
     return os.path.basename(path).split("_")[1]
 
