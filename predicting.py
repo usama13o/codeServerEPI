@@ -177,126 +177,131 @@ def get_unique(n):
 
 ######################################################################################################
 MessageTools.show_yellow(f"Generating input for slide")
+if RECURSE ==True and PROCESS_SLIDE=='any':
+  pass
+else:
+  NUM_FILTERED=1
+for i in range(NUM_FILTERED):
+    get_ipython().system('rm /content/filtered/input/*')
 
-get_ipython().system('rm /content/filtered/input/*')
+    def generate_input_tiles(index,path,output_dir=None):
+      ind=index
+      #list of filtered images.. ones without background 
+      test = sorted(glob(path+"/*.png"))
+      test.extend(sorted(glob(path+"/*.tif")))
+      test=test[ind]
+      MessageTools.show_succ(test)
+      tile_sum = score_tiles(test,test=True,SCALE_FACTOR=SCALE_FACTOR)
+      dir = os.path.dirname(test)
+      dir = os.path.join(dir,'input')
+      if  not os.path.exists(dir):
+        os.makedirs(dir)
+      if output_dir is None:
+        output_dir=dir
+      for t in tile_sum.tiles_by_score():
+        c = t.c 
+        r = t.r 
+        ce=t.o_c_e
+        rs=t.o_r_s
+        re=t.o_r_e
+        cs=t.o_c_s
+        tily=t.get_pil_tile()
+        tily=np.array(tily)
+        if VERBOSE > 0:
+          print(rs,re,cs,ce)
+        mapped=mapping(target,tily)
+        tily_m=Image.fromarray(mapped)
+        tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
 
-def generate_input_tiles(index,path,output_dir=None):
-  ind=index
-  #list of filtered images.. ones without background 
-  test = sorted(glob(path+"/*.png"))
-  test.extend(sorted(glob(path+"/*.tif")))
-  test=test[ind]
-  MessageTools.show_succ(test)
-  tile_sum = score_tiles(test,test=True,SCALE_FACTOR=SCALE_FACTOR)
-  dir = os.path.dirname(test)
-  dir = os.path.join(dir,'input')
-  if  not os.path.exists(dir):
-    os.makedirs(dir)
-  if output_dir is None:
-    output_dir=dir
-  for t in tile_sum.tiles_by_score():
-    c = t.c 
-    r = t.r 
-    ce=t.o_c_e
-    rs=t.o_r_s
-    re=t.o_r_e
-    cs=t.o_c_s
-    tily=t.get_pil_tile()
-    tily=np.array(tily)
-    if VERBOSE > 0:
-      print(rs,re,cs,ce)
-    mapped=mapping(target,tily)
-    tily_m=Image.fromarray(mapped)
-    tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
-
-global slide_num
-def get_slide_idx(name):
-  if name =="any":
-    len_filtered=len(FILTER_DIR_names)
-    random_idx=random.randint(0, len_filtered)	
-    if VERBOSE > 0:
-      print(random_idx,len_filtered)
-    slide_num=get_num_norm(FILTER_DIR_names[random_idx])
-    MessageTools.show_blue(f"Going for idx {random_idx} in filtered")
-    return random_idx
-    
-  for idx,val in enumerate(sorted(glob(FILTER_DIR+'/*'))):
-    if name in val:
-      return idx
-# %%
-try:
-  slide_idx=get_slide_idx(PROCESS_SLIDE)
-  generate_input_tiles(slide_idx,FILTER_DIR)
-except Exception as e:
-  traceback.print_exc()
-  MessageTools.show_err(f"Failed to generate input --> {e}")
-# %% how to predict ona  single image 
-# new_learner.predict(Path(sorted(glob("/content/filtered/input/*"))[2]))
+    global slide_num
+    slide_num=False
+    def get_slide_idx(name):
+      if name =="any":
+        len_filtered=len(FILTER_DIR_names)
+        random_idx=random.randint(0, len_filtered)	
+        if VERBOSE > 0:
+          print(random_idx,len_filtered)
+        slide_num=get_num_norm(FILTER_DIR_names[random_idx])
+        MessageTools.show_blue(f"Going for idx {random_idx} in filtered")
+        return random_idx
+        
+      for idx,val in enumerate(sorted(glob(FILTER_DIR+'/*'))):
+        if name in val:
+          return idx
+    # %%
+    try:
+      slide_idx=get_slide_idx(PROCESS_SLIDE)
+      generate_input_tiles(slide_idx,FILTER_DIR)
+    except Exception as e:
+      traceback.print_exc()
+      MessageTools.show_err(f"Failed to generate input --> {e}")
+    # %% how to predict ona  single image 
+    # new_learner.predict(Path(sorted(glob("/content/filtered/input/*"))[2]))
 
 
-# %% [markdown]
-# Predict on input tiles 
-######################################################################################################
+    # %% [markdown]
+    # Predict on input tiles 
+    ######################################################################################################
 
-# %%
-MessageTools.show_yellow("Running predictions ...")
-get_ipython().system('rm /content/output/*')
-if not os.path.exists('/content/output/'):
-  os.makedirs('/content/output/')
-for i in range(len(sorted(glob("/content/filtered/input/*")))):
-  if VERBOSE > 0:
-    print(i)
-  np_to_pil(np.array(get_test_preds(i,learner=new_learner,bk=TARG_PRED,input_path="/content/filtered/input")).astype('bool')).save(f'/content/output/{os.path.basename(sorted(glob("/content/filtered/input/*"))[i])}')
-
-######################################################################################################
-# %%
-MessageTools.show_succ("Preds Done .. stitching")
-# %%
-def get_outs(out_path):
-  if not os.path.exists(out_path):
-    os.makedirs(out_path)
-  outs= sorted(glob(f"{out_path}/*"))
-  out_base = os.path.basename(outs[0])
-  out_split = out_base.split("_")
-  num_rows= int(out_split[0])
-  num_cols= int(out_split[1])
-  return outs,num_rows,num_cols
-def get_tile_sum_image(tile_sum):
-  fns = sorted(glob(f"{FILTER_DIR}/*.png"))
-
-  num  = get_num(tile_sum.slide_num)
-  path = [s for s in fns if num in s][0]
-  return open_image(path)
-def get_stitched_slide(outs,num_rows,num_cols,tile_size=1024):
-  re_tile = np.zeros([num_rows*tile_size,num_cols*tile_size])
-
-  for out in outs:
-    out_base = os.path.basename(out)
-    if VERBOSE > 0:
-      print(out_base)
-    out_split = out_base.split("_")
-    rs=int(out_split[2])
-    re=int(out_split[3])
-    cs=int(out_split[4])
-    ce=int(out_split[5])
-    if ce-cs!=tile_size:
-      ce+=(tile_size-(ce-cs))
+    # %%
+    MessageTools.show_yellow("Running predictions ...")
+    get_ipython().system('rm /content/output/*')
+    if not os.path.exists('/content/output/'):
+      os.makedirs('/content/output/')
+    for i in range(len(sorted(glob("/content/filtered/input/*")))):
       if VERBOSE > 0:
-        print(f'corrected for ce {ce}')
-    if re-rs!=tile_size:
-      re+=(tile_size-(re-rs))
-      if VERBOSE > 0:
-        print(f'corrected for re {re}')
-    re_tile[rs:re,cs:ce]=open_image_np(out)[:]
-  return re_tile
+        print(i)
+      np_to_pil(np.array(get_test_preds(i,learner=new_learner,bk=TARG_PRED,input_path="/content/filtered/input")).astype('bool')).save(f'/content/output/{os.path.basename(sorted(glob("/content/filtered/input/*"))[i])}')
+
+    ######################################################################################################
+    # %%
+    MessageTools.show_succ("Preds Done .. stitching")
+    # %%
+    def get_outs(out_path):
+      if not os.path.exists(out_path):
+        os.makedirs(out_path)
+      outs= sorted(glob(f"{out_path}/*"))
+      out_base = os.path.basename(outs[0])
+      out_split = out_base.split("_")
+      num_rows= int(out_split[0])
+      num_cols= int(out_split[1])
+      return outs,num_rows,num_cols
+    def get_tile_sum_image(tile_sum):
+      fns = sorted(glob(f"{FILTER_DIR}/*.png"))
+
+      num  = get_num(tile_sum.slide_num)
+      path = [s for s in fns if num in s][0]
+      return open_image(path)
+    def get_stitched_slide(outs,num_rows,num_cols,tile_size=1024):
+      re_tile = np.zeros([num_rows*tile_size,num_cols*tile_size])
+
+      for out in outs:
+        out_base = os.path.basename(out)
+        if VERBOSE > 0:
+          print(out_base)
+        out_split = out_base.split("_")
+        rs=int(out_split[2])
+        re=int(out_split[3])
+        cs=int(out_split[4])
+        ce=int(out_split[5])
+        if ce-cs!=tile_size:
+          ce+=(tile_size-(ce-cs))
+          if VERBOSE > 0:
+            print(f'corrected for ce {ce}')
+        if re-rs!=tile_size:
+          re+=(tile_size-(re-rs))
+          if VERBOSE > 0:
+            print(f'corrected for re {re}')
+        re_tile[rs:re,cs:ce]=open_image_np(out)[:]
+      return re_tile
 
 
-# %%
-# re stitching
-if not slide_num: 
-  slide_num=PROCESS_SLIDE
-outs,num_rows,num_cols= get_outs("/content/output")
-re_tile= get_stitched_slide(outs,num_rows,num_cols)
-np_to_pil(re_tile.astype('bool')).save(f"/content/{slide_num}_stitched_{TARG_PRED}.png")
+    # %%
+    # re stitching
+    if not slide_num: 
+      slide_num=PROCESS_SLIDE
+    outs,num_rows,num_cols= get_outs("/content/output")
+    re_tile= get_stitched_slide(outs,num_rows,num_cols)
+    np_to_pil(re_tile.astype('bool')).save(f"/content/{slide_num}_stitched_{TARG_PRED}.png")
 
 
