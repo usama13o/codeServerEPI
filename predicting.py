@@ -43,10 +43,10 @@ except Exception as e :
 # ## New Section
 
 # %%
-number_of_the_seed = 2020
+# number_of_the_seed = 2020
 
-random.seed(number_of_the_seed)
-set_seed(number_of_the_seed)
+# random.seed(number_of_the_seed)
+# set_seed(number_of_the_seed)
 
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
@@ -208,8 +208,11 @@ for i in range(NUM_FILTERED):
         tily=t.get_pil_tile()
         tily=np.array(tily)
         if VERBOSE > 0:
-          print(rs,re,cs,ce)
-        mapped=mapping(target,tily)
+          print(rs,re,cs,ce,tily.shape)
+        try:
+          mapped=mapping(target,tily)
+        except Exception as e:
+          mapped=tily
         tily_m=Image.fromarray(mapped)
         tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
 

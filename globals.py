@@ -7,6 +7,6 @@ PROCESS_SLIDE='any'
 SLIDES_PATH='/content/normal/'
 #pred for tumour {1} or normal {2} cells
 TARG_PRED=2
-VERBOSE=0
+VERBOSE=1
 RECURSE=True
 ####GLOBALS####
