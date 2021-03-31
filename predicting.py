@@ -5,16 +5,7 @@ from IPython import get_ipython
 import MessageTools
 import traceback
 # %%
-####GLOBALS####
-#num of filtered slides to generate 
-NUM_FILTERED=1
-#which slide of the filtered to process
-PROCESS_SLIDE='any'
-#where are the slides to be filtered
-SLIDES_PATH='/content/ihc/'
-#pred for tumour or normal cells
-TARG_PRED=1
-####GLOBALS####
+from globals import *
 import os 
 from semtorch import get_segmentation_learner
 from glob import glob
@@ -27,8 +18,7 @@ from fastai.callback.wandb import *
 from utils import *
 from pred_utils import * 
 
-# %%
-
+MessageTools.show_succ(f"Using GLOBALS: \n SLIDES_PATH: {SLIDES_PATH} |NUM_FILTERED:  {NUM_FILTERED} | TARG_PRED: {TARG_PRED} | PROCESS_SLIDE: {PROCESS_SLIDE} |")
 if os.path.exists('/content/normal'):
   MessageTools.show_blue("Data already Unzipped !")
   pass
@@ -251,7 +241,7 @@ for i in range(len(sorted(glob("/content/filtered/input/*")))):
 MessageTools.show_succ("Preds Done .. stitching")
 # %%
 def get_outs(out_path):
-  if not os.exists(out_path):
+  if not os.path.exists(out_path):
     os.makedirs(out_path)
   outs= sorted(glob(f"{out_path}/*"))
   out_base = os.path.basename(outs[0])

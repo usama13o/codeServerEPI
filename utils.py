@@ -1,5 +1,8 @@
 import torch 
 import pandas
+import globals
+
+import MessageTools
 # from scipy.misc import imread
 import math
 import matplotlib.pyplot as plt
@@ -39,7 +42,7 @@ annotated_tif_test_dir = sorted(glob("D:\Other\DOWNLOADS\WSIData\\filtered\\anno
 PNG_original_file_names = sorted(glob(PNG_org_DIR+"\*"))
 PNG_annotated_file_names =sorted(glob(PNG_ANN_DIR+"\*"))
 FILTER_DIR_names = sorted(glob(FILTER_DIR+"\*"))
-NORM_TIFF_DIR = sorted(glob(DEST_MAIN_DIR + '/test_imgs/*'))
+NORM_TIFF_DIR = sorted(glob(f'{globals.SLIDES_PATH}*'))
 SCALE_FACTOR = 1
 TISSUE_HIGH_THRESH = 80
 TISSUE_LOW_THRESH = 10
@@ -108,7 +111,7 @@ def get_num_norm(path):
   return fn
 def get_num(path):# print(os.path.basename(path).split("_"))
     if (len(os.path.basename(path).split("_"))==1):
-      print("using the normal path num retrival")
+      MessageTools.show_yellow("using the normal path num retrival")
       return get_num_norm(path)
     return os.path.basename(path).split("_")[1]
 
@@ -147,10 +150,10 @@ def slide_to_scaled_pil_image(path,scale_factor=1):
     Tuple consisting of scaled-down PIL image, original width, original height, new width, and new height.
     """
     SCALE_FACTOR = scale_factor
-    print("Scaling to %d ..."%(SCALE_FACTOR))
+    MessageTools.show_yellow("Scaling to %d ..."%(SCALE_FACTOR))
     
     slide_filepath = path
-    print("Opening Slide : %s" % ( slide_filepath))
+    MessageTools.show_yellow("Opening Slide : %s" % ( slide_filepath))
     slide = open_slide(slide_filepath)
 
     large_w, large_h = slide.dimensions
@@ -170,12 +173,12 @@ def training_slide_to_image(path,DEST_TRAIN_DI,scale_factor=1,test=False):
     if (DEST_TRAIN_DI ==0):
       DEST_TRAIN_DI = os.path.join( "D:\Other\DOWNLOADS\WSIData","training_PNG")
     
-    print("Scaling to %d ..."%(scale_factor))
+    MessageTools.show_yellow("Scaling to %d ..."%(scale_factor))
     img, large_w, large_h, new_w, new_h = slide_to_scaled_pil_image(path,scale_factor)
 # for original [35:-4] , annotated [37:-4]
     path = get_num_norm(path)
     img_path = os.path.join(DEST_TRAIN_DI,path+".png")
-    print("Saving image to: " +img_path)
+    MessageTools.show_yellow("Saving image to: " +img_path)
     if not os.path.exists(DEST_TRAIN_DIR):
         os.makedirs(DEST_TRAIN_DIR)
     img.save(img_path)
@@ -185,12 +188,12 @@ def training_slide_to_image(path,DEST_TRAIN_DI,scale_factor=1,test=False):
 def test_slide_to_image(path,scale_factor = 1):
   
   dest  = os.path.dirname(path)
-  print("scalling to %d .. "%(scale_factor))
+  MessageTools.show_yellow("scalling to %d .. "%(scale_factor))
   img, large_w, large_h, new_w, new_h = slide_to_scaled_pil_image(path,scale_factor)
   img_path =(dest+"\\PNG\\_"+get_num(path)+"_.png")
   if not os.path.exists(os.path.dirname(img_path)) :
     os.makedirs(os.path.dirname(img_path))
-  print("Saving image to: " +img_path)
+  MessageTools.show_yellow("Saving image to: " +img_path)
   img.save(img_path)
 
 def slide_info(path,display_all_properties=False):
@@ -645,7 +648,7 @@ def tile_to_pil_tile(tile):
     """
     t = tile
     slide_filepath = get_slide_path_based_on_PNG_path(t.slide_num,t.test)
-    print("Retrived this slide : %s"%(slide_filepath))
+    MessageTools.show_blue("Retrived this slide : %s"%(slide_filepath))
     s = open_slide(slide_filepath)
 
     x, y = t.o_c_s, t.o_r_s
@@ -661,7 +664,7 @@ def np_tile_to_pil_tile(tile):
 # this should be retriving the mask tif slide and getting the required tile out of it, it should 
 # match with the tile from the tissue slide 
     slide_filepath =  get_test_annotation_slide_path(t.slide_num)
-    print("Retrived this slide : %s"%(slide_filepath))
+    MessageTools.show_yellow("Retrived this slide : %s"%(slide_filepath))
     s = open_slide(slide_filepath)
     x, y = t.o_c_s, t.o_r_s
     #maybe make it just the w h 
@@ -674,7 +677,7 @@ def np_tile_to_pil_tile(tile):
 def get_slide_path_based_on_PNG_path(path,test=False):
   
   num = get_num(path)
-  print(f" Looking for slide .. {num}")
+  MessageTools.show_blue(f" Looking for slide .. {num} in {globals.SLIDES_PATH}")
   if test: 
     fn = NORM_TIFF_DIR
   else : 
@@ -759,7 +762,7 @@ def save_display_tile(tile, save=True, display=False,isThereTest=False):
         tile_train_mask.show()
 def get_mask_for_test(path):
   num = get_num(path)
-  print("Getting mask for slide num: %s"%(num))
+  MessageTools.show_yellow("Getting mask for slide num: %s"%(num))
   match = [s for s in annotated_test_dir if num in s][0]
   np = open_image_np(match)
   return np 
@@ -890,7 +893,7 @@ def score_tiles(path, np_img=None, dimensions=None, small_tile_in_tile=False,SCA
  # this gets the mask of the HE tifs from their counter-parts PNGS (ie this the np of a png iamge) not tif 
       # Looks in annotated__test_dir
       np_ann = get_mask_for_test(path)
-      print("Using the mask for tissue percentage . . . ")
+      MessageTools.show_blue("Using the mask for tissue percentage . . . ")
 
     if dimensions is None:
         o_h, o_w, h, w = parse_dimensions_from_image_filename(img_path)
@@ -901,8 +904,8 @@ def score_tiles(path, np_img=None, dimensions=None, small_tile_in_tile=False,SCA
      
     row_tile_size = round(ROW_TILE_SIZE / SCALE_FACTOR)  # use round?
     col_tile_size = round(COL_TILE_SIZE / SCALE_FACTOR)  # use round?
-    print("size: %d - %d"%(row_tile_size,col_tile_size))
-    print(f"Image width: {w} - Hight: {h}")
+    MessageTools.show_yellow("size: %d - %d"%(row_tile_size,col_tile_size))
+    MessageTools.show_blue(f"Image width: {w} - Hight: {h}")
     num_row_tiles, num_col_tiles = get_num_tiles(h, w, row_tile_size, col_tile_size)
     # if  test:
       # tissue_percent_ = tissue_percent(np_img)
@@ -1548,7 +1551,7 @@ def apply_filters_to_image(slide_num, save=True, display=False):
     Tuple consisting of 1) the resulting filtered image as a NumPy array, and 2) dictionary of image information
     (used for HTML page generation).
   """
-  print("Processing slide #%d" % slide_num)
+  MessageTools.show_yellow("Processing slide #%d" % slide_num)
 
   info = dict()
 
@@ -1842,7 +1845,7 @@ def filter_remove_small_objects(np_img, min_size=3000, avoid_overmask=True, over
   mask_percentage = mask_percent(rem_sm)
   if (mask_percentage >= overmask_thresh) and (min_size >= 1) and (avoid_overmask is True):
     new_min_size = min_size / 2
-    print("Mask percentage %3.2f%% >= overmask threshold %3.2f%% for Remove Small Objs size %d, so try %d" % (
+    MessageTools.show_blue("Mask percentage %3.2f%% >= overmask threshold %3.2f%% for Remove Small Objs size %d, so try %d" % (
       mask_percentage, overmask_thresh, min_size, new_min_size))
     rem_sm = filter_remove_small_objects(np_img, new_min_size, avoid_overmask, overmask_thresh, output_type)
   np_img = rem_sm
@@ -2040,7 +2043,7 @@ def get_msk(fn, p2c):
   
   for i, val in enumerate(p2c):
     msk[msk==p2c[i]] = val
-  print(np.unique(msk))
+  MessageTools.show_blue(np.unique(msk))
   msk=msk.astype("bool")
   return PILMask.create(msk).convert("1")
 def tumour_norm(input, target):
