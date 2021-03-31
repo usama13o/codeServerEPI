@@ -41,7 +41,7 @@ annotated_test_dir = sorted( glob( FILTER_DIR + '/*'))
 annotated_tif_test_dir = sorted(glob("D:\Other\DOWNLOADS\WSIData\\filtered\\annotated_tif\*"))
 PNG_original_file_names = sorted(glob(PNG_org_DIR+"\*"))
 PNG_annotated_file_names =sorted(glob(PNG_ANN_DIR+"\*"))
-FILTER_DIR_names = sorted(glob(FILTER_DIR+"\*"))
+FILTER_DIR_names = sorted(glob(FILTER_DIR+"/*.png"))
 NORM_TIFF_DIR = sorted(glob(f'{globals.SLIDES_PATH}*'))
 SCALE_FACTOR = 1
 TISSUE_HIGH_THRESH = 80
@@ -648,7 +648,8 @@ def tile_to_pil_tile(tile):
     """
     t = tile
     slide_filepath = get_slide_path_based_on_PNG_path(t.slide_num,t.test)
-    MessageTools.show_blue("Retrived this slide : %s"%(slide_filepath))
+    if globals.VERBOSE > 0:
+      MessageTools.show_blue("Retrived this slide : %s"%(slide_filepath))
     s = open_slide(slide_filepath)
 
     x, y = t.o_c_s, t.o_r_s
@@ -677,7 +678,8 @@ def np_tile_to_pil_tile(tile):
 def get_slide_path_based_on_PNG_path(path,test=False):
   
   num = get_num(path)
-  MessageTools.show_blue(f" Looking for slide .. {num} in {globals.SLIDES_PATH}")
+  if globals.VERBOSE > 0:
+    MessageTools.show_blue(f" Looking for slide .. {num} in {globals.SLIDES_PATH}")
   if test: 
     fn = NORM_TIFF_DIR
   else : 

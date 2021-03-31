@@ -7,4 +7,5 @@ PROCESS_SLIDE='any'
 SLIDES_PATH='/content/ihc/'
 #pred for tumour {1} or normal {2} cells
 TARG_PRED=1
+VERBOSE=0
 ####GLOBALS####
