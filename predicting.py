@@ -183,7 +183,9 @@ get_ipython().system('rm /content/filtered/input/*')
 def generate_input_tiles(index,path,output_dir=None):
   ind=index
   #list of filtered images.. ones without background 
-  test = sorted(glob(f"{path}/*.png"))[ind]
+  test = sorted(glob(path+"/*.png"))
+  test.extend(sorted(glob(path+"/*.tif")))
+  test=test[ind]
   MessageTools.show_succ(test)
   tile_sum = score_tiles(test,test=True,SCALE_FACTOR=SCALE_FACTOR)
   dir = os.path.dirname(test)
