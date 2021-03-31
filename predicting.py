@@ -9,9 +9,9 @@ import traceback
 #num of filtered slides to generate 
 NUM_FILTERED=1
 #which slide of the filtered to process
-PROCESS_SLIDE='3794'
+PROCESS_SLIDE='any'
 #where are the slides to be filtered
-SLIDES_PATH='/content/test_imgs/'
+SLIDES_PATH='/content/ihc/'
 #pred for tumour or normal cells
 TARG_PRED=1
 ####GLOBALS####
@@ -105,7 +105,7 @@ bs = 32
 def get_file_name():return original_file_names
 name2id= {'NoEPI': 0, 'EPI': 1}
 
-
+### FILTER ###
 void_code = name2id['EPI']
 
 if not os.path.exists('/content/filtered/'):
@@ -133,22 +133,9 @@ target = cv.imread('test.png')
 target = cv.cvtColor(target, cv.COLOR_BGR2RGB)
 
 
-# %%
-# MessageTools.show_blue('Making DataBlock ..')
-# manual = DataBlock(blocks=(ImageBlock, MaskBlock(['background','turmou','normal'])),
-#                    get_items=partial(get_image_files,folders=["train"]),
-#                    get_y=get_y_test,
-#                    splitter=RandomSplitter(valid_pct=0.3,seed=2020),
-#                    item_tfms=[Resize((size,size)),TargetMaskConvertTransform()],
-#                   )
-
-# manual.summary('/content')
-# dls = manual.dataloaders('/content',bs=bs)
-
 
 # %%
 
-# !wandb login
 
 os.environ["WANDB_API_KEY"] = '4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8'
 
@@ -228,6 +215,12 @@ def generate_input_tiles(index,path,output_dir=None):
     tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
 
 def get_slide_idx(name):
+  if name =="any":
+    len_filtered=len(FILTER_DIR_names)
+    random_idx=random.randint(0, len_filtered)	
+    MessageTools.show_blue(f"Going for idx {random_idx} in filtered")
+    return random_idx
+    
   for idx,val in enumerate(sorted(glob(FILTER_DIR+'/*'))):
     if name in val:
       return idx
@@ -258,6 +251,8 @@ for i in range(len(sorted(glob("/content/filtered/input/*")))):
 MessageTools.show_succ("Preds Done .. stitching")
 # %%
 def get_outs(out_path):
+  if not os.exists(out_path):
+    os.makedirs(out_path)
   outs= sorted(glob(f"{out_path}/*"))
   out_base = os.path.basename(outs[0])
   out_split = out_base.split("_")
