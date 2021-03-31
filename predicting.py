@@ -209,11 +209,11 @@ def generate_input_tiles(index,path,output_dir=None):
     tily_m=Image.fromarray(mapped)
     tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
 
+global slide_num
 def get_slide_idx(name):
   if name =="any":
     len_filtered=len(FILTER_DIR_names)
     random_idx=random.randint(0, len_filtered)	
-    global slide_num
     if VERBOSE > 0:
       print(random_idx,len_filtered)
     slide_num=get_num_norm(FILTER_DIR_names[random_idx])
@@ -293,8 +293,10 @@ def get_stitched_slide(outs,num_rows,num_cols,tile_size=1024):
 
 # %%
 # re stitching
+if not slide_num: 
+  slide_num=PROCESS_SLIDE
 outs,num_rows,num_cols= get_outs("/content/output")
 re_tile= get_stitched_slide(outs,num_rows,num_cols)
-np_to_pil(re_tile.astype('bool')).save(f"/content/{slide_num}_stitched.png")
+np_to_pil(re_tile.astype('bool')).save(f"/content/{slide_num}_stitched_{TARG_PRED}.png")
 
 
