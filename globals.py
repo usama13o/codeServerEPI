@@ -1,6 +1,8 @@
 ####GLOBALS####
+NORMAL='NORMAL'
+TUMOUR='TUMOUR'
 #num of filtered slides to generate 
-NUM_FILTERED=15
+NUM_FILTERED=4
 #which slide of the filtered to process
 PROCESS_SLIDE='any'
 #where are the slides to be filtered. format --> '/PATH/to/slides/' 

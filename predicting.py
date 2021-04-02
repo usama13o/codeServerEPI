@@ -18,7 +18,7 @@ from fastai.callback.wandb import *
 from utils import *
 from pred_utils import * 
 
-MessageTools.show_succ(f"Using GLOBALS: \n SLIDES_PATH: {SLIDES_PATH} |NUM_FILTERED:  {NUM_FILTERED} | TARG_PRED: {TARG_PRED} | PROCESS_SLIDE: {PROCESS_SLIDE} |")
+MessageTools.show_succ(f"Using GLOBALS: \n SLIDES_PATH: {SLIDES_PATH} |NUM_FILTERED:  {NUM_FILTERED} | TARG_PRED: {TARG_PRED} [{NORMAL if TARG_PRED ==2 else TUMOUR}] | PROCESS_SLIDE: {PROCESS_SLIDE} |")
 if os.path.exists('/content/normal'):
   MessageTools.show_blue("Data already Unzipped !")
   pass
@@ -119,7 +119,7 @@ MessageTools.show_yellow("Assigining Target")
 # !pip install cv
 import cv2 as cv
 
-target = cv.imread('test.png')
+target = cv.imread('codeServerEPI/test.png')
 target = cv.cvtColor(target, cv.COLOR_BGR2RGB)
 
 
@@ -178,6 +178,7 @@ def get_unique(n):
 ######################################################################################################
 MessageTools.show_yellow(f"Generating input for slide")
 if RECURSE ==True and PROCESS_SLIDE=='any':
+  global slide_num
   pass
 else:
   NUM_FILTERED=1
@@ -212,20 +213,23 @@ for i in range(NUM_FILTERED):
         try:
           mapped=mapping(target,tily)
         except Exception as e:
+          if VERBOSE > 0:
+            MessageTools.show_err("Can't normalise tile using as is !")
           mapped=tily
         tily_m=Image.fromarray(mapped)
         tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
 
-    global slide_num
     slide_num=False
     def get_slide_idx(name):
       if name =="any":
         len_filtered=len(FILTER_DIR_names)
+        #randomly go thorugh filtered images
         random_idx=random.randint(0, len_filtered)	
         if VERBOSE > 0:
           print(random_idx,len_filtered)
+          #get slide num for file saving 
         slide_num=get_num_norm(FILTER_DIR_names[random_idx])
-        MessageTools.show_blue(f"Going for idx {random_idx} in filtered")
+        MessageTools.show_blue(f"Going for slide {slide_num} at idx {random_idx} in filtered")
         return random_idx
         
       for idx,val in enumerate(sorted(glob(FILTER_DIR+'/*'))):
@@ -301,7 +305,7 @@ for i in range(NUM_FILTERED):
 
     # %%
     # re stitching
-    if not slide_num: 
+    if slide_num == False: 
       slide_num=PROCESS_SLIDE
     outs,num_rows,num_cols= get_outs("/content/output")
     re_tile= get_stitched_slide(outs,num_rows,num_cols)
