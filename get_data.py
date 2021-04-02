@@ -1,15 +1,15 @@
 import os
 import subprocess
 import sys
-os.environ['KAGGLE_CONFIG_DIR'] = "/content/"
+os.environ['KAGGLE_CONFIG_DIR'] = "/content/codeServerEPI/"
 
-get_ipython().system('apt-get install openslide-tools')
-get_ipython().system('pip install openslide-python')
-get_ipython().system('pip install scipy')
-get_ipython().system('pip install fastai --upgrade')
-get_ipython().system('pip install semtorch')
-get_ipython().system('pip install spams')
-get_ipython().system('pip install wandb')
+os.system('apt-get install openslide-tools')
+os.system('pip install openslide-python')
+os.system('pip install scipy')
+os.system('pip install fastai --upgrade')
+os.system('pip install semtorch')
+os.system('pip install spams')
+os.system('pip install wandb')
 
 
 list_datasets=[

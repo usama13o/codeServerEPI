@@ -1,7 +1,7 @@
 # To add a new cell, type '# %%'# To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-from IPython import get_ipython
+# from IPython import get_ipython
 import MessageTools
 import traceback
 # %%
@@ -25,11 +25,11 @@ if os.path.exists('/content/normal'):
 else:
   MessageTools.show_yellow("Unzipping data ...")
 # %%
-  get_ipython().system('unzip -q /content/epithelial-cells-ihc.zip -d /content/ihc')
+  os.system('unzip -q /content/epithelial-cells-ihc.zip -d /content/ihc')
 
 
 # %%
-  get_ipython().system('unzip -q /content/normal-tifff -d /content/normal')
+  os.system('unzip -q /content/normal-tifff -d /content/normal')
 try:
   len_ihc = len([name for name in os.listdir('/content/ihc/') ])
   len_norm = len([name for name in os.listdir('/content/normal/')])
@@ -182,7 +182,7 @@ if RECURSE ==True and PROCESS_SLIDE=='any':
 else:
   NUM_FILTERED=1
 for i in range(NUM_FILTERED):
-    get_ipython().system('rm /content/filtered/input/*')
+    os.system('rm /content/filtered/input/*')
 
     def generate_input_tiles(index,path,output_dir=None):
       ind=index
@@ -248,7 +248,7 @@ for i in range(NUM_FILTERED):
 
     # %%
     MessageTools.show_yellow("Running predictions ...")
-    get_ipython().system('rm /content/output/*')
+    os.system('rm /content/output/*')
     if not os.path.exists('/content/output/'):
       os.makedirs('/content/output/')
     for i in range(len(sorted(glob("/content/filtered/input/*")))):
