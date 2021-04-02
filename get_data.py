@@ -10,6 +10,8 @@ os.system('pip install fastai --upgrade')
 os.system('pip install semtorch')
 os.system('pip install spams')
 os.system('pip install wandb')
+os.system('git config --global user.email "osama.zadan@gmail.com"')
+os.system('git config --global user.name "usama13o"')
 
 
 list_datasets=[
