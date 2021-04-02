@@ -25,15 +25,15 @@ if os.path.exists('/content/normal'):
 else:
   MessageTools.show_yellow("Unzipping data ...")
 # %%
-  os.system('unzip -q /content/epithelial-cells-ihc.zip -d /content/ihc')
+  os.system('unzip -q /content/normal-epi -d /content/normal-epi')
 
 
 # %%
   os.system('unzip -q /content/normal-tifff -d /content/normal')
 try:
-  len_ihc = len([name for name in os.listdir('/content/ihc/') ])
+  len_ihc = len([name for name in os.listdir('/content/normal-epi/') ])
   len_norm = len([name for name in os.listdir('/content/normal/')])
-  MessageTools.show_yellow(f'Data all here ! length-_->  normal:  {len_norm} tumour ihc:  {len_ihc}')
+  MessageTools.show_yellow(f'Data all here ! length-_->  normal:  {len_norm} normal-epi:  {len_ihc}')
 except Exception as e :
   MessageTools.show_err(f"Something is missing, Failed to show file stats --> {e}")
 
@@ -158,13 +158,13 @@ else:
 MessageTools.show_yellow("Making DataBlock .. here we go !")
 try:
   manual = DataBlock(blocks=(ImageBlock, MaskBlock(['background','EPI','Tumour'])),
-                    get_items=partial(get_image_files,folders=["train"]),
+                    get_items=partial(get_image_files,folders=["1024"]),
                     get_y= get_y_fake,
                     splitter=RandomSplitter(valid_pct=0.3,seed=2020),
                     item_tfms=[Resize((1024,1024))],
                     )
   # manual.summary('/content/ihc')
-  dls = manual.dataloaders('/content/ihc',bs=2)
+  dls = manual.dataloaders('/content/',bs=2)
 
   new_learner = load_learner("artifacts/my-model_multi:v4/export.pkl")
   new_learner.dls=dls
@@ -230,7 +230,7 @@ for i in range(NUM_FILTERED):
           #get slide num for file saving 
         slide_num=get_num_norm(FILTER_DIR_names[random_idx])
         MessageTools.show_blue(f"Going for slide {slide_num} at idx {random_idx} in filtered")
-        return random_idx,slide_nume
+        return random_idx,slide_num
         
       for idx,val in enumerate(sorted(glob(FILTER_DIR+'/*'))):
         if name in val:

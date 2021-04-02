@@ -15,7 +15,8 @@ os.system('git config --global user.name "usama13o"')
 
 
 list_datasets=[
-"kaggle datasets download -d usamann/epithelial-cells-ihc",
+# "kaggle datasets download -d usamann/epithelial-cells-ihc",
+"kaggle datasets download -d usamann/normal-epi",
 "kaggle datasets download -d usamann/normal-tifff"
 ]
 
