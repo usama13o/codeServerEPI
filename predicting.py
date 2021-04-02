@@ -2,6 +2,7 @@
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
 # from IPython import get_ipython
+from google.colab import drive
 import MessageTools
 import traceback
 # %%
@@ -19,6 +20,8 @@ from utils import *
 from pred_utils import * 
 
 MessageTools.show_succ(f"Using GLOBALS: \n SLIDES_PATH: {SLIDES_PATH} |NUM_FILTERED:  {NUM_FILTERED} | TARG_PRED: {TARG_PRED} [{NORMAL if TARG_PRED ==2 else TUMOUR}] | PROCESS_SLIDE: {PROCESS_SLIDE} |")
+if SAVE_DRIVE:
+  drive.mount('/content/drive')
 if os.path.exists('/content/normal'):
   MessageTools.show_blue("Data already Unzipped !")
   pass
@@ -98,7 +101,7 @@ name2id= {'NoEPI': 0, 'EPI': 1}
 
 ### FILTER ###
 void_code = name2id['EPI']
-if not os.path.exists('/content/filtered/') and len(FILTER_DIR_names)!=NUM_FILTERED:
+if not os.path.exists('/content/filtered/') or len(FILTER_DIR_names)!=NUM_FILTERED:
 # %%
   MessageTools.show_yellow("Generating filtered slides ....")
   # # Generating output 
@@ -164,7 +167,7 @@ try:
                     item_tfms=[Resize((1024,1024))],
                     )
   # manual.summary('/content/ihc')
-  dls = manual.dataloaders('/content/',bs=2)
+  dls = manual.dataloaders('/content/normal-epi/',bs=2)
 
   new_learner = load_learner("artifacts/my-model_multi:v4/export.pkl")
   new_learner.dls=dls
@@ -224,7 +227,7 @@ for i in range(NUM_FILTERED):
       if name =="any":
         len_filtered=len(FILTER_DIR_names)
         #randomly go thorugh filtered images
-        random_idx=random.randint(0, len_filtered)	
+        random_idx=random.randint(0, len_filtered-1)	
         if VERBOSE > 0:
           print(random_idx,len_filtered)
           #get slide num for file saving 
@@ -307,9 +310,13 @@ for i in range(NUM_FILTERED):
     # re stitching
     if slide_num == False: 
       slide_num=PROCESS_SLIDE
+    if SAVE_DRIVE:
+      extra_path='drive/My Drive/stitched/'
+    else:
+      extra_path=''
     outs,num_rows,num_cols= get_outs("/content/output")
     re_tile= get_stitched_slide(outs,num_rows,num_cols)
-    MessageTools.show_yellow(f"saving to ---> /content/{slide_num}_stitched_{TARG_PRED}.png")
-    np_to_pil(re_tile.astype('bool')).save(f"/content/{slide_num}_stitched_{TARG_PRED}.png")
+    MessageTools.show_yellow(f"saving to ---> /content/{extra_path}{slide_num}_stitched_{TARG_PRED}.png")
+    np_to_pil(re_tile.astype('bool')).save(f"/content/{extra_path}{slide_num}_stitched_{TARG_PRED}.png")
 
 
