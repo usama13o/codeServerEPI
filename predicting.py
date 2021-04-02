@@ -230,14 +230,14 @@ for i in range(NUM_FILTERED):
           #get slide num for file saving 
         slide_num=get_num_norm(FILTER_DIR_names[random_idx])
         MessageTools.show_blue(f"Going for slide {slide_num} at idx {random_idx} in filtered")
-        return random_idx
+        return random_idx,slide_nume
         
       for idx,val in enumerate(sorted(glob(FILTER_DIR+'/*'))):
         if name in val:
-          return idx
+          return idx,name
     # %%
     try:
-      slide_idx=get_slide_idx(PROCESS_SLIDE)
+      slide_idx,slide_num=get_slide_idx(PROCESS_SLIDE)
       generate_input_tiles(slide_idx,FILTER_DIR)
     except Exception as e:
       traceback.print_exc()
@@ -309,6 +309,7 @@ for i in range(NUM_FILTERED):
       slide_num=PROCESS_SLIDE
     outs,num_rows,num_cols= get_outs("/content/output")
     re_tile= get_stitched_slide(outs,num_rows,num_cols)
+    MessageTools.show_yellow(f"saving to ---> /content/{slide_num}_stitched_{TARG_PRED}.png")
     np_to_pil(re_tile.astype('bool')).save(f"/content/{slide_num}_stitched_{TARG_PRED}.png")
 
 
