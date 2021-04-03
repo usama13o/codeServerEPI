@@ -1,21 +1,35 @@
 from pathlib import Path
+import os
 from glob import glob 
+import numpy as np
+from utils import np_to_pil
 if __name__ == "__main__":
    print("Pred utils executed when ran directly")
 else:
    print("Pred utils imported")
 # %%
-def pred_img(i,input_images_path="/content/input"):
-    test_lis = sorted(glob(f"{input_images_path}/*"))[i]
-    return PILImage.create(test_lis)
-
 def get_pred_on_test(im_index,new_learner,input_images_path="/content/input"):
   test_dl=new_learner.dls.test_dl([Path(sorted(glob(f"{input_images_path}/*"))[im_index])])
-  # TODO: use batch preds instead of invidual 
   preds = new_learner.get_preds(dl=test_dl)
 
   return preds
-def get_test_preds(i,learner,bk=1,input_path=None):
+def get_batch_preds(new_learner,input_images_path="/content/input"):
+  data = sorted(glob(input_images_path+'/*'))
+  data=list(map(Path,data))
+  test_dl=new_learner.dls.test_dl(data)
+  preds = new_learner.get_preds(dl=test_dl)
+  return preds[0],test_dl.items
+def get_test_preds_batch(learner,bk=1,prob=.5,input_path=None,output_path='/content/output/'):
+  preds,fns = get_batch_preds(learner,input_images_path=input_path)
+  for i,pred in enumerate(preds):
+    print(f'processing : {i,fns[i]}')
+    base= os.path.basename(str(fns[i]))
+    pred=(pred[bk])>prob
+    pred_np=np.array(pred).astype('bool')
+    pred_pil= np_to_pil(pred_np)
+    pred_pil.save(f'{output_path}/{base}')
+  
+def get_test_preds(i,learner,bk=1,input_path=None,output_path='/content/output/'):
   preds = get_pred_on_test(i,new_learner=learner,input_images_path=input_path)
   print(preds[0].shape)
   pred_im = (preds[0][0][bk])>.5

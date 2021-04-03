@@ -266,11 +266,11 @@ for i in range(NUM_FILTERED):
     os.system('rm /content/output/*')
     if not os.path.exists('/content/output/'):
       os.makedirs('/content/output/')
-    for i in range(len(sorted(glob("/content/filtered/input/*")))):
-      if VERBOSE > 0:
-        print(i)
-      np_to_pil(np.array(get_test_preds(i,learner=new_learner,bk=TARG_PRED,input_path="/content/filtered/input")).astype('bool')).save(f'/content/output/{os.path.basename(sorted(glob("/content/filtered/input/*"))[i])}')
-
+    # for i in range(len(sorted(glob("/content/filtered/input/*")))):
+    #   if VERBOSE > 0:
+    #     print(i)
+    #   np_to_pil(np.array(get_test_preds(i,learner=new_learner,bk=TARG_PRED,input_path="/content/filtered/input")).astype('bool')).save(f'/content/output/{os.path.basename(sorted(glob("/content/filtered/input/*"))[i])}')
+    get_test_preds_batch(learner=new_learner,prob=0.5,bk=TARG_PRED,input_path="/content/filtered/input",output_path="/content/output")
     ######################################################################################################
     # %%
     MessageTools.show_succ("Preds Done .. stitching")
