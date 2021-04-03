@@ -29,10 +29,12 @@ else:
   MessageTools.show_yellow("Unzipping data ...")
 # %%
   os.system('unzip -q /content/normal-epi -d /content/normal-epi')
+  os.system('rm  /content/normal-epi')
 
 
 # %%
   os.system('unzip -q /content/normal-tifff -d /content/normal')
+  os.system('rm /content/normal-tifff ')
 try:
   len_ihc = len([name for name in os.listdir('/content/normal-epi/') ])
   len_norm = len([name for name in os.listdir('/content/normal/')])
@@ -223,11 +225,16 @@ for i in range(NUM_FILTERED):
         tily_m.save(f"{output_dir}/{tile_sum.num_row_tiles}_{tile_sum.num_col_tiles}_{rs}_{re}_{cs}_{ce}_.png")
 
     slide_num=False
-    def get_slide_idx(name):
+    def get_slide_idx(name,idx=None):
       if name =="any":
         len_filtered=len(FILTER_DIR_names)
         #randomly go thorugh filtered images
-        random_idx=random.randint(0, len_filtered-1)	
+        if idx is None:
+          MessageTools.show_yellow("Randomly choose a filtered Image")
+          random_idx=random.randint(0, len_filtered-1)	
+        else:
+          MessageTools.show_yellow("Iterating through filtered images")
+          random_idx=idx
         if VERBOSE > 0:
           print(random_idx,len_filtered)
           #get slide num for file saving 
@@ -240,7 +247,8 @@ for i in range(NUM_FILTERED):
           return idx,name
     # %%
     try:
-      slide_idx,slide_num=get_slide_idx(PROCESS_SLIDE)
+      arg={'name':PROCESS_SLIDE,'idx':None if RANDOM_RUN else i}
+      slide_idx,slide_num=get_slide_idx(**arg)
       generate_input_tiles(slide_idx,FILTER_DIR)
     except Exception as e:
       traceback.print_exc()

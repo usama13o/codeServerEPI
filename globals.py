@@ -12,4 +12,6 @@ TARG_PRED=2
 VERBOSE=1
 SAVE_DRIVE=True
 RECURSE=True
+#randomly choose idx of filtered
+RANDOM_RUN = False
 ####GLOBALS####
