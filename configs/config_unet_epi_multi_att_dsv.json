@@ -18,7 +18,7 @@
     "display_single_pane_ncols": 0
   },
   "data_path": {
-    "epi": "/mnt/data/Other/DOWNLOADS/WSIData/Normal/kaggle/input/stain-normalisation/SN"
+    "epi": "/content/kaggle/input/stain-normalisation/SN"
 
   },
   "augmentation": {
