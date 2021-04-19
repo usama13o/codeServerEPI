@@ -166,6 +166,7 @@ class Visualiser():
     def plot_current_errors(self, epoch, errors, split_name, counter_ratio=0.0, **kwargs):
         errors['epoch'] = epoch
         if self.use_wandb:
+            errors[split_name]=errors
             self.run.log(errors)
         if self.display_id > 0:
             for key in errors.keys():
