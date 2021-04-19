@@ -4,12 +4,6 @@ import subprocess
 import sys
 os.environ['KAGGLE_CONFIG_DIR'] = "/content/codeServerEPI/"
 
-os.system('pip install scipy')
-os.system('pip install semtorch')
-os.system('pip install spams')
-os.system('pip install wandb')
-os.system('pip install pywick')
-os.system('pip install dominate')
 os.system('git config --global user.email "osama.zadan@gmail.com"')
 os.system('git config --global user.name "usama13o"')
 
