@@ -6,9 +6,14 @@ from os import listdir
 from os.path import join
 from os.path import basename
 from .utils import load_nifti_img, check_exceptions, is_image_file, open_image_np,open_target_np;                   
-
+import random
 
 class stain_norm_dataset(data.Dataset):
+    def find_in_y(self,x):
+        y_lis = self.target_filenames
+        match = [y for y in y_lis if x in y]
+        return match[0]
+
     def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8):
         super(stain_norm_dataset, self).__init__()
         image_dir = root_dir
@@ -20,11 +25,12 @@ class stain_norm_dataset(data.Dataset):
         self.target_filenames.extend(sorted([join(tum_dir, x) for x in listdir(tum_dir) if is_image_file(x)]))
         sp= self.target_filenames.__len__()
         sp= int(train_pct *sp)
+        random.shuffle(self.image_filenames)
         if split == 'train':
             self.image_filenames = self.image_filenames[:sp]
         else:
             self.image_filenames = self.image_filenames[sp:]
-        self.target_filenames = sorted([x for x in self.target_filenames if basename(x) in map(basename,self.image_filenames)])
+        self.target_filenames = [ self.find_in_y(basename(x)) for x in self.image_filenames]
         assert len(self.image_filenames) == len(self.target_filenames)
 
         # report the number of images in the dataset

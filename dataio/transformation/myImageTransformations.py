@@ -69,6 +69,25 @@ def elastic_transform(image, alpha=1000, sigma=30, spline_order=1, mode='nearest
             image[:, :, i], indices, order=spline_order, mode=mode).reshape(shape)
     return result
 
+class Resize:
+    def __init__(self, size):
+        assert isinstance(size, int) or (isinstance(size, Iterable) and len(size) == 2)
+        if isinstance(size, int):
+            self._size = (size, size)
+        else:
+            self._size = size
+
+    def __call__(self,x,y=None):
+        _input=x
+        _input = skimage.transform.resize(_input, self._size)
+        _input = skimage.util.img_as_ubyte(_input)
+        if y is not None:
+            _input_y=y
+            _input_y = skimage.transform.resize(_input_y, self._size)
+            _input_y = skimage.util.img_as_ubyte(_input_y)
+            return _input, _input_y
+        else:
+            return _input
 
 class Merge(object):
     """Merge a group of images
