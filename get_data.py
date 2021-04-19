@@ -9,6 +9,7 @@ os.system('pip install semtorch')
 os.system('pip install spams')
 os.system('pip install wandb')
 os.system('pip install pywick')
+os.system('pip install dominate')
 os.system('git config --global user.email "osama.zadan@gmail.com"')
 os.system('git config --global user.name "usama13o"')
 
@@ -22,3 +23,4 @@ list_datasets=[
 
 for link in list_datasets:
     subprocess.check_call(link.split())
+os.system('unzip staindata.zip')
