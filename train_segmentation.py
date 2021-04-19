@@ -31,6 +31,7 @@ def train(arguments):
 
     # Setup the NN Model
     model = get_model(json_opts.model)
+    network_debug=False
     if network_debug:
         print('# of pars: ', model.get_number_parameters())
         print('fp time: {0:.3f} sec\tbp time: {1:.3f} sec per sample'.format(*model.get_fp_bp_time()))
@@ -40,9 +41,9 @@ def train(arguments):
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-    train_loader = DataLoader(dataset=train_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=True)
-    valid_loader = DataLoader(dataset=valid_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=False)
-    test_loader  = DataLoader(dataset=test_dataset,  num_workers=16, batch_size=train_opts.batchSize, shuffle=False)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=True)
+    valid_loader = DataLoader(dataset=valid_dataset, num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
+    test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
     # Visualisation Parameters
     visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir)

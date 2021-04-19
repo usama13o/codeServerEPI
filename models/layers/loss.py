@@ -71,19 +71,67 @@ class CustomSoftDiceLoss(nn.Module):
 
         return score
 
-
+class IoU_loss(nn.Module):
+    """Computes the Jaccard loss, a.k.a the IoU loss.
+    Notes: [Batch size,Num classes,Height,Width]
+    Args:
+        targs: a tensor of shape [B, H, W] or [B, 1, H, W].
+        preds: a tensor of shape [B, C, H, W]. Corresponds to
+            the raw output or logits of the model. (prediction)
+        eps: added to the denominator for numerical stability.
+    Returns:
+        iou: the average class intersection over union value 
+             for multi-class image segmentation
+    """
+    def __init__(self,n_classes):
+        super(IoU_loss, self).__init__()
+        self.num_classes = n_classes
+    def forward(self,preds, targs, eps=1e-8):
+    # Single class segmentation?
+        num_classes = self.num_classes
+        if num_classes == 1:
+            true_1_hot = torch.eye(num_classes + 1)[targs.squeeze(1)]
+            true_1_hot = true_1_hot.permute(0, 3, 1, 2).float()
+            true_1_hot_f = true_1_hot[:, 0:1, :, :]
+            true_1_hot_s = true_1_hot[:, 1:2, :, :]
+            true_1_hot = torch.cat([true_1_hot_s, true_1_hot_f], dim=1)
+            pos_prob = torch.sigmoid(preds)
+            neg_prob = 1 - pos_prob
+            probas = torch.cat([pos_prob, neg_prob], dim=1)
+            
+        # Multi-class segmentation
+        else:
+            # Convert target to one-hot encoding
+            # true_1_hot = torch.eye(num_classes)[torch.squeeze(targs,1)]
+            true_1_hot = torch.eye(num_classes)[targs.squeeze(1)]
+            
+            # Permute [B,H,W,C] to [B,C,H,W]
+            true_1_hot = true_1_hot.permute(0, 3, 1, 2).float()
+            
+            # Take softmax along class dimension; all class probs add to 1 (per pixel)
+            probas = F.softmax(preds, dim=1)
+            
+        true_1_hot = true_1_hot.type(preds.type())
+        
+        # Sum probabilities by class and across batch images
+        dims = (0,) + tuple(range(2, targs.ndimension()))
+        intersection = torch.sum(probas * true_1_hot, dims) # [class0,class1,class2,...]
+        cardinality = torch.sum(probas + true_1_hot, dims)  # [class0,class1,class2,...]
+        union = cardinality - intersection
+        iou = (intersection / (union + eps)).mean()   # find mean of class IoU values
+        return 1-iou
 class One_Hot(nn.Module):
     def __init__(self, depth):
         super(One_Hot, self).__init__()
         self.depth = depth
-        self.ones = torch.sparse.torch.eye(depth).cuda()
+        self.ones = torch.sparse.torch.eye(depth)
 
     def forward(self, X_in):
         n_dim = X_in.dim()
-        output_size = X_in.size() + torch.Size([self.depth])
+        output_size = X_in.size()# + torch.Size([self.depth])
         num_element = X_in.numel()
         X_in = X_in.data.long().view(num_element)
-        out = Variable(self.ones.index_select(0, X_in)).view(output_size)
+        out = Variable(self.ones.index_select(1, X_in)).view(output_size)
         return out.permute(0, -1, *range(1, n_dim)).squeeze(dim=2).float()
 
     def __repr__(self):
@@ -95,8 +143,8 @@ if __name__ == '__main__':
     depth=3
     batch_size=2
     encoder = One_Hot(depth=depth).forward
-    y = Variable(torch.LongTensor(batch_size, 1, 1, 2 ,2).random_() % depth).cuda()  # 4 classes,1x3x3 img
+    y = Variable(torch.LongTensor(batch_size, 1, 1, 2 ,2).random_() % depth) # 4 classes,1x3x3 img
     y_onehot = encoder(y)
-    x = Variable(torch.randn(y_onehot.size()).float()).cuda()
+    x = Variable(torch.randn(y_onehot.size()).float())
     dicemetric = SoftDiceLoss(n_classes=depth)
     dicemetric(x,y)

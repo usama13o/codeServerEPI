@@ -1,6 +1,6 @@
 import torchsample.transforms as ts
 from pprint import pprint
-
+from  dataio.transformation.myImageTransformations  import BilinearResize
 
 class Transformations:
 
@@ -29,6 +29,7 @@ class Transformations:
             'test_sax': self.test_3d_sax_transform,
             'acdc_sax': self.cmr_3d_sax_transform,
             'us':       self.ultrasound_transform,
+            'epi':       self.epi_transform,
         }[self.name]()
 
     def print(self):
@@ -48,6 +49,36 @@ class Transformations:
         if hasattr(t_opts, 'inten_val'):        self.inten_val = t_opts.intensity
         if hasattr(t_opts, 'random_flip_prob'): self.random_flip_prob = t_opts.random_flip_prob
         if hasattr(t_opts, 'division_factor'):  self.division_factor = t_opts.division_factor
+
+    def epi_transform(self):
+        train_transform = ts.Compose([ts.Resize(size=self.scale_size),
+                                      ts.ToTensor(),
+                                      ts.ChannelsFirst(),
+                                      ts.TypeCast(['float', 'float']),
+                                      ts.RandomFlip(h=True, v=True, p=self.random_flip_prob),
+                                      ts.RandomAffine(rotation_range=self.rotate_val, translation_range=self.shift_val,
+                                                      zoom_range=self.scale_val, interp=('bilinear', 'nearest')),
+                                      #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
+                                    #   ts.NormalizeMedic(norm_flag=(True, False)),
+                                      ts.ChannelsLast(),
+                                      ts.AddChannel(axis=0),
+                                    #   ts.RandomCrop(size=self.patch_size),
+                                      ts.TypeCast(['float', 'long'])
+                                ])
+
+        valid_transform = ts.Compose([ts.Resize(size=self.scale_size),
+                                      ts.ToTensor(),
+                                      ts.ChannelsFirst(),
+                                      ts.TypeCast(['float', 'float']),
+                                      #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
+                                    #   ts.NormalizeMedic(norm_flag=(True, False)),
+                                      ts.ChannelsLast(),
+                                      ts.AddChannel(axis=0),
+                                    #   ts.SpecialCrop(size=self.patch_size, crop_type=0),
+                                      ts.TypeCast(['float', 'long'])
+                                ])
+
+        return {'train': train_transform, 'valid': valid_transform}
 
     def ukbb_sax_transform(self):
 
@@ -76,7 +107,7 @@ class Transformations:
 
     def cmr_3d_sax_transform(self):
 
-        train_transform = ts.Compose([ts.PadNumpy(size=self.scale_size),
+        train_transform = ts.Compose([ts.Pad(size=self.scale_size),
                                       ts.ToTensor(),
                                       ts.ChannelsFirst(),
                                       ts.TypeCast(['float', 'float']),
@@ -84,19 +115,19 @@ class Transformations:
                                       ts.RandomAffine(rotation_range=self.rotate_val, translation_range=self.shift_val,
                                                       zoom_range=self.scale_val, interp=('bilinear', 'nearest')),
                                       #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
-                                      ts.NormalizeMedic(norm_flag=(True, False)),
+                                    #   ts.NormalizeMedic(norm_flag=(True, False)),
                                       ts.ChannelsLast(),
                                       ts.AddChannel(axis=0),
                                       ts.RandomCrop(size=self.patch_size),
                                       ts.TypeCast(['float', 'long'])
                                 ])
 
-        valid_transform = ts.Compose([ts.PadNumpy(size=self.scale_size),
+        valid_transform = ts.Compose([ts.Pad(size=self.scale_size),
                                       ts.ToTensor(),
                                       ts.ChannelsFirst(),
                                       ts.TypeCast(['float', 'float']),
                                       #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
-                                      ts.NormalizeMedic(norm_flag=(True, False)),
+                                    #   ts.NormalizeMedic(norm_flag=(True, False)),
                                       ts.ChannelsLast(),
                                       ts.AddChannel(axis=0),
                                       ts.SpecialCrop(size=self.patch_size, crop_type=0),
