@@ -26,7 +26,7 @@ class Visualiser():
         if self.use_wandb:
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
-            self.run=wandb.init(project='EPISEG',name=f"Attention_Unet")
+            self.run=wandb.init(project='EPISEG',name=f"Attention_Unet{opt.run_name}")
 
         if self.display_id > 0:
             import visdom
