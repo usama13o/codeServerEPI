@@ -384,13 +384,17 @@ class BilinearResize(object):
     def __init__(self, zoom):
         self.zoom = [zoom, zoom, 1]
 
-    def __call__(self, image):
-        if isinstance(image, np.ndarray):
-            return scipy.ndimage.interpolation.zoom(image, self.zoom)
-        elif isinstance(image, Image.Image):
-            return image.resize(self.size, Image.BILINEAR)
-        else:
-            raise Exception('unsupported type')
+    def __call__(self, *inputs):  
+        outputs = []
+        for idx, _input in enumerate(inputs):
+            if isinstance(_input, np.ndarray):
+                _input = scipy.ndimage.interpolation.zoom(_input, self.zoom)
+            elif isinstance(_input, Image.Image):
+                _input =_input.resize(self.size, Image.BILINEAR)
+            else:
+                raise Exception('unsupported type')
+            outputs.append(_input)
+        return outputs if idx > 1 else outputs[0]
 
 
 class EnhancedCompose(object):

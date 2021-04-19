@@ -69,14 +69,14 @@ class FeedForwardSegmentation(BaseModel):
             # If it's a 5D array and 2D model then (B x C x H x W x Z) -> (BZ x C x H x W)
             bs = _input.size()
             if (self.tensor_dim == '2D') and (len(bs) > 4):
-                _input = _input.permute(0,4,1,2,3).contiguous().view(bs[0]*bs[4], bs[1], bs[2], bs[3])
+                _input = _input.permute(0,1,4,2,3).contiguous().view(bs[0]*bs[1], bs[4], bs[2], bs[3])
 
             # Define that it's a cuda array
             if idx == 0:
                 self.input = _input.cuda() if self.use_cuda else _input
             elif idx == 1:
                 self.target = Variable(_input.cuda()) if self.use_cuda else Variable(_input)
-                assert self.input.size() == self.target.size()
+                assert self.input.size(-1) == self.target.size(-1)
 
     def forward(self, split):
         if split == 'train':
@@ -128,7 +128,7 @@ class FeedForwardSegmentation(BaseModel):
         return OrderedDict(seg_stats)
 
     def get_current_errors(self):
-        return OrderedDict([('Seg_Loss', self.loss_S.data[0])
+        return OrderedDict([('Seg_Loss', self.loss_S.data.item())
                             ])
 
     def get_current_visuals(self):
@@ -145,8 +145,8 @@ class FeedForwardSegmentation(BaseModel):
         if size is None:
             size = (1, 1, 160, 160, 96)
 
-        inp_array = Variable(torch.zeros(*size)).cuda()
-        out_array = Variable(torch.zeros(*size)).cuda()
+        inp_array = Variable(torch.zeros(*size))
+        out_array = Variable(torch.zeros(*size))
         fp, bp = benchmark_fp_bp_time(self.net, inp_array, out_array)
 
         bsize = size[0]

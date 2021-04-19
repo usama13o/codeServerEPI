@@ -2,11 +2,41 @@ import nibabel as nib
 import numpy as np
 import os
 from utils.util import mkdir
+from PIL import Image
 
 def is_image_file(filename):
-    return any(filename.endswith(extension) for extension in [".nii.gz"])
+    return any(filename.endswith(extension) for extension in [".nii.gz",'png','tiff','jpg'])
 
+def open_image(filename):
+    """
+    Open an image (*.jpg, *.png, etc).
+    Args:
+    filename: Name of the image file.
+    returns:
+    A PIL.Image.Image object representing an image.
+    """
+    image = Image.open(filename)
+    return image
+def open_target_np(path):
+    im = open_image(path)
+    mask= np.array(im)
+    li = (np.unique(mask))
+    if 29 in li:
+        mask[mask==29]=0
+    # normal case
+    if len(li)>5:
+        mask[mask!=255]=0
+        mask[mask==255]=2
+    #tumour
+    else:
+        mask[mask!=255]=0
+        mask[mask==255]=1
+    return mask[:,:,0,np.newaxis]
 
+def open_image_np(path):
+    im = open_image(path)
+    array = np.array(im)
+    return array
 def load_nifti_img(filepath, dtype):
     '''
     NIFTI Image Loader
