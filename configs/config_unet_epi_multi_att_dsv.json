@@ -13,7 +13,8 @@
     "display_port":9898,
     "no_html": true,
     "display_winsize": 256,
-    "display_id": 1,
+    "display_id": 0,
+    "use_wandb": true,
     "display_single_pane_ncols": 0
   },
   "data_path": {

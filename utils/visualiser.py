@@ -5,6 +5,7 @@ import ntpath
 import time
 from utils import util, html
 
+import wandb 
 # Use the following comment to launch a visdom server
 # python -m visdom.server
 
@@ -17,10 +18,15 @@ class Visualiser():
         self.name = os.path.basename(self.save_dir)
         self.saved = False
         self.display_single_pane_ncols = opt.display_single_pane_ncols
+        self.use_wandb = opt.use_wandb
 
         # Error plots
         self.error_plots = dict()
         self.error_wins = dict()
+        if self.use_wandb:
+            WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
+            os.environ["WANDB_API_KEY"] = WANDB_API_KEY
+            self.run=wandb.init(project='EPISEG',name=f"Attention_Unet")
 
         if self.display_id > 0:
             import visdom
@@ -41,6 +47,11 @@ class Visualiser():
 
     # |visuals|: dictionary of images to display or save
     def display_current_results(self, visuals, epoch, save_result):
+        if self.use_wandb:
+            mask = []
+            for inp,pred,true in zip(visuals['inp_S'],visuals['out_S'],visuals['true_S']):
+                mask.append(wb_mask(inp, pred,true))
+            self.run.log({'predictions':mask})
         if self.display_id > 0:  # show images in the browser
             ncols = self.display_single_pane_ncols
             if ncols > 0:
@@ -152,6 +163,9 @@ class Visualiser():
             self.vis.line(X=np.array([x]), Y=np.array([y]), win=self.error_plots[key], name=split_name,update='append')
     # errors: dictionary of error labels and values
     def plot_current_errors(self, epoch, errors, split_name, counter_ratio=0.0, **kwargs):
+        errors['epoch'] = epoch
+        if self.use_wandb:
+            self.run.log(errors)
         if self.display_id > 0:
             for key in errors.keys():
                 x = epoch + counter_ratio
@@ -196,3 +210,16 @@ class Visualiser():
             txts.append(label)
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
+  
+def labels(): 
+    segmentation_classes = ['BG','Tumour','Normal']
+    l = {}
+    for i, label in enumerate(segmentation_classes):
+        l[i] = label
+    return l
+
+# util function for generating interactive image mask from components
+def wb_mask(bg_img, pred_mask, true_mask):
+    return wandb.Image(bg_img, masks={
+        "prediction" : {"mask_data" : pred_mask, "class_labels" : labels()},
+        "ground truth" : {"mask_data" : true_mask, "class_labels" : labels()}})

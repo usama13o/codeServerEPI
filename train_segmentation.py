@@ -55,15 +55,15 @@ def train(arguments):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 
         # Training Iterations
-        for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
-            # Make a training update
-            model.set_input(images, labels)
-            model.optimize_parameters()
-            #model.optimize_parameters_accumulate_grd(epoch_iter)
+        # for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
+        #     # Make a training update
+        #     model.set_input(images, labels)
+        #     model.optimize_parameters()
+        #     #model.optimize_parameters_accumulate_grd(epoch_iter)
 
-            # Error visualisation
-            errors = model.get_current_errors()
-            error_logger.update(errors, split='train')
+        #     # Error visualisation
+        #     errors = model.get_current_errors()
+        #     error_logger.update(errors, split='train')
 
         # Validation and Testing Iterations
         for loader, split in zip([valid_loader, test_loader], ['validation', 'test']):
