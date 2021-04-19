@@ -4,7 +4,7 @@ import os
 import ntpath
 import time
 from utils import util, html
-
+from datetime import datetime
 import wandb 
 # Use the following comment to launch a visdom server
 # python -m visdom.server
@@ -19,6 +19,7 @@ class Visualiser():
         self.saved = False
         self.display_single_pane_ncols = opt.display_single_pane_ncols
         self.use_wandb = opt.use_wandb
+        now = datetime.now()
 
         # Error plots
         self.error_plots = dict()
@@ -26,7 +27,7 @@ class Visualiser():
         if self.use_wandb:
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
-            self.run=wandb.init(project='EPISEG',name=f"Attention_Unet{opt.run_name}")
+            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}')
 
         if self.display_id > 0:
             import visdom
