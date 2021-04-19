@@ -64,6 +64,7 @@ def train(arguments):
             # Error visualisation
             errors = model.get_current_errors()
             error_logger.update(errors, split='train')
+            visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
         # Validation and Testing Iterations
         for loader, split in zip([valid_loader, test_loader], ['validation', 'test']):
