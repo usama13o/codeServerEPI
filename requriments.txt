@@ -1,6 +1,4 @@
 scipy
-semtorch
-spams
 wandb
 pywick
 dominate

@@ -1,7 +1,7 @@
 {
   "training":{
     "arch_type": "epi",
-    "n_epochs": 1000,
+    "n_epochs":50,
     "save_epoch_freq": 10,
     "lr_policy": "step",
     "lr_decay_iters": 250,
@@ -49,7 +49,7 @@
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "experiment_unet_ct_multi_att_dsv",
-    "criterion": "iou_loss",
+    "criterion": "dice_loss",
     "optim":"adam"
   }
 }
