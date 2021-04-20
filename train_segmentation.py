@@ -41,8 +41,8 @@ def train(arguments):
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-    train_loader = DataLoader(dataset=train_dataset, num_workers=3, batch_size=train_opts.batchSize, shuffle=True)
-    valid_loader = DataLoader(dataset=valid_dataset, num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=4, batch_size=train_opts.batchSize, shuffle=True)
+    valid_loader = DataLoader(dataset=valid_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=False)
     test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
     # Visualisation Parameters
@@ -63,10 +63,12 @@ def train(arguments):
 
             # Error visualisation
             errors = model.get_current_errors()
-            error_logger.update(errors, split='train')
+            stats = model.get_segmentation_stats()
+            error_logger.update({**errors, **stats}, split='train')
+            visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
 
         # Validation and Testing Iterations
-        for loader, split in zip([valid_loader, test_loader], ['validation', 'test']):
+        for loader, split in zip([valid_loader], ['validation']):
             for epoch_iter, (images, labels) in tqdm(enumerate(loader, 1), total=len(loader)):
 
                 # Make a forward pass with the model
@@ -83,7 +85,7 @@ def train(arguments):
                 visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
 
         # Update the plots
-        for split in ['train', 'validation', 'test']:
+        for split in ['train', 'validation']:
             visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
             visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
         error_logger.reset()
