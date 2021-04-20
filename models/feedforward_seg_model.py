@@ -59,9 +59,9 @@ class FeedForwardSegmentation(BaseModel):
                 print('Network is initialized')
                 print_network(self.net)
 
-    def set_scheduler(self, train_opt):
+    def set_scheduler(self, train_opt, **kwargs):
         for optimizer in self.optimizers:
-            self.schedulers.append(get_scheduler(optimizer, train_opt))
+            self.schedulers.append(get_scheduler(optimizer, train_opt,**kwargs))
             print('Scheduler is added for optimiser {0}'.format(optimizer))
 
     def set_input(self, *inputs):

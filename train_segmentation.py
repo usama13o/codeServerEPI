@@ -50,7 +50,7 @@ def train(arguments):
     error_logger = ErrorLogger()
 
     # Training Function
-    model.set_scheduler(train_opts)
+    model.set_scheduler(train_opts,len_train=len(train_dataset))
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 
@@ -65,7 +65,7 @@ def train(arguments):
             errors = model.get_current_errors()
             stats = model.get_segmentation_stats()
             error_logger.update({**errors, **stats}, split='train')
-            visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
+            visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
         # Validation and Testing Iterations
         for loader, split in zip([valid_loader], ['validation']):

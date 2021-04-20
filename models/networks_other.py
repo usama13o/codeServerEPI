@@ -90,7 +90,7 @@ def adjust_learning_rate(optimizer, lr):
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
-def get_scheduler(optimizer, opt):
+def get_scheduler(optimizer, opt, **kwargs):
     print('opt.lr_policy = [{}]'.format(opt.lr_policy))
     if opt.lr_policy == 'lambda':
         def lambda_rule(epoch):
@@ -132,6 +132,9 @@ def get_scheduler(optimizer, opt):
                 lr_l = 0.01
             return lr_l
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
+    elif opt.lr_policy == 'one_cycle':
+        print("Using one-cycle scheduler")
+        scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=0.001, steps_per_epoch=kwargs['len_train'], epochs=opt.n_epochs, cycle_momentum=True, verbose=True)
     else:
 
         return NotImplementedError('learning rate policy [%s] is not implemented', opt.lr_policy)
