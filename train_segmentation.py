@@ -58,8 +58,8 @@ def train(arguments):
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
             # Make a training update
             model.set_input(images, labels)
-            model.optimize_parameters()
-            #model.optimize_parameters_accumulate_grd(epoch_iter)
+            # model.optimize_parameters()
+            model.optimize_parameters_accumulate_grd(epoch_iter)
 
             # Error visualisation
             errors = model.get_current_errors()

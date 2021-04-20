@@ -134,7 +134,7 @@ def get_scheduler(optimizer, opt, **kwargs):
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
     elif opt.lr_policy == 'one_cycle':
         print("Using one-cycle scheduler")
-        scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=0.001, steps_per_epoch=kwargs['len_train'], epochs=opt.n_epochs, cycle_momentum=True, verbose=True)
+        scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=0.001, steps_per_epoch=kwargs['len_train'], epochs=opt.n_epochs, cycle_momentum=True, verbose=True,div_factor=10000)
     else:
 
         return NotImplementedError('learning rate policy [%s] is not implemented', opt.lr_policy)
