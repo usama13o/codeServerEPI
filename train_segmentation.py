@@ -67,7 +67,7 @@ def train(arguments):
             visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
         # Validation and Testing Iterations
-        for loader, split in zip([valid_loader, test_loader], ['validation', 'test']):
+        for loader, split in zip([valid_loader], ['validation']):
             for epoch_iter, (images, labels) in tqdm(enumerate(loader, 1), total=len(loader)):
 
                 # Make a forward pass with the model
@@ -84,7 +84,7 @@ def train(arguments):
                 visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
 
         # Update the plots
-        for split in ['train', 'validation', 'test']:
+        for split in ['train', 'validation']:
             visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
             visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
         error_logger.reset()

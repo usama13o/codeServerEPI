@@ -150,8 +150,8 @@ class FeedForwardSegmentation(BaseModel):
         if size is None:
             size = (1, 1, 160, 160, 96)
 
-        inp_array = Variable(torch.zeros(*size))
-        out_array = Variable(torch.zeros(*size))
+        inp_array = Variable(torch.zeros(*size)).cuda()
+        out_array = Variable(torch.zeros(*size)).cuda()
         fp, bp = benchmark_fp_bp_time(self.net, inp_array, out_array)
 
         bsize = size[0]
