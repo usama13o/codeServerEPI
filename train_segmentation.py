@@ -63,7 +63,9 @@ def train(arguments):
 
             # Error visualisation
             errors = model.get_current_errors()
-            error_logger.update(errors, split='train')
+            stats = model.get_segmentation_stats()
+            error_logger.update({**errors, **stats}, split='train')
+
             visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
         # Validation and Testing Iterations
