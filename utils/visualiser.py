@@ -51,7 +51,7 @@ class Visualiser():
     def display_current_results(self, visuals, epoch, save_result):
         if self.use_wandb:
             mask = []
-            lim=15 if visuals['inp_S'].shape[0] > 15 else visuals['inp_S'].shape[0]-1
+            lim= self.limif visuals['inp_S'].shape[0] > self.lim else visuals['inp_S'].shape[0]-1
             for inp,pred,true in zip(visuals['inp_S'][lim],visuals['out_S'][lim],visuals['true_S'][lim]):
                 mask.append(wb_mask(inp, pred,true))
             self.run.log({'predictions':mask})
