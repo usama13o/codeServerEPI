@@ -20,3 +20,4 @@ for link in list_datasets:
 os.system('unzip staindata.zip')
 os.system('pip install -r /content/codeServerEPI/requriments.txt')
 os.system('rm staindata.zip')
+os.system('python /content/codeServerEPI/pywich_test.py')

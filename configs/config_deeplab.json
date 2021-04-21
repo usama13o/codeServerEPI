@@ -1,11 +1,11 @@
 {
   "training":{
     "arch_type": "epi",
-    "n_epochs": 11,
-    "save_epoch_freq": 10,
+    "n_epochs": 15,
+    "save_epoch_freq": 1,
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
-    "batchSize": 8,
+    "batchSize": 32,
     "preloadData": false,
     "split_pct":0.8
   },
