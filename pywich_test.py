@@ -19,7 +19,7 @@ from models import get_model
 
 
 # Parse input arguments
-json_filename = "/mnt/data/Other/Projects/codeServerEPI/Attention-Gated-Networks/configs/config_deeplab.json"
+json_filename = "/content/codeServerEPI/configs/config_deeplab.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
@@ -45,7 +45,7 @@ test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train
 # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
 # trainer = ModuleTrainer(model)
 
-model.set_scheduler(train_opts,len_train=len(train_dataset))
+model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
 for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 

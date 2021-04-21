@@ -18,7 +18,7 @@
     "display_single_pane_ncols": 0
   },
   "data_path": {
-    "epi": "/mnt/data/Other/DOWNLOADS/WSIData/Normal/kaggle/input/stain-normalisation/SN"
+    "epi": "/content/kaggle/input/stain-normalisation/SN"
 
   },
   "augmentation": {
@@ -38,10 +38,11 @@
     "which_epoch": -1,
     "model_type": "DeepLab",
     "tensor_dim": "v3+",
-    "division_factor": 16,
+    "division_factor": 1000,
     "input_nc": 3,
     "output_nc": 3,
     "lr_rate": 1e-4,
+    "max_lr":1e-2,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
     "gpu_ids": [0],

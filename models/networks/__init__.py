@@ -9,7 +9,7 @@ from .unet_CT_multi_att_dsv_3D import *
 from .unet_CT_multi_att_dsv_2D import *
 from .sononet import *
 from .sononet_grid_attention import *
-from pywick.models.segmentation as pws
+import pywick.models.segmentation as pws
 
 def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D',
                 nonlocal_mode='embedded_gaussian', attention_dsample=(2,2),
