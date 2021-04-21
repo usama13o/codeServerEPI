@@ -94,6 +94,7 @@ def train(arguments):
         # Save the model parameters
         if epoch % train_opts.save_epoch_freq == 0:
             model.save(epoch)
+            visualizer.save_mode(epoch,model.save_dir)
 
         # Update the model learning rate
         model.update_learning_rate()
