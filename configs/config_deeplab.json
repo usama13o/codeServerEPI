@@ -12,9 +12,11 @@
   "visualisation":{
     "display_port":9898,
     "no_html": true,
+    "lim":15,
     "display_winsize": 256,
     "display_id": 0,
     "use_wandb": true,
+    "run_name":"deeplab",
     "display_single_pane_ncols": 0
   },
   "data_path": {
