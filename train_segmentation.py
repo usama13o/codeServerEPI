@@ -41,8 +41,10 @@ def train(arguments):
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
+
     train_loader = DataLoader(dataset=train_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=True)
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=1, batch_size=train_opts.batchSize, shuffle=False)
+
     test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
     # Visualisation Parameters
@@ -50,7 +52,9 @@ def train(arguments):
     error_logger = ErrorLogger()
 
     # Training Function
+
     model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
+
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
         try:
@@ -64,13 +68,15 @@ def train(arguments):
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
             # Make a training update
             model.set_input(images, labels)
-            model.optimize_parameters()
-            #model.optimize_parameters_accumulate_grd(epoch_iter)
+            # model.optimize_parameters()
+            model.optimize_parameters_accumulate_grd(epoch_iter)
 
             # Error visualisation
             errors = model.get_current_errors()
             stats = model.get_segmentation_stats()
             error_logger.update({**errors, **stats}, split='train')
+
+
 
             visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
