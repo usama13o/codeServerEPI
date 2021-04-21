@@ -134,7 +134,7 @@ def get_scheduler(optimizer, opt, **kwargs):
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
     elif opt.lr_policy == 'one_cycle':
         print("Using one-cycle scheduler")
-        scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=kwargs['max_lr'], steps_per_epoch=kwargs['len_train'], epochs=opt.n_epochs, cycle_momentum=True, verbose=True,div_factor=kwargs['division_factor])
+        scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=kwargs['max_lr'], steps_per_epoch=kwargs['len_train'], epochs=opt.n_epochs, cycle_momentum=True, verbose=True,div_factor=kwargs['division_factor'])
 def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, init_type='normal', gpu_ids=[]):
     netG = None
     use_gpu = len(gpu_ids) > 0
