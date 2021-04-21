@@ -41,8 +41,10 @@ def train(arguments):
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-    train_loader = DataLoader(dataset=train_dataset, num_workers=4, batch_size=train_opts.batchSize, shuffle=True)
-    valid_loader = DataLoader(dataset=valid_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=False)
+
+    train_loader = DataLoader(dataset=train_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=True)
+    valid_loader = DataLoader(dataset=valid_dataset, num_workers=1, batch_size=train_opts.batchSize, shuffle=False)
+
     test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
     # Visualisation Parameters
@@ -50,9 +52,17 @@ def train(arguments):
     error_logger = ErrorLogger()
 
     # Training Function
-    model.set_scheduler(train_opts,len_train=len(train_dataset))
+
+    model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
+
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
+        try:
+            print(f'saving the mdoel {model.save_dir}')
+            model.save(epoch)
+            visualizer.save_model(epoch_label=epoch,save_dir=model.save_dir)
+        except:
+            print('cant save it ! :(')
 
         # Training Iterations
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
@@ -65,6 +75,9 @@ def train(arguments):
             errors = model.get_current_errors()
             stats = model.get_segmentation_stats()
             error_logger.update({**errors, **stats}, split='train')
+
+
+
             visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
         # Validation and Testing Iterations
@@ -93,6 +106,7 @@ def train(arguments):
         # Save the model parameters
         if epoch % train_opts.save_epoch_freq == 0:
             model.save(epoch)
+            visualizer.save_model(epoch,model.save_dir)
 
         # Update the model learning rate
         model.update_learning_rate()
