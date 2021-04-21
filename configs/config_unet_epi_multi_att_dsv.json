@@ -35,7 +35,7 @@
   "model":{
     "type":"seg",
     "continue_train":true,
-    "which_epoch": 0,
+    "which_epoch": 10,
     "model_type": "unet_ct_multi_att_dsv",
     "tensor_dim": "2D",
     "division_factor": 16,

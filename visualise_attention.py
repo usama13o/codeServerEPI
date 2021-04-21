@@ -122,7 +122,7 @@ dataset_transform = get_dataset_transformation(train_opts.arch_type, opts=json_o
 
 # Setup Data Loader
 dataset = dataset_class(dataset_path, split='train', transform=dataset_transform['valid'])
-data_loader = DataLoader(dataset=dataset, num_workers=1, batch_size=1, shuffle=True)
+data_loader = DataLoader(dataset=dataset, num_workers=1, batch_size=1, shuffle=False)
 
 # test
 for iteration, data in enumerate(data_loader, 1):
@@ -131,8 +131,10 @@ for iteration, data in enumerate(data_loader, 1):
     cls = int(data[1].max())
 
     model.validate()
-    pred_class = model.pred_seg[0].squeeze()
+    pred_class = np.transpose(model.pred_seg.cpu().numpy().astype(np.uint8),(0,2,3,1)).squeeze(3).squeeze()
     pred_cls = int(pred_class.max())
+
+    gt = np.transpose(data[1].cpu().squeeze(4).numpy().astype(np.uint8),(0,2,3,1)).squeeze(3).squeeze()
     
 
     #########################################################
@@ -148,12 +150,18 @@ for iteration, data in enumerate(data_loader, 1):
     chance = np.random.random() < 0.01 if cls == 1 else 1
     if cls != pred_cls:
         plt.savefig('{}/neg/{:03d}.png'.format(dir_name,iteration))
+        plotNNFilterOverlay(input_img,gt, figure_id=0, interp='bilinear',
+                        colormap=cm.jet,save=False,title='GT')
+        plt.savefig('{}/neg/{:03d}_GT.png'.format(dir_name,iteration))
     elif cls == pred_cls and chance:
         plt.savefig('{}/pos/{:03d}.png'.format(dir_name,iteration))
+        plotNNFilterOverlay(input_img,gt, figure_id=0, interp='bilinear',
+                        colormap=cm.jet,save=False,title='GT')
+        plt.savefig('{}/pos/{:03d}_GT.png'.format(dir_name,iteration))
     #########################################################
     # Compatibility Scores overlay with input
     attentions = []
-    layer_name = 'attentionblock3'
+    layer_name = 'attentionblock2'
     for i in [0,1]:
         fmap = model.get_feature_maps(layer_name, upscale=False)
         if not fmap:
@@ -162,7 +170,6 @@ for iteration, data in enumerate(data_loader, 1):
         # Output of the attention block
         fmap_0 = fmap[1][0].squeeze().permute(1,2,0).cpu().numpy()
         fmap_size = fmap_0.shape
-
         # Attention coefficient (b x c x w x h x s)
         attention = fmap[1][1].squeeze().permute(1,2,0).cpu().numpy()
         attention = attention[:, :,i]
@@ -173,14 +180,20 @@ for iteration, data in enumerate(data_loader, 1):
         # plotNNFilterOverlay(input_img,fmap_0[:,:,i], figure_id=i, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat fmap. {}'.format(cls,pred_cls,i), alpha=0.5)
         attentions.append(attention)
 
-    #plotNNFilterOverlay(input_img, attentions[0], figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all)'.format(cls, pred_cls), alpha=0.5)
     plotNNFilterOverlay(input_img, numpy.mean(attentions,0), figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all)'.format(cls, pred_cls), alpha=0.5,save=True)
-    plotNNFilterOverlay(input_img, numpy.mean(fmap_0,2), figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)
+    fmap_0_resized = resize(numpy.mean(fmap_0,2)[:,:],(input_img.shape[0],input_img.shape[1]),mode='constant',preserve_range=True)
+    plotNNFilterOverlay(input_img,fmap_0_resized, figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)
 
     if cls != pred_cls:
-        plt.savefig('{}/neg/{:03d}_hm.png'.format(dir_name,iteration))
+        plotNNFilterOverlay(input_img,fmap_0_resized, figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)
+        plt.savefig('{}/neg/{:03d}_FMAP.png'.format(dir_name,iteration))
+        plotNNFilterOverlay(input_img, numpy.mean(attentions,0), figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all)'.format(cls, pred_cls), alpha=0.5,save=True)
+        plt.savefig('{}/neg/{:03d}_ATT.png'.format(dir_name,iteration))
     elif cls == pred_cls and chance:
-        plt.savefig('{}/pos/{:03d}_hm.png'.format(dir_name,iteration))
+        plotNNFilterOverlay(input_img,fmap_0_resized, figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)
+        plt.savefig('{}/pos/{:03d}_FMAP.png'.format(dir_name,iteration))
+        plotNNFilterOverlay(input_img, numpy.mean(attentions,0), figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all)'.format(cls, pred_cls), alpha=0.5,save=True)
+        plt.savefig('{}/pos/{:03d}_ATT.png'.format(dir_name,iteration))
     # Linear embedding g(x)
     # (b, c, h, w)
     #gx = fmap[2].squeeze().permute(1,2,0).cpu().numpy()
