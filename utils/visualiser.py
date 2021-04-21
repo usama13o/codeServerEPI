@@ -13,6 +13,7 @@ class Visualiser():
     def __init__(self, opt, save_dir, filename='loss_log.txt'):
         self.display_id = opt.display_id
         self.use_html = not opt.no_html
+        self.lim = opt.lim
         self.win_size = opt.display_winsize
         self.save_dir = save_dir
         self.name = os.path.basename(self.save_dir)
@@ -50,7 +51,8 @@ class Visualiser():
     def display_current_results(self, visuals, epoch, save_result):
         if self.use_wandb:
             mask = []
-            for inp,pred,true in zip(visuals['inp_S'],visuals['out_S'],visuals['true_S']):
+            lim=15 if visuals['inp_S'].shape[0] > 15 else visuals['inp_S'].shape[0]-1
+            for inp,pred,true in zip(visuals['inp_S'][lim],visuals['out_S'][lim],visuals['true_S'][lim]):
                 mask.append(wb_mask(inp, pred,true))
             self.run.log({'predictions':mask})
         if self.display_id > 0:  # show images in the browser
