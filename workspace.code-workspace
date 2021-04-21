@@ -17,5 +17,10 @@
 				"args": ["-c","codeServerEPI/configs/config_unet_epi_multi_att_dsv.json"]
 			}
 		]
+	},
+	"extensions": {
+		"recommendations": [
+			"vscodevim.vim"
+		]
 	}
 }
