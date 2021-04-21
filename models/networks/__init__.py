@@ -9,6 +9,7 @@ from .unet_CT_multi_att_dsv_3D import *
 from .unet_CT_multi_att_dsv_2D import *
 from .sononet import *
 from .sononet_grid_attention import *
+from pywick.models.segmentation as pws
 
 def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D',
                 nonlocal_mode='embedded_gaussian', attention_dsample=(2,2),
@@ -50,6 +51,8 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       feature_scale=feature_scale,
                       nonlocal_mode=nonlocal_mode,
                       aggregation_mode=aggregation_mode)
+    elif name in ['DeepLab','Deeplab']:
+        model = model(num_classes=n_classes,pretrained=True)
     else:
         raise 'Model {} not available'.format(name)
 
@@ -66,5 +69,6 @@ def _get_model_instance(name, tensor_dim):
         'unet_ct_multi_att_dsv': {'3D': unet_CT_multi_att_dsv_3D,"2D": unet_CT_multi_att_dsv_2D},
         'sononet': {'2D': sononet},
         'sononet2': {'2D': sononet2},
-        'sononet_grid_attention': {'2D': sononet_grid_attention}
+        'sononet_grid_attention': {'2D': sononet_grid_attention},
+        'DeepLab':{'v3+':pws.deeplab_v3_plus.DeepLabv3_plus,"v2":pws.deeplab_v2_res.DeepLabv2_ASPP,"v3":pws.deeplab_v3.DeepLabv3}
     }[name][tensor_dim]
