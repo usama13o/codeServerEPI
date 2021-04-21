@@ -56,7 +56,7 @@ def train(arguments):
         try:
             print(f'saving the mdoel {model.save_dir}')
             model.save(epoch)
-            visualizer.save_model(epoch_label = epoch,save_dir=model.save_dir)
+            visualizer.save_model(epoch_label=epoch,save_dir=model.save_dir)
         except:
             print('cant save it ! :(')
 

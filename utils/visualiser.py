@@ -214,7 +214,7 @@ class Visualiser():
             txts.append(label)
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
-    def save_model(epoch_label,save_dir,network_label='S'):
+    def save_model(self,epoch_label,save_dir,network_label='S'):
         try:
             print('tring to save model')
             save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
