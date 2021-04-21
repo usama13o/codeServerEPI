@@ -3,7 +3,7 @@
     "arch_type": "epi",
     "n_epochs":50,
     "save_epoch_freq": 10,
-    "lr_policy": "step",
+    "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
     "batchSize":32,
     "preloadData":false,
