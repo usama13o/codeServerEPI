@@ -124,14 +124,14 @@ class One_Hot(nn.Module):
     def __init__(self, depth):
         super(One_Hot, self).__init__()
         self.depth = depth
-        self.ones = torch.sparse.torch.eye(depth).cuda()
+        self.ones = torch.sparse.torch.eye(depth)
 
     def forward(self, X_in):
         n_dim = X_in.dim()
-        output_size = X_in.size() + torch.Size([self.depth])
+        output_size = X_in.size()# + torch.Size([self.depth])
         num_element = X_in.numel()
         X_in = X_in.data.long().view(num_element)
-        out = Variable(self.ones.index_select(0, X_in)).view(output_size)
+        out = Variable(self.ones.index_select(1, X_in)).view(output_size)
         return out.permute(0, -1, *range(1, n_dim)).squeeze(dim=2).float()
 
     def __repr__(self):

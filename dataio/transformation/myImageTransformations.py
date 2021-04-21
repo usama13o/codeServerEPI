@@ -6,7 +6,6 @@ from scipy.ndimage.interpolation import map_coordinates
 import collections
 from PIL import Image
 import numbers
-import skimage.transform
 
 
 def center_crop(x, center_crop_size):

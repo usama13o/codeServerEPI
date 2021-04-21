@@ -55,8 +55,7 @@ class ModelOpts:
         if hasattr(opts, 'attention_dsample'): self.attention_dsample = opts.attention_dsample
         # Classifier
         if hasattr(opts, 'aggregation_mode'): self.aggregation_mode = opts.aggregation_mode
-
-        if hasattr(opts, 'optim'): self.optim= opts.optim
+        if hasattr(opts, 'optim'): self.optim = opts.optim
 
 def get_model(json_opts):
 

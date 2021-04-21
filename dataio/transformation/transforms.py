@@ -1,7 +1,6 @@
-import pywick.transforms.tensor_transforms as ts
-import pywick.transforms.affine_transforms as af
+import torchsample.transforms as ts
 from pprint import pprint
-from  dataio.transformation.myImageTransformations  import Resize
+from  dataio.transformation.myImageTransformations  import BilinearResize
 
 class Transformations:
 
@@ -52,12 +51,12 @@ class Transformations:
         if hasattr(t_opts, 'division_factor'):  self.division_factor = t_opts.division_factor
 
     def epi_transform(self):
-        train_transform = ts.Compose([Resize(size=self.scale_size),
+        train_transform = ts.Compose([ts.Resize(size=self.scale_size),
                                       ts.ToTensor(),
                                       ts.ChannelsFirst(),
                                       ts.TypeCast(['float', 'float']),
                                       ts.RandomFlip(h=True, v=True, p=self.random_flip_prob),
-                                      af.RandomAffine(rotation_range=self.rotate_val, translation_range=self.shift_val,
+                                      ts.RandomAffine(rotation_range=self.rotate_val, translation_range=self.shift_val,
                                                       zoom_range=self.scale_val, interp=('bilinear', 'nearest')),
                                       #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
                                     #   ts.NormalizeMedic(norm_flag=(True, False)),
@@ -67,7 +66,7 @@ class Transformations:
                                       ts.TypeCast(['float', 'long'])
                                 ])
 
-        valid_transform = ts.Compose([Resize(size=self.scale_size),
+        valid_transform = ts.Compose([ts.Resize(size=self.scale_size),
                                       ts.ToTensor(),
                                       ts.ChannelsFirst(),
                                       ts.TypeCast(['float', 'float']),

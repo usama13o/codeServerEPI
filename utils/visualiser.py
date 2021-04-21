@@ -4,9 +4,7 @@ import os
 import ntpath
 import time
 from utils import util, html
-
-
-from datetime import datetime
+import datetime
 
 import wandb 
 # Use the following comment to launch a visdom server
@@ -16,26 +14,20 @@ class Visualiser():
     def __init__(self, opt, save_dir, filename='loss_log.txt'):
         self.display_id = opt.display_id
         self.use_html = not opt.no_html
-        self.lim = opt.lim
         self.win_size = opt.display_winsize
         self.save_dir = save_dir
         self.name = os.path.basename(self.save_dir)
         self.saved = False
         self.display_single_pane_ncols = opt.display_single_pane_ncols
         self.use_wandb = opt.use_wandb
-
-        now = datetime.now()
-
-
+        now = datetime.datetime.now()
         # Error plots
         self.error_plots = dict()
         self.error_wins = dict()
         if self.use_wandb:
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
-
-            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}')
-
+            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet_PC_{now.strftime("%Y-%m-%d-%H:%M")}')
 
         if self.display_id > 0:
             import visdom
@@ -223,17 +215,6 @@ class Visualiser():
             txts.append(label)
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
-    def save_model(self,epoch_label,save_dir,network_label='S'):
-        try:
-            print('tring to save model')
-            save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
-            save_path = os.path.join(save_dir, save_filename)
-            artifact  = wandb.Artifact('attention_model_unet',type='model')
-            artifact.add_file(save_path)
-            self.run.log_artifact(artifact)
-        except:
-            print('Couldnt save mdoel ')
-            pass
   
 def labels(): 
     segmentation_classes = ['BG','Tumour','Normal']
