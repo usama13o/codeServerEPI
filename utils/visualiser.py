@@ -165,9 +165,11 @@ class Visualiser():
     # errors: dictionary of error labels and values
     def plot_current_errors(self, epoch, errors, split_name, counter_ratio=0.0, **kwargs):
         errors['epoch'] = epoch
+        err={}
+        for key in errors.keys():
+            err[key+"_"+split_name] = errors[key]
         if self.use_wandb:
-            # errors[split_name]=errors
-            self.run.log(errors)
+            self.run.log(err)
         if self.display_id > 0:
             for key in errors.keys():
                 x = epoch + counter_ratio
