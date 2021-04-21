@@ -53,6 +53,12 @@ def train(arguments):
     model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
+        try:
+            print(f'saving the mdoel {model.save_dir}')
+            model.save(epoch)
+            visualizer.save_model(epoch_label = epoch,save_dir=model.save_dir)
+        except:
+            print('cant save it ! :(')
 
         # Training Iterations
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
