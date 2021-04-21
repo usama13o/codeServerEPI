@@ -64,6 +64,9 @@ class BaseModel():
         save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
         save_path = os.path.join(self.save_dir, save_filename)
         torch.save(network.cpu().state_dict(), save_path)
+        artifact  = wandb.Artifact('attention_model_unet',type='model')
+        artifact.add_file(save_path)
+        self.run.log_artifact(artifact)
         if len(gpu_ids) and torch.cuda.is_available():
             network.cuda(gpu_ids[0])
 

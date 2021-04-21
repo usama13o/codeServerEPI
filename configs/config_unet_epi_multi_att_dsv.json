@@ -2,7 +2,7 @@
   "training":{
     "arch_type": "epi",
     "n_epochs":50,
-    "save_epoch_freq": 10,
+    "save_epoch_freq":10,
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
     "batchSize":32,
@@ -51,7 +51,7 @@
     "experiment_name": "experiment_unet_ct_multi_att_dsv",
     "criterion": "iou_loss",
     "optim":"adam",
-    "non_local_mode":"concatenation_residual"
+    "non_local_mode":"concatenation"
     
   }
 }
