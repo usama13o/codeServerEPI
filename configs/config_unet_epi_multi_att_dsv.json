@@ -52,7 +52,7 @@
     "experiment_name": "experiment_unet_ct_multi_att_dsv",
     "criterion": "iou_loss",
     "optim":"adam",
-    "non_local_mode":"concatenation"
+    "non_local_mode":"concatenation_residual"
     
   }
 }
