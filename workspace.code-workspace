@@ -2,13 +2,7 @@
 	"folders": [
 		{
 			"path": ".."
-		},
-		{
-			"name": "Attention-Gated-Networks",
-			"path": "."
 		}
 	],
-	"settings": {
-		"python.pythonPath": "/usr/local/share/.virtualenvs/ml/bin/python"
-	}
+	"settings": {}
 }
