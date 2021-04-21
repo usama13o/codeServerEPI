@@ -69,7 +69,7 @@ class FeedForwardSegmentation(BaseModel):
         for idx, _input in enumerate(inputs):
             # If it's a 5D array and 2D model then (B x C x H x W x Z) -> (BZ x C x H x W)
             bs = _input.size()
-            if (self.tensor_dim == '2D') and (len(bs) > 4):
+            if (len(bs) > 4):
                 _input = _input.permute(0,1,4,2,3).contiguous().view(bs[0]*bs[1], bs[4], bs[2], bs[3])
 
             # Define that it's a cuda array
@@ -77,7 +77,7 @@ class FeedForwardSegmentation(BaseModel):
                 self.input = _input.cuda() if self.use_cuda else _input
             elif idx == 1:
                 self.target = Variable(_input.cuda()) if self.use_cuda else Variable(_input)
-                assert self.input.size(-1) == self.target.size(-1)
+                assert self.input.size(2) == self.target.size(2)
 
     def forward(self, split):
         if split == 'train':
