@@ -18,6 +18,11 @@ class FeedForwardSegmentation(BaseModel):
     def name(self):
         return 'FeedForwardSegmentation'
 
+    @staticmethod
+    def apply_argmax_softmax(pred):
+        log_p = F.softmax(pred, dim=1)
+
+        return log_p
     def initialize(self, opts, **kwargs):
         BaseModel.initialize(self, opts, **kwargs)
         self.isTrain = opts.isTrain
@@ -32,6 +37,7 @@ class FeedForwardSegmentation(BaseModel):
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
                                attention_dsample=opts.attention_dsample)
+        self.net.apply_argmax_softmax = self.apply_argmax_softmax
         if self.use_cuda: self.net = self.net.cuda()
 
         # load the model if a path is specified or it is in inference mode

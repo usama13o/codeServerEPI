@@ -41,7 +41,9 @@ test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['va
 train_loader = DataLoader(dataset=train_dataset, num_workers=4, batch_size=train_opts.batchSize, shuffle=True)
 valid_loader = DataLoader(dataset=valid_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=False)
 test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
-
+    # Visualisation Parameters
+visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir)
+error_logger = ErrorLogger()
 # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
 # trainer = ModuleTrainer(model)
 
@@ -50,17 +52,17 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 
     # Training Iterations
-    for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
-        # Make a training update
-        model.set_input(images, labels)
-        # model.optimize_parameters()
-        model.optimize_parameters_accumulate_grd(epoch_iter)
+    # for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
+    #     # Make a training update
+    #     model.set_input(images, labels)
+    #     # model.optimize_parameters()
+    #     model.optimize_parameters_accumulate_grd(epoch_iter)
 
-        # Error visualisation
-        errors = model.get_current_errors()
-        stats = model.get_segmentation_stats()
-        error_logger.update({**errors, **stats}, split='train')
-        visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
+    #     # Error visualisation
+    #     errors = model.get_current_errors()
+    #     stats = model.get_segmentation_stats()
+    #     error_logger.update({**errors, **stats}, split='train')
+    #     visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
     # Validation and Testing Iterations
     for loader, split in zip([valid_loader], ['validation']):
