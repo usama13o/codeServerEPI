@@ -215,6 +215,18 @@ class Visualiser():
             txts.append(label)
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
+    def save_model(self,epoch_label,network_label='S'):
+        try:
+            print('tring to save model')
+            save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
+            save_path = os.path.join(self.save_dir, save_filename)
+            artifact  = wandb.Artifact('attention_model_unet',type='model')
+            artifact.add_file(save_path)
+            self.run.log_artifact(artifact)
+        except:
+            print('Couldnt save mdoel ')
+            pass
+
   
 def labels(): 
     segmentation_classes = ['BG','Tumour','Normal']
