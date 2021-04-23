@@ -36,7 +36,7 @@
     "type":"seg",
     "continue_train":true,
     "down":true,
-    "down_v":"usama_ml/EPISEG/attention_model_unet:v27",
+    "down_v":"usama_ml/EPISEG/attention_model_unet:v45",
     "which_epoch": 10,
     "model_type": "DeepLab",
     "tensor_dim": "v3+",

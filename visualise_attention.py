@@ -103,10 +103,12 @@ json_opts = json_file_to_pyobj(f'/mnt/data/Other/Projects/codeServerEPI/Attentio
 train_opts = json_opts.training
 
 dir_name = os.path.join('visualisation_debug', config_name)
+os.system(f"rm -r {dir_name}")
 if not os.path.isdir(dir_name):
     os.makedirs(dir_name)
     os.makedirs(os.path.join(dir_name,'pos'))
     os.makedirs(os.path.join(dir_name,'neg'))
+
 
 # Setup the NN Model
 model = get_model(json_opts.model)
@@ -161,7 +163,7 @@ for iteration, data in enumerate(data_loader, 1):
     #########################################################
     # Compatibility Scores overlay with input
     attentions = []
-    layer_name = 'aspp1'
+    layer_name = 'aspp4'
     for i in [0,1]:
         fmap = model.get_feature_maps(layer_name, upscale=False)
         if not fmap:
