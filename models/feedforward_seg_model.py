@@ -43,7 +43,9 @@ class FeedForwardSegmentation(BaseModel):
         # load the model if a path is specified or it is in inference mode
         if not self.isTrain or opts.continue_train:
             self.path_pre_trained_model = opts.path_pre_trained_model
-            if self.path_pre_trained_model:
+            if opts.down:
+                self.load_network_from_path(self.net,opts.down_v,False,opts.down)
+            elif self.path_pre_trained_model:
                 self.load_network_from_path(self.net, self.path_pre_trained_model, strict=False)
                 self.which_epoch = int(0)
             else:

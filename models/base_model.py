@@ -74,9 +74,21 @@ class BaseModel():
         save_path = os.path.join(self.save_dir, save_filename)
         network.load_state_dict(torch.load(save_path))
 
-    def load_network_from_path(self, network, network_filepath, strict):
-        network_label = os.path.basename(network_filepath)
-        epoch_label = network_label.split('_')[0]
+    def load_network_from_path(self, network, network_filepath, strict,is_wandb):
+        #TODO add get model path for wandb file using the given model version name
+        if is_wandb:
+            import wandb
+            WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
+            os.environ["WANDB_API_KEY"] = WANDB_API_KEY
+            run = wandb.init(resume=True)
+            artifact = run.use_artifact( network_filepath, type='model')
+            network_filepath= artifact.download()
+            network_label = network_filepath.split('/')[-1]
+            epoch_label = network_filepath.split(':')[-1]
+            network_filepath =network_filepath  + '/' + os.listdir(network_filepath)[0]
+        else:
+            network_label = os.path.basename(network_filepath)
+            epoch_label = network_label.split('_')[0]
         print('Loading the model {0} - epoch {1}'.format(network_label, epoch_label))
         network.load_state_dict(torch.load(network_filepath), strict=strict)
 

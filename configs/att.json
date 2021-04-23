@@ -35,9 +35,11 @@
   "model":{
     "type":"seg",
     "continue_train":true,
+    "down":true,
+    "down_v":"usama_ml/EPISEG/attention_model_unet:v27",
     "which_epoch": 10,
-    "model_type": "unet_ct_multi_att_dsv",
-    "tensor_dim": "2D",
+    "model_type": "DeepLab",
+    "tensor_dim": "v3+",
     "division_factor": 16,
     "input_nc": 3,
     "output_nc": 3,

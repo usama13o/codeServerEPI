@@ -27,7 +27,7 @@ class Visualiser():
         if self.use_wandb:
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
-            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet_PC_{now.strftime("%Y-%m-%d-%H:%M")}')
+            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet_PC_{now.strftime("%Y-%m-%d-%H:%M")}',resume=True)
 
         if self.display_id > 0:
             import visdom
@@ -91,7 +91,12 @@ class Visualiser():
             else:
                 idx = 1
                 for label, image_numpy in visuals.items():
-                    self.vis.image(image_numpy.transpose([2, 0, 1]), opts=dict(title=label),
+                    image_numpy = image_numpy[0]
+                    if len(image_numpy.shape) > 2:
+                        image_numpy = image_numpy.transpose(2,0,1)
+                    else:
+                        image_numpy = image_numpy *255
+                    self.vis.image(image_numpy, opts=dict(title=label),
                                    win=self.display_id + idx)
                     idx += 1
 
@@ -216,16 +221,19 @@ class Visualiser():
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
     def save_model(self,epoch_label,network_label='S'):
-        try:
-            print('tring to save model')
-            save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
-            save_path = os.path.join(self.save_dir, save_filename)
-            artifact  = wandb.Artifact('attention_model_unet',type='model')
-            artifact.add_file(save_path)
-            self.run.log_artifact(artifact)
-        except:
-            print('Couldnt save mdoel ')
-            pass
+        if self.use_wandb:
+            try:
+                print('tring to save model')
+                save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
+                save_path = os.path.join(self.save_dir, save_filename)
+                artifact  = wandb.Artifact('attention_model_unet',type='model')
+                artifact.add_file(save_path)
+                self.run.log_artifact(artifact)
+            except:
+                print('Couldnt save mdoel ')
+                pass
+        else:
+            print("Not using wandb, can't log model to server")
 
   
 def labels(): 

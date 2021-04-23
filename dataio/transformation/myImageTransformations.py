@@ -6,6 +6,7 @@ from scipy.ndimage.interpolation import map_coordinates
 import collections
 from PIL import Image
 import numbers
+import skimage.transform
 
 
 def center_crop(x, center_crop_size):
@@ -85,6 +86,8 @@ class Resize:
             _input_y=y
             _input_y = skimage.transform.resize(_input_y, self._size)
             _input_y = skimage.util.img_as_ubyte(_input_y)
+            if 2 in _input_y :
+                _input_y[_input_y == 1 ] = 2
             return _input, _input_y
         else:
             return _input

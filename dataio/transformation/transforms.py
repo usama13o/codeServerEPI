@@ -1,6 +1,6 @@
 import torchsample.transforms as ts
 from pprint import pprint
-from  dataio.transformation.myImageTransformations  import BilinearResize
+from  dataio.transformation.myImageTransformations  import Resize
 
 class Transformations:
 
@@ -51,7 +51,7 @@ class Transformations:
         if hasattr(t_opts, 'division_factor'):  self.division_factor = t_opts.division_factor
 
     def epi_transform(self):
-        train_transform = ts.Compose([ts.Resize(size=self.scale_size),
+        train_transform = ts.Compose([Resize(size=self.scale_size),
                                       ts.ToTensor(),
                                       ts.ChannelsFirst(),
                                       ts.TypeCast(['float', 'float']),
@@ -66,7 +66,7 @@ class Transformations:
                                       ts.TypeCast(['float', 'long'])
                                 ])
 
-        valid_transform = ts.Compose([ts.Resize(size=self.scale_size),
+        valid_transform = ts.Compose([Resize(size=self.scale_size),
                                       ts.ToTensor(),
                                       ts.ChannelsFirst(),
                                       ts.TypeCast(['float', 'float']),
