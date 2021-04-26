@@ -20,7 +20,7 @@ from models import get_model
 
 
 # Parse input arguments
-json_filename = "/content/codeServerEPI/configs/config_deeplab.json"
+json_filename = "configs/config_deeplab.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
@@ -39,7 +39,7 @@ ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation
 train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
 valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-train_loader = DataLoader(dataset=train_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=True)
+train_loader = DataLoader(dataset=train_dataset, num_workers=7, batch_size=train_opts.batchSize, shuffle=True)
 valid_loader = DataLoader(dataset=valid_dataset, num_workers=1, batch_size=train_opts.batchSize, shuffle=False)
 test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
@@ -55,8 +55,8 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
     for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
         # Make a training update
         model.set_input(images, labels)
-        # model.optimize_parameters()
-        model.optimize_parameters_accumulate_grd(epoch_iter)
+        model.optimize_parameters()
+#         model.optimize_parameters_accumulate_grd(epoch_iter)
 
         # Error visualisation
         errors = model.get_current_errors()
@@ -90,8 +90,11 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
     # Save the model parameters
     if epoch % train_opts.save_epoch_freq == 0:
         model.save(epoch)
+        visualizer.save_model(epoch)
 
     # Update the model learning rate
     model.update_learning_rate()
 
 
+
+visualizer.finish()

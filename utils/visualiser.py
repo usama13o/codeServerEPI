@@ -34,7 +34,7 @@ class Visualiser():
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
 
-            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}')
+            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=True)
 
 
         if self.display_id > 0:
@@ -223,17 +223,19 @@ class Visualiser():
             txts.append(label)
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
-    def save_model(self,epoch_label,save_dir,network_label='S'):
+    def save_model(self,epoch_label,network_label='S'):
         try:
             print('tring to save model')
             save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
-            save_path = os.path.join(save_dir, save_filename)
+            save_path = os.path.join(self.save_dir, save_filename)
             artifact  = wandb.Artifact('attention_model_unet',type='model')
             artifact.add_file(save_path)
             self.run.log_artifact(artifact)
         except:
             print('Couldnt save mdoel ')
             pass
+    def finish(self):
+        self.run.finish()
   
 def labels(): 
     segmentation_classes = ['BG','Tumour','Normal']

@@ -86,6 +86,8 @@ class Resize:
             _input_y=y
             _input_y = skimage.transform.resize(_input_y, self._size)
             _input_y = skimage.util.img_as_ubyte(_input_y)
+            if 2 in _input_y :
+                _input_y[_input_y == 1] = 2
             return _input, _input_y
         else:
             return _input

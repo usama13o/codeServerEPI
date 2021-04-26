@@ -18,8 +18,8 @@ class stain_norm_dataset(data.Dataset):
         super(stain_norm_dataset, self).__init__()
         image_dir = root_dir
         # targets are a comob of two dirs 1- normal 1024 patches 2- Tum 1024
-        norm_dir ="/content/kaggle/input/stain-normalisation/1024"
-        tum_dir = "/content/kaggle/input/stain-normalisation/mask"
+        norm_dir ="kaggle/input/stain-normalisation/1024"
+        tum_dir = "kaggle/input/stain-normalisation/mask"
         self.image_filenames  = sorted([join(image_dir, x) for x in listdir(image_dir) if is_image_file(x)])
         self.target_filenames = sorted([join(norm_dir, x) for x in listdir(norm_dir) if is_image_file(x)])
         self.target_filenames.extend(sorted([join(tum_dir, x) for x in listdir(tum_dir) if is_image_file(x)]))

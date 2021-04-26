@@ -42,8 +42,8 @@ def train(arguments):
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 
-    train_loader = DataLoader(dataset=train_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=True)
-    valid_loader = DataLoader(dataset=valid_dataset, num_workers=1, batch_size=train_opts.batchSize, shuffle=False)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=6, batch_size=train_opts.batchSize, shuffle=True)
+    valid_loader = DataLoader(dataset=valid_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=False)
 
     test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
@@ -57,19 +57,14 @@ def train(arguments):
 
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
-        try:
-            print(f'saving the mdoel {model.save_dir}')
-            model.save(epoch)
-            visualizer.save_model(epoch_label=epoch,save_dir=model.save_dir)
-        except:
-            print('cant save it ! :(')
+   
 
         # Training Iterations
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
             # Make a training update
             model.set_input(images, labels)
-            # model.optimize_parameters()
-            model.optimize_parameters_accumulate_grd(epoch_iter)
+            model.optimize_parameters()
+#             model.optimize_parameters_accumulate_grd(epoch_iter)
 
             # Error visualisation
             errors = model.get_current_errors()
@@ -106,10 +101,11 @@ def train(arguments):
         # Save the model parameters
         if epoch % train_opts.save_epoch_freq == 0:
             model.save(epoch)
-            visualizer.save_model(epoch,model.save_dir)
+            visualizer.save_model(epoch)
 
         # Update the model learning rate
         model.update_learning_rate()
+        visualizer.finish()
 
 
 if __name__ == '__main__':

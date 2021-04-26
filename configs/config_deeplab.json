@@ -1,11 +1,11 @@
 {
   "training":{
     "arch_type": "epi",
-    "n_epochs": 15,
-    "save_epoch_freq": 1,
+    "n_epochs": 30,
+    "save_epoch_freq": 2,
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
-    "batchSize": 32,
+    "batchSize": 8,
     "preloadData": false,
     "split_pct":0.8
   },
@@ -20,7 +20,7 @@
     "display_single_pane_ncols": 0
   },
   "data_path": {
-    "epi": "/content/kaggle/input/stain-normalisation/SN"
+    "epi": "kaggle/input/stain-normalisation/SN"
 
   },
   "augmentation": {
@@ -36,11 +36,11 @@
   },
   "model":{
     "type":"seg",
-    "continue_train":false,
-    "which_epoch": -1,
+    "continue_train":true,
+    "which_epoch":18,
     "model_type": "DeepLab",
     "tensor_dim": "v3+",
-    "division_factor": 1000,
+    "division_factor": 100,
     "input_nc": 3,
     "output_nc": 3,
     "lr_rate": 1e-4,
