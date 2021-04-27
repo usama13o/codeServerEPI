@@ -14,7 +14,7 @@
   "visualisation":{
     "display_port":9898,
     "no_html": true,
-    "lim":15,
+    "lim":2,
     "display_winsize": 256,
     "display_id": 0,
     "use_wandb": true,

@@ -105,7 +105,7 @@ def train(arguments):
 
         # Update the model learning rate
         model.update_learning_rate()
-        visualizer.finish()
+    visualizer.finish()
 
 
 if __name__ == '__main__':

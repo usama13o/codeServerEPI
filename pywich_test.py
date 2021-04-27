@@ -63,6 +63,7 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
         stats = model.get_segmentation_stats()
         error_logger.update({**errors, **stats}, split='train')
         visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
+    visualizer.upload_limit =45
 
     # Validation and Testing Iterations
     for loader, split in zip([valid_loader], ['validation']):
