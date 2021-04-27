@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 os.environ['KAGGLE_CONFIG_DIR'] = "./"
+os.system('pip3 install -r requriments.txt')
 
 os.system('git config --global user.email "osama.zadan@gmail.com"')
 os.system('git config --global user.name "usama13o"')
@@ -18,6 +19,6 @@ list_datasets=[
 for link in list_datasets:
     subprocess.check_call(link.split())
 os.system('unzip staindata.zip')
-os.system('pip install -r requriments.txt')
-# os.system('rm staindata.zip')
-os.system('python pywich_test.py')
+os.system('apt-get install unzip')
+os.system('rm staindata.zip')
+os.system('python3 pywich_test.py')
