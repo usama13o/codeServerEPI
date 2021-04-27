@@ -89,6 +89,7 @@ class BaseModel():
                 scheduler.step()
             lr = self.optimizers[0].param_groups[0]['lr']
         print('current learning rate = %.7f' % lr)
+        return lr
 
     # returns the number of trainable parameters
     def get_number_parameters(self):

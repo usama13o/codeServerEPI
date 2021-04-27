@@ -53,7 +53,7 @@ def train(arguments):
 
     # Training Function
 
-    model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
+    model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=-1 if not json_opts.model.continue_train else (json_opts.model.which_epoch * len(train_loader)))
 
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
@@ -66,14 +66,20 @@ def train(arguments):
             model.optimize_parameters()
 #             model.optimize_parameters_accumulate_grd(epoch_iter)
 
+            # Update the model learning rate
+            lr = model.update_learning_rate()
+            lr = {'lr':lr}
+
             # Error visualisation
             errors = model.get_current_errors()
             stats = model.get_segmentation_stats()
-            error_logger.update({**errors, **stats}, split='train')
+            error_logger.update({**errors, **stats,**lr}, split='train')
 
 
 
             visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
+            
+        visualizer.upload_limit =45
 
         # Validation and Testing Iterations
         for loader, split in zip([valid_loader], ['validation']):
@@ -104,7 +110,7 @@ def train(arguments):
             visualizer.save_model(epoch)
 
         # Update the model learning rate
-        model.update_learning_rate()
+        # model.update_learning_rate()
     visualizer.finish()
 
 
