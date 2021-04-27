@@ -149,7 +149,7 @@ for iteration, data in enumerate(data_loader, 1):
     plotNNFilterOverlay(input_img,pred_class, figure_id=0, interp='bilinear',
                         colormap=cm.jet,save=False)
 
-    chance = np.random.random() < 0.3 if cls == 1 else 1
+    chance = np.random.random() < 0.5 if cls == 1 else 1
     if cls != pred_cls:
         plt.savefig('{}/neg/{:03d}.png'.format(dir_name,iteration))
         plotNNFilterOverlay(input_img,gt, figure_id=0, interp='bilinear',
@@ -163,7 +163,7 @@ for iteration, data in enumerate(data_loader, 1):
     #########################################################
     # Compatibility Scores overlay with input
     attentions = []
-    layer_name = 'final'
+    layer_name = 'attentionblock4'
     for i in [0,1]:
         fmap = model.get_feature_maps(layer_name, upscale=False)
         if not fmap:

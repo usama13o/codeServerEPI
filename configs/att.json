@@ -36,7 +36,7 @@
     "type":"seg",
     "continue_train":true,
     "down":true,
-    "down_v":"usama_ml/EPISEG/attention_model_unet:v53",
+    "down_v":"usama_ml/EPISEG/attention_model_unet:v76",
     "which_epoch": 10,
     "model_type": "unet_ct_multi_att_dsv",
     "tensor_dim": "2D",
