@@ -17,7 +17,6 @@ class ModelOpts:
         self.l2_reg_weight = 0.0
         self.feature_scale = 4
         self.tensor_dim = '2D'
-        self.down=False
         self.path_pre_trained_model = None
         self.criterion = 'cross_entropy'
         self.type = 'seg'
@@ -44,8 +43,6 @@ class ModelOpts:
         self.which_epoch = opts.which_epoch
 
         if hasattr(opts, 'type'): self.type = opts.type
-        if hasattr(opts, 'down'): self.down= opts.down
-        if hasattr(opts, 'down_v'): self.down_v= opts.down_v
         if hasattr(opts, 'l2_reg_weight'): self.l2_reg_weight = opts.l2_reg_weight
         if hasattr(opts, 'lr_rate'):       self.lr_rate = opts.lr_rate
         if hasattr(opts, 'feature_scale'): self.feature_scale = opts.feature_scale
@@ -58,7 +55,8 @@ class ModelOpts:
         if hasattr(opts, 'attention_dsample'): self.attention_dsample = opts.attention_dsample
         # Classifier
         if hasattr(opts, 'aggregation_mode'): self.aggregation_mode = opts.aggregation_mode
-        if hasattr(opts, 'optim'): self.optim = opts.optim
+
+        if hasattr(opts, 'optim'): self.optim= opts.optim
 
 def get_model(json_opts):
 

@@ -1,24 +1,28 @@
 {
   "training":{
     "arch_type": "epi",
-    "n_epochs": 11,
-    "save_epoch_freq": 10,
+
+    "n_epochs":50,
+    "save_epoch_freq":2,
+                                                                          
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
-    "batchSize": 8,
-    "preloadData": false,
+    "batchSize":8,
+    "preloadData":false,
     "split_pct":0.8
   },
   "visualisation":{
     "display_port":9898,
     "no_html": true,
+    "lim":15,
     "display_winsize": 256,
     "display_id": 0,
     "use_wandb": true,
-    "display_single_pane_ncols": 0
+    "display_single_pane_ncols": 0,
+    "run_name":"unet_ct_multi_att_dsv"
   },
   "data_path": {
-    "epi": "/mnt/data/Other/DOWNLOADS/WSIData/Normal/kaggle/input/stain-normalisation/SN"
+    "epi": "kaggle/input/stain-normalisation/SN"
 
   },
   "augmentation": {
@@ -35,13 +39,14 @@
   "model":{
     "type":"seg",
     "continue_train":false,
-    "which_epoch": 10,
+    "which_epoch": -1,
     "model_type": "unet_ct_multi_att_dsv",
     "tensor_dim": "2D",
-    "division_factor": 16,
+    "division_factor": 100,
     "input_nc": 3,
     "output_nc": 3,
     "lr_rate": 1e-4,
+    "max_lr":1e-2,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
     "gpu_ids": [0],
@@ -49,8 +54,9 @@
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "experiment_unet_ct_multi_att_dsv",
     "criterion": "iou_loss",
-    "nonlocal_mode":"concatenation_residual",
-    "optim":"adam"
+    "optim":"adam",
+    "non_local_mode":"concatenation_residual"
+
   }
 }
 
