@@ -6,12 +6,9 @@ import time
 from utils import util, html
 import datetime
 
-<<<<<<< HEAD
-=======
 
 from datetime import datetime
 
->>>>>>> colab
 import wandb 
 # Use the following comment to launch a visdom server
 # python -m visdom.server
@@ -27,27 +24,19 @@ class Visualiser():
         self.saved = False
         self.display_single_pane_ncols = opt.display_single_pane_ncols
         self.use_wandb = opt.use_wandb
-<<<<<<< HEAD
-        now = datetime.datetime.now()
-=======
 
         now = datetime.now()
 
 
->>>>>>> colab
         # Error plots
         self.error_plots = dict()
         self.error_wins = dict()
         if self.use_wandb:
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
-<<<<<<< HEAD
-            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet_PAPERSPACE_{now.strftime("%Y-%m-%d-%H:%M")}',resume=True)
-=======
 
-            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=True)
+            self.run=wandb.init(project='EPISEG',name=f'Paperspace_{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=True)
 
->>>>>>> colab
 
         if self.display_id > 0:
             import visdom
@@ -70,11 +59,7 @@ class Visualiser():
     def display_current_results(self, visuals, epoch, save_result):
         if self.use_wandb:
             mask = []
-<<<<<<< HEAD
-            lim=15 
-=======
             lim= self.lim 
->>>>>>> colab
             for inp,pred,true in zip(visuals['inp_S'][:lim],visuals['out_S'][:lim],visuals['true_S'][:lim]):
                 mask.append(wb_mask(inp, pred,true))
             self.run.log({'predictions':mask})
@@ -245,22 +230,6 @@ class Visualiser():
             links.append(image_name)
         webpage.add_images(ims, txts, links, width=self.win_size)
     def save_model(self,epoch_label,network_label='S'):
-<<<<<<< HEAD
-        if self.use_wandb:
-            try:
-                print('tring to save model')
-                save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
-                save_path = os.path.join(self.save_dir, save_filename)
-                artifact  = wandb.Artifact('attention_model_unet',type='model')
-                artifact.add_file(save_path)
-                self.run.log_artifact(artifact)
-            except:
-                print('Couldnt save mdoel ')
-                pass
-        else:
-            print("Not using wandb, can't log model to server")
-
-=======
         try:
             print('tring to save model')
             save_filename = '{0:03d}_net_{1}.pth'.format(epoch_label, network_label)
@@ -273,7 +242,6 @@ class Visualiser():
             pass
     def finish(self):
         self.run.finish()
->>>>>>> colab
   
 def labels(): 
     segmentation_classes = ['BG','Tumour','Normal']
