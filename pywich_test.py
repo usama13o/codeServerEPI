@@ -19,7 +19,7 @@ from models import get_model
 
 
 # Parse input arguments
-json_filename = "/mnt/data/Other/Projects/codeServerEPI/Attention-Gated-Networks/configs/config_TransUnet.json"
+json_filename = "configs/config_TransUnet.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
