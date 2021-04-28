@@ -14,11 +14,13 @@
     "no_html": true,
     "display_winsize": 256,
     "display_id": 0,
+    "lim":15,
+    "run_name":"TransUnet",
     "use_wandb": true,
     "display_single_pane_ncols": 0
   },
   "data_path": {
-    "epi": "kaggle/input/stain-normalisation/SN"
+    "epi": "/mnt/data/Other/DOWNLOADS/WSIData/Normal/kaggle/input/stain-normalisation/SN"
 
   },
   "augmentation": {

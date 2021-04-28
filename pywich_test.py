@@ -51,41 +51,41 @@ model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.mode
 for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 
-    # Training Iterations
-    for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
-        # Make a training update
-        model.set_input(images, labels)
-        model.optimize_parameters()
-        # model.optimize_parameters_accumulate_grd(epoch_iter)
-        model.update_learning_rate()
+    # # Training Iterations
+    # for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
+    #     # Make a training update
+    #     model.set_input(images, labels)
+    #     model.optimize_parameters()
+    #     # model.optimize_parameters_accumulate_grd(epoch_iter)
+    #     model.update_learning_rate()
 
-        # Error visualisation
-        errors = model.get_current_errors()
-        stats = model.get_segmentation_stats()
-        error_logger.update({**errors, **stats}, split='train')
-        visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
+    #     # Error visualisation
+    #     errors = model.get_current_errors()
+    #     stats = model.get_segmentation_stats()
+    #     error_logger.update({**errors, **stats}, split='train')
+    #     visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
     # Validation and Testing Iterations
-    # for loader, split in zip([valid_loader], ['validation']):
-    #     for epoch_iter, (images, labels) in tqdm(enumerate(loader, 1), total=len(loader)):
+    for loader, split in zip([valid_loader], ['validation']):
+        for epoch_iter, (images, labels) in tqdm(enumerate(loader, 1), total=len(loader)):
 
-    #         # Make a forward pass with the model
-    #         model.set_input(images, labels)
-    #         model.validate()
+            # Make a forward pass with the model
+            model.set_input(images, labels)
+            model.validate()
 
-    #         # Error visualisation
-    #         errors = model.get_current_errors()
-    #         stats = model.get_segmentation_stats()
-    #         error_logger.update({**errors, **stats}, split=split)
+            # Error visualisation
+            errors = model.get_current_errors()
+            stats = model.get_segmentation_stats()
+            error_logger.update({**errors, **stats}, split=split)
 
-    #         # Visualise predictions
-    #         visuals = model.get_current_visuals()
-    #         visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
+            # Visualise predictions
+            visuals = model.get_current_visuals()
+            visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
 
-    # # Update the plots
-    # for split in ['validation']:
-    #     visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
-    #     visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
+    # Update the plots
+    for split in ['validation']:
+        visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
+        visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
     error_logger.reset()
 
     # Save the model parameters
