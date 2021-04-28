@@ -17,7 +17,6 @@ class FeedForwardSegmentation(BaseModel):
 
     def name(self):
         return 'FeedForwardSegmentation'
-
     @staticmethod
     def apply_argmax_softmax(pred):
         log_p = F.softmax(pred, dim=1)
@@ -31,21 +30,19 @@ class FeedForwardSegmentation(BaseModel):
         self.input = None
         self.target = None
         self.tensor_dim = opts.tensor_dim
-
+        print("USING CUDA !!") if self.use_cuda else print("NOT USING CUDA !!!!!")
         # load/define networks
         self.net = get_network(opts.model_type, n_classes=opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
                                attention_dsample=opts.attention_dsample)
         self.net.apply_argmax_softmax = self.apply_argmax_softmax
-        if self.use_cuda: self.net = self.net.cuda()
+        if self.use_cuda: self.net = self.net.to(device='cuda')
 
         # load the model if a path is specified or it is in inference mode
         if not self.isTrain or opts.continue_train:
             self.path_pre_trained_model = opts.path_pre_trained_model
-            if opts.down:
-                self.load_network_from_path(self.net,opts.down_v,False,opts.down)
-            elif self.path_pre_trained_model:
+            if self.path_pre_trained_model:
                 self.load_network_from_path(self.net, self.path_pre_trained_model, strict=False)
                 self.which_epoch = int(0)
             else:
@@ -82,10 +79,12 @@ class FeedForwardSegmentation(BaseModel):
 
             # Define that it's a cuda array
             if idx == 0:
-                self.input = _input.cuda() if self.use_cuda else _input
+                self.input = _input.to(device='cuda') if self.use_cuda else _input
             elif idx == 1:
+
                 self.target = Variable(_input.cuda()) if self.use_cuda else Variable(_input)
                 assert self.input.size(2) == self.target.size(2)
+
 
     def forward(self, split):
         if split == 'train':
@@ -158,8 +157,8 @@ class FeedForwardSegmentation(BaseModel):
         if size is None:
             size = (1, 1, 160, 160, 96)
 
-        inp_array = Variable(torch.zeros(*size))
-        out_array = Variable(torch.zeros(*size))
+        inp_array = Variable(torch.zeros(*size)).cuda()
+        out_array = Variable(torch.zeros(*size)).cuda()
         fp, bp = benchmark_fp_bp_time(self.net, inp_array, out_array)
 
         bsize = size[0]

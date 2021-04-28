@@ -38,16 +38,15 @@ ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation
 train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
 valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-train_loader = DataLoader(dataset=train_dataset, num_workers=4, batch_size=train_opts.batchSize, shuffle=True)
+train_loader = DataLoader(dataset=train_dataset, num_workers=6, batch_size=train_opts.batchSize, shuffle=True)
 valid_loader = DataLoader(dataset=valid_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=False)
 test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
     # Visualisation Parameters
 visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir)
 error_logger = ErrorLogger()
-# metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
-# trainer = ModuleTrainer(model)
 
-model.set_scheduler(train_opts,len_train=len(train_dataset))
+model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
+
 for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 
@@ -55,8 +54,9 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
     for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
         # Make a training update
         model.set_input(images, labels)
-        # model.optimize_parameters()
-        model.optimize_parameters_accumulate_grd(epoch_iter)
+        model.optimize_parameters()
+        # model.optimize_parameters_accumulate_grd(epoch_iter)
+        model.update_learning_rate()
 
         # Error visualisation
         errors = model.get_current_errors()
@@ -65,33 +65,34 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
         visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
     # Validation and Testing Iterations
-    for loader, split in zip([valid_loader], ['validation']):
-        for epoch_iter, (images, labels) in tqdm(enumerate(loader, 1), total=len(loader)):
+    # for loader, split in zip([valid_loader], ['validation']):
+    #     for epoch_iter, (images, labels) in tqdm(enumerate(loader, 1), total=len(loader)):
 
-            # Make a forward pass with the model
-            model.set_input(images, labels)
-            model.validate()
+    #         # Make a forward pass with the model
+    #         model.set_input(images, labels)
+    #         model.validate()
 
-            # Error visualisation
-            errors = model.get_current_errors()
-            stats = model.get_segmentation_stats()
-            error_logger.update({**errors, **stats}, split=split)
+    #         # Error visualisation
+    #         errors = model.get_current_errors()
+    #         stats = model.get_segmentation_stats()
+    #         error_logger.update({**errors, **stats}, split=split)
 
-            # Visualise predictions
-            visuals = model.get_current_visuals()
-            visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
+    #         # Visualise predictions
+    #         visuals = model.get_current_visuals()
+    #         visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
 
-    # Update the plots
-    for split in ['validation']:
-        visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
-        visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
+    # # Update the plots
+    # for split in ['validation']:
+    #     visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
+    #     visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
     error_logger.reset()
 
     # Save the model parameters
     if epoch % train_opts.save_epoch_freq == 0:
         model.save(epoch)
+        visualizer.save_model(epoch)
 
     # Update the model learning rate
-    model.update_learning_rate()
+    # model.update_learning_rate()
 
 
