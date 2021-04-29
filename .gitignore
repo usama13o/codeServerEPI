@@ -115,3 +115,5 @@ wandb/
 visualisation_debug/
 artifacts
 kaggle
+filtered
+output

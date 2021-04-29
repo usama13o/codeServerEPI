@@ -2,19 +2,19 @@
 NORMAL='NORMAL'
 TUMOUR='TUMOUR'
 #num of filtered slides to generate 
-NUM_FILTERED=10
+NUM_FILTERED=20
 #which slide of the filtered to process
-PROCESS_SLIDE='3794'
-#where are the slides to be filtered. format --> '/PATH/to/slides/' 
-SLIDES_PATH='/content/epithelial-cells-ihc'
+PROCESS_SLIDE='any'
+#where are the slides to be filtered. format --> '/PATH/to/slides' 
+SLIDES_PATH='/mnt/data/Other/DOWNLOADS/WSIData/training_PNG'
 #pred for tumour {1} or normal {2} cells
 TARG_PRED=2
 # verbosity
 VERBOSE=1
 #save to google drive
-SAVE_DRIVE=True
+SAVE_DRIVE=False
 #recurse through all filtered images | run on one only
-RECURSE=False
+RECURSE=True
 #randomly choose idx of filtered if not then iterate thorugh all!
-RANDOM_RUN = False
+RANDOM_RUN =False
 ####GLOBALS####

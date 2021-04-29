@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 from glob import glob 
 import numpy as np
-from utils import np_to_pil
+from utils_pred import np_to_pil
 import torch
 if __name__ == "__main__":
    print("Pred utils executed when ran directly")

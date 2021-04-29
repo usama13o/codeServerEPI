@@ -17,7 +17,7 @@ import os
 from glob import glob
 import sys
 import numpy as np
-import utils
+import utils_pred
 from tqdm.auto import tqdm
 from PIL import Image, ImageDraw, ImageFont
 import skimage.color as sk_color
@@ -30,20 +30,20 @@ import skimage.segmentation as sk_segmentation
 import scipy.ndimage.morphology as sc_morph
 from enum import Enum
 #Consts file names
-DEST_MAIN_DIR="/content"
+DEST_MAIN_DIR=""
 BASE_PNG_DIR="training_PNG"
 FILTER_DIR =os.path.join(DEST_MAIN_DIR,"filtered")
 PNG_org_DIR = os.path.join(DEST_MAIN_DIR,BASE_PNG_DIR)
 PNG_ANN_DIR = os.path.join(DEST_MAIN_DIR,BASE_PNG_DIR+"_annotation")
 annotated_file_names = sorted(glob("/content/1024_mask/1024/*"))
 original_file_names= sorted(glob("/content/D:\Other\DOWNLOADS\WSIData/filtered/*"))
-annotated_test_dir = sorted( glob( FILTER_DIR + '/*'))
 annotated_tif_test_dir = sorted(glob("D:\Other\DOWNLOADS\WSIData\\filtered\\annotated_tif\*"))
 PNG_original_file_names = sorted(glob(PNG_org_DIR+"\*"))
 PNG_annotated_file_names =sorted(glob(PNG_ANN_DIR+"\*"))
 FILTER_DIR_names = sorted(glob(FILTER_DIR+"/*.png"))
 FILTER_DIR_names.extend(sorted(glob(FILTER_DIR+"/*.tif")))
 NORM_TIFF_DIR = sorted(glob(f'{globals.SLIDES_PATH}/*'))
+annotated_test_dir = FILTER_DIR_names
 SCALE_FACTOR = 1
 TISSUE_HIGH_THRESH = 80
 TISSUE_LOW_THRESH = 10

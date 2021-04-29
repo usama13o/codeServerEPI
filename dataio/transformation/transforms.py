@@ -31,6 +31,7 @@ class Transformations:
             'acdc_sax': self.cmr_3d_sax_transform,
             'us':       self.ultrasound_transform,
             'epi':       self.epi_transform,
+            'test':       self.epi_test,
         }[self.name]()
 
     def print(self):
@@ -81,6 +82,35 @@ class Transformations:
 
         return {'train': train_transform, 'valid': valid_transform}
 
+    def epi_test(self):
+        train_transform = ts.Compose([Resize(size=self.scale_size),
+                                      ts.ToTensor(),
+                                      ts.ChannelsFirst(),
+                                      ts.TypeCast(['float', 'float']),
+                                      ts.RandomFlip(h=True, v=True, p=self.random_flip_prob),
+                                      af.RandomAffine(rotation_range=self.rotate_val, translation_range=self.shift_val,
+                                                      zoom_range=self.scale_val, interp=('bilinear', 'nearest')),
+                                      #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
+                                    #   ts.NormalizeMedic(norm_flag=(True, False)),
+                                      ts.ChannelsLast(),
+                                      ts.AddChannel(axis=0),
+                                    #   ts.RandomCrop(size=self.patch_size),
+                                      ts.TypeCast(['float', 'long'])
+                                ])
+
+        valid_transform = ts.Compose([Resize(size=self.scale_size),
+                                      ts.ToTensor(),
+                                      ts.ChannelsFirst(),
+                                      ts.TypeCast(['float', 'float']),
+                                      #ts.NormalizeMedicPercentile(norm_flag=(True, False)),
+                                    #   ts.NormalizeMedic(norm_flag=(True, False)),
+                                      ts.ChannelsLast(),
+                                      ts.AddChannel(axis=0),
+                                    #   ts.SpecialCrop(size=self.patch_size, crop_type=0),
+                                      ts.TypeCast(['float', 'long'])
+                                ])
+
+        return {'train': train_transform, 'test': valid_transform}
     def ukbb_sax_transform(self):
 
         train_transform = ts.Compose([ts.PadNumpy(size=self.scale_size),

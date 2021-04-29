@@ -29,7 +29,7 @@ class ModelOpts:
         self.aggregation_mode = 'concatenation'
 
 
-    def initialise(self, json_opts):
+    def initialise(self, json_opts, **kwargs):
         opts = json_opts
 
         self.raw = json_opts
@@ -48,7 +48,7 @@ class ModelOpts:
         if hasattr(opts, 'feature_scale'): self.feature_scale = opts.feature_scale
         if hasattr(opts, 'tensor_dim'):    self.tensor_dim = opts.tensor_dim
 
-        if hasattr(opts, 'path_pre_trained_model'): self.path_pre_trained_model = opts.path_pre_trained_model
+        if hasattr(opts, 'path_pre_trained_model'): self.path_pre_trained_model = opts.path_pre_trained_model if opts.path_pre_trained_model != -1 else kwargs['model_path']
         if hasattr(opts, 'criterion'):              self.criterion = opts.criterion
 
         if hasattr(opts, 'nonlocal_mode'): self.nonlocal_mode = opts.nonlocal_mode
@@ -58,12 +58,12 @@ class ModelOpts:
 
         if hasattr(opts, 'optim'): self.optim= opts.optim
 
-def get_model(json_opts):
+def get_model(json_opts,**kwargs):
 
     # Neural Network Model Initialisation
     model = None
     model_opts = ModelOpts()
-    model_opts.initialise(json_opts)
+    model_opts.initialise(json_opts, **kwargs)
 
     # Print the model type
     print('\nInitialising model {}'.format(model_opts.model_type))

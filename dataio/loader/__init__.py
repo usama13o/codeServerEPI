@@ -18,7 +18,7 @@ def get_dataset(name):
         'acdc_sax': CMR3DDataset,
         'rvsc_sax': CMR3DDataset,
         'hms_sax':  HMSDataset,
-        'test_sax': TestDataset,
+        'test': TestDataset,
         'us': UltraSoundDataset,
         'epi':stain_norm_dataset
     }[name]
