@@ -6,7 +6,8 @@ NUM_FILTERED=20
 #which slide of the filtered to process
 PROCESS_SLIDE='any'
 #where are the slides to be filtered. format --> '/PATH/to/slides' 
-SLIDES_PATH='/mnt/data/Other/DOWNLOADS/WSIData/training_PNG'
+# SLIDES_PATH='/mnt/data/Other/DOWNLOADS/WSIData/training_PNG'
+SLIDES_PATH='/mnt/data/Other/DOWNLOADS/WSIData/Normal/Original/PNG'
 #pred for tumour {1} or normal {2} cells
 TARG_PRED=2
 # verbosity
@@ -16,5 +17,8 @@ SAVE_DRIVE=False
 #recurse through all filtered images | run on one only
 RECURSE=True
 #randomly choose idx of filtered if not then iterate thorugh all!
-RANDOM_RUN =False
+RANDOM_RUN =True
 ####GLOBALS####
+if SLIDES_PATH != 'any':
+    RECURSE = False
+    RANDOM_RUN = False

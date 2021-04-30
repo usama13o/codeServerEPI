@@ -37,7 +37,7 @@ class TestDataset(data.Dataset):
             check_exceptions(input, label)
         else:
             label = []
-            check_exceptions(input)
+            # check_exceptions(input)
 
         # Pre-process the input 3D Nifti image
         input = self.transform(input)

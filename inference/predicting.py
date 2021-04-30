@@ -55,7 +55,7 @@ void_code = name2id['EPI']
 if not os.path.exists('filtered/') or len(FILTER_DIR_names)<NUM_FILTERED:
   MessageTools.show_yellow("Generating filtered slides ....")
   # # Generating output 
-  fns = sorted(glob(SLIDES_PATH+'/*'))
+  fns = sorted(glob(SLIDES_PATH+'/*.png'))
   MessageTools.show_blue("converting all images into tisuse only images (ie. bg out)")
 
   for ind in fns[:NUM_FILTERED]:
@@ -65,7 +65,7 @@ else:
   MessageTools.show_blue("Filtered dir already exists. Continue ..")
 
 if PROCESS_SLIDE is not 'any':
-  if not [False for x in FILTER_DIR_names if PROCESS_SLIDE in x][0]:
+  if not sum([False if PROCESS_SLIDE not in x else True for x in FILTER_DIR_names ]):
     MessageTools.show_yellow("Slide not in filtered .. trying to find it")
     try:
       path = [p for p in glob(SLIDES_PATH +'/*') if PROCESS_SLIDE in p][0]
@@ -217,10 +217,17 @@ for i in range(NUM_FILTERED):
       model.set_input(images)
       model.test()
 
-      out = model.pred_seg
-      out = out.cpu().numpy().astype(np.uint8)
-      out = np_to_pil(out.squeeze() * 255)
-      out = out.resize((1024,1024))
+      out = model.logits
+      out = out.cpu().argmax(dim=1).squeeze().numpy().astype(np.uint8)
+      RGB = np.zeros((out.shape[0],out.shape[1],3), dtype=np.uint8)
+      #rgb convert for better res visulisation
+      RGB[out==0] = [200,0,0] # bg is red
+      RGB[out==1] = [0,0,255] # tumour is blue
+      RGB[out==2] = [0,255,0] # normal is green
+      pred_pil= np_to_pil(RGB)
+      # out = np_to_pil(out.squeeze() * 255)
+      out = pred_pil
+      out = out.resize((1024,1024),PIL.Image.LANCZOS)
       out.save(f'output/{os.path.basename(f_paths[0])}')
 
 
@@ -246,7 +253,7 @@ for i in range(NUM_FILTERED):
       path = [s for s in fns if num in s][0]
       return open_image(path)
     def get_stitched_slide(outs,num_rows,num_cols,tile_size=1024):
-      re_tile = np.zeros((num_rows*tile_size,num_cols*tile_size))
+      re_tile = np.zeros((num_rows*tile_size,num_cols*tile_size,3))
 
       for out in outs:
         out_base = os.path.basename(out)
@@ -265,7 +272,7 @@ for i in range(NUM_FILTERED):
           re+=(tile_size-(re-rs))
           if VERBOSE > 0:
             print(f'corrected for re {re}')
-        re_tile[rs:re,cs:ce]=open_image_np(out)[:]
+        re_tile[rs:re,cs:ce,:]=open_image_np(out)[:]
       return re_tile
 
 
