@@ -19,6 +19,7 @@ def get_b16_config():
     config.patch_size = 16
 
     config.decoder_channels = (256, 128, 64, 16)
+    config.n_skip = 0
     config.n_classes = 2
     config.activation = 'softmax'
     return config
@@ -86,6 +87,7 @@ def get_l16_config():
     config.pretrained_path = '../model/vit_checkpoint/imagenet21k/ViT-L_16.npz'
     config.decoder_channels = (256, 128, 64, 16)
     config.n_classes = 2
+    config.n_skip = 0
     config.activation = 'softmax'
     return config
 
@@ -103,6 +105,7 @@ def get_r50_l16_config():
     config.decoder_channels = (256, 128, 64, 16)
     config.skip_channels = [512, 256, 64, 16]
     config.n_classes = 2
+    config.n_skip = 3
     config.activation = 'softmax'
     return config
 

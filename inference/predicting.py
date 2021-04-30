@@ -91,30 +91,15 @@ os.environ["WANDB_API_KEY"] = '4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8'
 
 # %%
 MessageTools.show_yellow(f"Downlaoding model")
-import wandb
-run = wandb.init()
-artifact = run.use_artifact('usama_ml/EPISEG/attention_model_unet:v139', type='model')
-artifact_dir = artifact.download()
+if os.path.exists(f'artifacts/attention_model_unet:v{MODEl_VERSION}/'):
+  MessageTools.show_blue("Model already exists")
+  artifact_dir = os.path.join(f'artifacts/attention_model_unet:v{MODEl_VERSION}','')
+else:
+  import wandb
+  run = wandb.init(resume=True)
+  artifact = run.use_artifact(f'usama_ml/EPISEG/attention_model_unet:v{MODEl_VERSION}', type='model')
+  artifact_dir = artifact.download()
 model_path = os.path.join(artifact_dir,os.listdir(artifact_dir)[0])
-
-# %%
-# MessageTools.show_yellow('Making learner ...')
-# learn = get_segmentation_learner(dls=dls, number_classes=3, segmentation_type="Semantic Segmentation",
-                                #  architecture_name="deeplabv3+", backbone_name="resnet50", 
-                                #  metrics=[ seg_accuracy ,tumour_norm,Dice(), JaccardCoeff(),DiceMulti(),IoU],wd=1e-2,
-                                #  ).to_fp16()
-
-CUDA_LAUNCH_BLOCKING=1
-
-######################################################################################################
-
-def get_y_fake(im_f):
-  return im_f
-# # %%
-# import wandb
-
-def get_unique(n):
-    return np.unique(n)
 
 ######################################################################################################
 MessageTools.show_yellow(f"Generating input for slide")
@@ -124,7 +109,7 @@ if RECURSE ==True and PROCESS_SLIDE=='any':
 else:
   NUM_FILTERED=1
 for i in range(NUM_FILTERED):
-    os.system('rm filtered/input/*')
+    # os.system('rm filtered/input/*')
 
     def generate_input_tiles(index,path,output_dir=None):
       ind=index
@@ -185,7 +170,7 @@ for i in range(NUM_FILTERED):
     try:
       arg={'name':PROCESS_SLIDE,'idx':None if RANDOM_RUN else i}
       slide_idx,slide_num=get_slide_idx(**arg)
-      generate_input_tiles(slide_idx,FILTER_DIR)
+      # generate_input_tiles(slide_idx,FILTER_DIR)
     except Exception as e:
       traceback.print_exc()
       MessageTools.show_err(f"Failed to generate input --> {e}")
