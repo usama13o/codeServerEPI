@@ -136,6 +136,7 @@ def get_scheduler(optimizer, opt, **kwargs):
         print("Using one-cycle scheduler")
 
         scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=kwargs['max_lr'], steps_per_epoch=kwargs['len_train'], epochs=opt.n_epochs, cycle_momentum=True,div_factor=kwargs['division_factor'])
+        print(f"Scheduler: last epoch: {kwargs['last_epoch']}")
         scheduler.last_epoch = kwargs['last_epoch']
 
     else:

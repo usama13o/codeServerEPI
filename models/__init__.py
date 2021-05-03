@@ -41,6 +41,7 @@ class ModelOpts:
         self.output_nc = opts.output_nc
         self.continue_train = opts.continue_train
         self.which_epoch = opts.which_epoch
+        self.img_size=224
 
         if hasattr(opts, 'type'): self.type = opts.type
         if hasattr(opts, 'l2_reg_weight'): self.l2_reg_weight = opts.l2_reg_weight
@@ -57,6 +58,7 @@ class ModelOpts:
         if hasattr(opts, 'aggregation_mode'): self.aggregation_mode = opts.aggregation_mode
 
         if hasattr(opts, 'optim'): self.optim= opts.optim
+        if hasattr(opts, 'img_size'): self.img_size= opts.img_size
 
 def get_model(json_opts):
 

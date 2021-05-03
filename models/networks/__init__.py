@@ -15,7 +15,7 @@ from .vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 
 def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D',
                 nonlocal_mode='embedded_gaussian', attention_dsample=(2,2),
-                aggregation_mode='concat',img_size=224):
+                aggregation_mode='concat',img_size=512):
     model = _get_model_instance(name, tensor_dim)
 
     if name in ['unet', 'unet_ct_dsv']:
@@ -58,7 +58,8 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
     elif name in CONFIGS_ViT_seg.keys():
         config_vit = CONFIGS_ViT_seg[name]
         config_vit.n_classes = n_classes
-        img_size = config_vit.img_size if config_vit.img_size else img_size
+        img_size = config_vit.img_size if hasattr(config_vit,"img_size") else img_size
+        print(img_size)
         if 'R50' in name:
             config_vit.patches.grid = (int(img_size / config_vit.patches.grid[0]), int(img_size / config_vit.patches.grid[1]))
     
@@ -86,5 +87,7 @@ def _get_model_instance(name, tensor_dim):
         'ViT-H_14': {'2D':VisionTransformer},
         'R50-ViT-B_32': {'2D':VisionTransformer},
         'R50-ViT-B_16': {'2D':VisionTransformer},
+        'R50-ViT-L_16': {'2D':VisionTransformer},
+        'R50-ViT-l_32': {'2D':VisionTransformer},
         'DeepLab':{'v3+':pws.deeplab_v3_plus.DeepLabv3_plus,"v2":pws.deeplab_v2_res.DeepLabv2_ASPP,"v3":pws.deeplab_v3.DeepLabv3}
     }[name][tensor_dim]
