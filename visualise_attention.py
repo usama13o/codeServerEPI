@@ -5,6 +5,7 @@ from dataio.transformation import get_dataset_transformation
 from utils.util import json_file_to_pyobj
 from utils.visualiser import Visualiser
 from models import get_model
+from dataio.loader.test_dataset import TestDataset
 from inference import MessageTools
 import os, time
 
@@ -136,16 +137,21 @@ dataset = dataset_class(dataset_path, split='train', transform=dataset_transform
 data_loader = DataLoader(dataset=dataset, num_workers=1, batch_size=1, shuffle=False)
 
 # test
+ds_transform = get_dataset_transformation('test', opts=json_opts.augmentation)
+dls = TestDataset('filtered/input',transform=ds_transform['train'])
+data_loader = DataLoader(dataset=dls, num_workers=1, batch_size=1, shuffle=False)
 for iteration, data in enumerate(data_loader, 1):
-    model.set_input(data[0], data[1])
+    # model.set_input(data[0], data[1])
+    # model.validate()
+    # cls = int(data[1].max())
+    cls = 1
+    model.set_input(data[0])
+    model.test()
 
-    cls = int(data[1].max())
-
-    model.validate()
     pred_class = np.transpose(model.pred_seg.cpu().numpy().astype(np.uint8),(0,2,3,1)).squeeze(3).squeeze()
     pred_cls = int(pred_class.max())
 
-    gt = np.transpose(data[1].cpu().squeeze(4).numpy().astype(np.uint8),(0,2,3,1)).squeeze(3).squeeze()
+    # gt = np.transpose(data[1].cpu().squeeze(4).numpy().astype(np.uint8),(0,2,3,1)).squeeze(3).squeeze()
     
 
     #########################################################
@@ -153,6 +159,8 @@ for iteration, data in enumerate(data_loader, 1):
     input_img = model.input[0,0].cpu().numpy()
     #input_img = numpy.expand_dims(imresize(input_img, (fmap_size[0], fmap_size[1]), interp='bilinear'), axis=2)
     input_img = numpy.expand_dims(input_img, axis=2)
+    
+    gt = input_img
 
     # plotNNFilter(input_img, figure_id=0, colormap="gray")
     plotNNFilterOverlay(input_img,pred_class, figure_id=0, interp='bilinear',
