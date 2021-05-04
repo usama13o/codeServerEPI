@@ -455,9 +455,22 @@ class HookBasedFeatureExtractor(nn.Module):
             for index in range(len(self.outputs)): self.outputs[index] = us(self.outputs[index]).data()
         else:
             self.outputs = us(self.outputs).data()
+    def get_layer(self,mod,targ,lvl=-1):
+        if lvl < 2:
+            for name,mm in mod.named_children():
+                if name == targ: return mm
+                if mod._modules.get(targ) is not None: return mod._modules.get(targ)
+                self.get_layer(mod._modules.get(name),targ,lvl=lvl+1)
+        return None
 
     def forward(self, x):
         target_layer = self.submodule._modules.get(self.layername)
+        if target_layer is None:
+            for mod in self.submodule._modules:
+                target_layer = self.get_layer(self.submodule._modules.get(mod),self.layername)
+                if target_layer is not None:
+                    break
+               
 
         # Collect the output tensor
         h_inp = target_layer.register_forward_hook(self.get_input_array)

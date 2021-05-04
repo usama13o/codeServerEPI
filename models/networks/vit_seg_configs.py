@@ -43,7 +43,6 @@ def get_testing():
 def get_r50_b16_config():
     """Returns the Resnet50 + ViT-B/16 configuration."""
     config = get_b16_config()
-    config.img_size=256
     config.patches.grid = (16, 16)
     config.resnet = ml_collections.ConfigDict()
     config.resnet.num_layers = (3, 4, 9)

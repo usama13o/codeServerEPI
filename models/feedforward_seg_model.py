@@ -35,7 +35,7 @@ class FeedForwardSegmentation(BaseModel):
         self.net = get_network(opts.model_type, n_classes=opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
-                               attention_dsample=opts.attention_dsample)
+                               attention_dsample=opts.attention_dsample,img_size= opts.img_size)
         self.net.apply_argmax_softmax = self.apply_argmax_softmax
         if self.use_cuda: self.net = self.net.to(device='cuda')
 

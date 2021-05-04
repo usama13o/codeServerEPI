@@ -20,7 +20,7 @@ from models import get_model
 
 
 # Parse input arguments
-json_filename = "configs/config_TransUnet_slides.json"
+json_filename = "configs/config_TransUnet.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
