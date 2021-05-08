@@ -45,20 +45,23 @@ test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train
 
 # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
 # trainer = ModuleTrainer(model)
-visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir)
+visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= True if json_opts.model.continue_train else False)
 error_logger = ErrorLogger()
 start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
 model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
 
-for epoch in range(model.which_epoch if model.which_epoch < train_opts.n_epochs else 0, train_opts.n_epochs):
+for epoch in range(0, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
+    if epoch == 3:
+        print("freezing model")
+        model.freeze()
 
     # Training Iterations
     for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
         # Make a training update
         model.set_input(images, labels)
-        model.optimize_parameters()
-        # model.optimize_parameters_accumulate_grd(epoch_iter)
+        # model.optimize_parameters()
+        model.optimize_parameters_accumulate_grd(epoch_iter)
         lr = model.update_learning_rate()
         lr = {"lr":lr}
         # Error visualisation
