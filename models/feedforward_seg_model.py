@@ -167,3 +167,14 @@ class FeedForwardSegmentation(BaseModel):
 
     def save(self, epoch_label):
         self.save_network(self.net, 'S', epoch_label, self.gpu_ids)
+    def freeze(self,layername="Encoder"):
+        print("Freeing Encoder")
+        for layer in self.net.children():
+            for parameter in layer.parameters():
+                if layer._get_name() == layername:
+                    parameter.requires_grad = False
+    def unfreeze(self):
+        print("unfreezing . . . ")
+        for layer in self.net.children():
+            for parameter in layer.parameters():
+                parameter.requires_grad = True

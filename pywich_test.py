@@ -38,7 +38,7 @@ ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation
 # Setup Data Loader
 train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
 valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-train_loader = DataLoader(dataset=train_dataset, num_workers=7, batch_size=train_opts.batchSize, shuffle=True)
+train_loader = DataLoader(dataset=train_dataset, num_workers=4, batch_size=train_opts.batchSize, shuffle=True)
 valid_loader = DataLoader(dataset=valid_dataset, num_workers=1, batch_size=train_opts.batchSize, shuffle=False)
 
 # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
@@ -46,6 +46,7 @@ valid_loader = DataLoader(dataset=valid_dataset, num_workers=1, batch_size=train
 visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir)
 error_logger = ErrorLogger()
 model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor)
+model.freeze("Transformer")
 for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
 

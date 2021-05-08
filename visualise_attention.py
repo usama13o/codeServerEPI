@@ -144,7 +144,7 @@ for iteration, data in enumerate(data_loader, 1):
     # model.set_input(data[0], data[1])
     # model.validate()
     # cls = int(data[1].max())
-    cls = 1
+    cls = 2
     model.set_input(data[0])
     model.test()
 
