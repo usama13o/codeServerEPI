@@ -116,3 +116,7 @@ visualisation_debug/
 utils/untitled.txt
 kaggle/
 kaggle/input
+artifacts/
+filtered/
+output/
+output_slides/
