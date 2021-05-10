@@ -11,7 +11,6 @@ from utils.error_logger import ErrorLogger
 import numpy
 from tqdm import tqdm
 
-
 from utils.visualiser import Visualiser
 from utils.error_logger import ErrorLogger
 
@@ -20,7 +19,7 @@ from models import get_model
 
 
 # Parse input arguments
-json_filename = "configs/config_TransUnet.json"
+json_filename = "configs/config_TransUnet_slides.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
@@ -50,11 +49,13 @@ error_logger = ErrorLogger()
 start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
 model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
 
-for epoch in range(0, train_opts.n_epochs):
+for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
-    if epoch == 3:
+    if epoch % 2 == 0:
         print("freezing model")
         model.freeze()
+    else:
+        model.unfreeze()
 
     # Training Iterations
     for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
@@ -63,6 +64,8 @@ for epoch in range(0, train_opts.n_epochs):
         # model.optimize_parameters()
         model.optimize_parameters_accumulate_grd(epoch_iter)
         lr = model.update_learning_rate()
+        
+        
         lr = {"lr":lr}
         # Error visualisation
         errors = model.get_current_errors()

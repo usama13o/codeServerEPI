@@ -115,3 +115,6 @@ wandb/
 visualisation_debug/
 artifacts
 kaggle
+training_PNG_annotation/training_PNG_annotation
+tumor_slides
+fixed

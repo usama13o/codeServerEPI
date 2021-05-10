@@ -31,6 +31,8 @@ class Transformations:
             'acdc_sax': self.cmr_3d_sax_transform,
             'us':       self.ultrasound_transform,
             'epi':       self.epi_transform,
+            'epi_slides':       self.epi_transform,
+
         }[self.name]()
 
     def print(self):

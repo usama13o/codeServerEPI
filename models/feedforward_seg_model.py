@@ -44,7 +44,7 @@ class FeedForwardSegmentation(BaseModel):
             self.path_pre_trained_model = opts.path_pre_trained_model
             if self.path_pre_trained_model:
                 self.load_network_from_path(self.net, self.path_pre_trained_model, strict=False)
-                self.which_epoch = int(0)
+                self.which_epoch = self.which_epoch
             else:
                 self.which_epoch = opts.which_epoch
                 self.load_network(self.net, 'S', self.which_epoch)
@@ -110,7 +110,7 @@ class FeedForwardSegmentation(BaseModel):
 
     # This function updates the network parameters every "accumulate_iters"
     def optimize_parameters_accumulate_grd(self, iteration):
-        accumulate_iters = int(2)
+        accumulate_iters = int(20)
         if iteration == 0: self.optimizer_S.zero_grad()
         self.net.train()
         self.forward(split='train')
@@ -168,7 +168,7 @@ class FeedForwardSegmentation(BaseModel):
     def save(self, epoch_label):
         self.save_network(self.net, 'S', epoch_label, self.gpu_ids)
     def freeze(self,layername="Transformer"):
-        print("Freeing Encoder")
+        print("Freezing ")
         for layer in self.net.children():
             for parameter in layer.parameters():
                 if layer._get_name() == layername:
