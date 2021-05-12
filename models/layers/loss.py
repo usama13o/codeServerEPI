@@ -25,6 +25,27 @@ def cross_entropy_3D(input, target, weight=None, size_average=True):
         loss /= float(target.numel())
     return loss
 
+def ce_loss(logits, true, weights=[0.1,0.59,0.9], ignore=0):
+    """Computes the weighted multi-class cross-entropy loss.
+    Args:
+        true: a tensor of shape [B, 1, H, W].
+        logits: a tensor of shape [B, C, H, W]. Corresponds to
+            the raw output or logits of the model.
+        weight: a tensor of shape [C,]. The weights attributed
+            to each class.
+        ignore: the class index to ignore.
+    Returns:
+        ce_loss: the weighted multi-class cross-entropy loss.
+    """
+    weights = torch.FloatTensor(weights).cuda()
+    true = true.squeeze(1)
+    ce_loss = F.cross_entropy(
+        logits.float(),
+        true.long(),
+        ignore_index=ignore,
+        weight=weights,
+    )
+    return ce_loss
 
 class SoftDiceLoss(nn.Module):
     def __init__(self, n_classes):
@@ -45,7 +66,7 @@ class SoftDiceLoss(nn.Module):
         score = torch.sum(2.0 * inter / union)
         score = 1.0 - score / (float(batch_size) * float(self.n_classes))
 
-        return score
+        return score + ce_loss(input,target)
 
 
 class CustomSoftDiceLoss(nn.Module):
@@ -119,7 +140,7 @@ class IoU_loss(nn.Module):
         cardinality = torch.sum(probas + true_1_hot, dims)  # [class0,class1,class2,...]
         union = cardinality - intersection
         iou = (intersection / (union + eps)).mean()   # find mean of class IoU values
-        return 1-iou
+        return (1-iou) + ce_loss(preds,targs)
 class One_Hot(nn.Module):
     def __init__(self, depth):
         super(One_Hot, self).__init__()
