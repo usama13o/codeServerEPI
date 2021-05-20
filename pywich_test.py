@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from pywick.modules import ModuleTrainer
 import pywick.metrics as pwm
 from utils.error_logger import ErrorLogger
-
+import torch
 import numpy
 from tqdm import tqdm
 

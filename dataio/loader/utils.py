@@ -26,18 +26,18 @@ def open_target_np(path):
     # normal case
     # if len(li)>5:
     if 'fixed' in path:
-        print('found normal slide' + path)
+       # print('found normal slide' + path)
         mask[mask!=255]=0
         mask[mask==255]=2
     #tumour
     else:
-        print('found tumour slide' + path)
+       # print('found tumour slide' + path)
         mask = ~mask
         mask[mask!=255]=0
 
         mask[mask==255]=1
     li = (np.unique(mask,return_counts=True))
-    print(li)
+    # print(li)
     return mask[:,:,0,np.newaxis]
 
 def open_image_np(path):
