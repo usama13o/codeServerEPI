@@ -442,7 +442,7 @@ class HookBasedFeatureExtractor(nn.Module):
 
     def get_output_array(self, m, i, o):
         if isinstance(o, tuple):
-            self.outputs = [o[index].data.clone() for index in range(len(o))]
+            self.outputs = [o[index].data.clone() for index in range(len(o)) if type(o[index]) != list]
             self.outputs_size = [output.size() for output in self.outputs]
         else:
             self.outputs = o.data.clone()
@@ -455,22 +455,19 @@ class HookBasedFeatureExtractor(nn.Module):
             for index in range(len(self.outputs)): self.outputs[index] = us(self.outputs[index]).data()
         else:
             self.outputs = us(self.outputs).data()
-    def get_layer(self,mod,targ,lvl=-1):
-        if lvl < 2:
-            for name,mm in mod.named_children():
-                if name == targ: return mm
-                if mod._modules.get(targ) is not None: return mod._modules.get(targ)
-                self.get_layer(mod._modules.get(name),targ,lvl=lvl+1)
-        return None
+        
 
     def forward(self, x):
-        target_layer = self.submodule._modules.get(self.layername)
-        if target_layer is None:
-            for mod in self.submodule._modules:
-                target_layer = self.get_layer(self.submodule._modules.get(mod),self.layername)
-                if target_layer is not None:
-                    break
-               
+        # target_layer = self.submodule._modules.get(self.layername)
+        target_layer = self.submodule
+        for i in range(len(self.layername)):
+            if target_layer._get_name().lower() == 'modulelist':
+                target_layer = target_layer[int(self.layername[i])]
+            else:
+                for mod in target_layer.children():
+                    if mod._get_name().lower() == self.layername[i].lower():
+                        target_layer = mod
+                        break
 
         # Collect the output tensor
         h_inp = target_layer.register_forward_hook(self.get_input_array)

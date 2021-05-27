@@ -6,6 +6,8 @@ from __future__ import print_function
 import copy
 import logging
 import math
+from models.networks.unet_CT_multi_att_dsv_2D import MultiAttentionBlock
+from models.networks.utils import UnetGridGatingSignal2, unetUp
 
 from os.path import join as pjoin
 
@@ -18,6 +20,7 @@ from torch.nn.modules.utils import _pair
 from scipy import ndimage
 from . import vit_seg_configs as configs
 from .vit_seg_modeling_resnet_skip import ResNetV2
+from models.layers.grid_attention_layer import GridAttentionBlock2D
 
 
 logger = logging.getLogger(__name__)
@@ -157,6 +160,11 @@ class Embeddings(nn.Module):
             x, features = self.hybrid_model(x)
         else:
             features = None
+        #reverse features to add x to them 
+        features = features[::-1]
+        features.append(x)
+        features = features[::-1]
+        # done shgould have all fmaps now 
         x = self.patch_embeddings(x)  # (B, hidden. n_patches^(1/2), n_patches^(1/2))
         x = x.flatten(2)
         x = x.transpose(-1, -2)  # (B, n_patches, hidden)
@@ -368,9 +376,9 @@ class DecoderCup(nn.Module):
         return x
 
 
-class VisionTransformer(nn.Module):
+class VisionTransformer_AG(nn.Module):
     def __init__(self, config, img_size=224, num_classes=21843, zero_head=False, vis=True):
-        super(VisionTransformer, self).__init__()
+        super(VisionTransformer_AG, self).__init__()
         self.num_classes = num_classes
         self.zero_head = zero_head
         self.classifier = config.classifier
@@ -383,10 +391,56 @@ class VisionTransformer(nn.Module):
         )
         self.config = config
 
+
+    #attention gates functions ``
+        self.feature_scale = 1
+        filters = [64, 256, 512, 1024]
+        nonlocal_mode='concatenation'
+        attention_dsample = (2,2)
+        filters = [int(x / self.feature_scale) for x in filters]
+        self.gating = UnetGridGatingSignal2(filters[3],filters[3], kernel_size=(1,1), is_batchnorm=True)
+
+        # attention blocks
+        self.attentionblock2 = MultiAttentionBlock(in_size=filters[0], gate_size=filters[1], inter_size=filters[1],
+                                                   nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
+        self.attentionblock3 = MultiAttentionBlock(in_size=filters[1], gate_size=filters[2], inter_size=filters[2],
+                                                   nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
+        self.attentionblock4 = MultiAttentionBlock(in_size=filters[2], gate_size=filters[3], inter_size=filters[3],
+                                                   nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
+
+ # upsampling
+        is_batchnorm = True
+        self.up_concat4 =  unetUp(filters[3], filters[2], is_batchnorm)
+        self.up_concat3 =  unetUp(filters[2], filters[1], is_batchnorm)
+        self.up_concat2 = unetUp(filters[1], filters[0], is_batchnorm)
+
+
     def forward(self, x):
         if x.size()[1] == 1:
             x = x.repeat(1,3,1,1)
         x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
+        features = features[::-1]
+        # pass ing through attention gates 
+        #we have 4 layers 
+        conv4 = features[2]
+        conv3 = features[1]
+        conv2 = features[0]
+        center = features[3]
+        gating= self.gating(features[3])
+
+        g_conv4, att4 = self.attentionblock4(conv4, gating)
+        up4 = self.up_concat4(g_conv4, center)
+        g_conv3, att3 = self.attentionblock3(conv3, up4)
+        up3 = self.up_concat3(g_conv3, up4)
+        g_conv2, att2 = self.attentionblock2(conv2, up3)
+
+        features[0]  = g_conv2
+        features[1]  = g_conv3
+        features[2]  = g_conv4
+
+        features = features[::-1]
+        # x = features[0]
+        features = features[1:]
         x = self.decoder(x, features)
         logits = self.segmentation_head(x)
         return logits
@@ -447,7 +501,6 @@ CONFIGS = {
     'ViT-L_32': configs.get_l32_config(),
     'ViT-H_14': configs.get_h14_config(),
     'R50-ViT-B_16': configs.get_r50_b16_config(),
-    'R50-ViT-B_16_AG': configs.get_r50_b16_config(),
     'R50-ViT-L_16': configs.get_r50_l16_config(),
     'testing': configs.get_testing(),
 }

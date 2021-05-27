@@ -180,8 +180,8 @@ for iteration, data in enumerate(data_loader, 1):
     #########################################################
     # Compatibility Scores overlay with input
     attentions = []
-    layer_name = 'conv_more'
-    for i in [0,1]:
+    layer_name = ['transformer','embeddings','hybrid_model','body']
+    for i in [11]:
         fmap = model.get_feature_maps(layer_name, upscale=False)
         if not fmap:
             continue
@@ -199,6 +199,25 @@ for iteration, data in enumerate(data_loader, 1):
             # plotNNFilterOverlay(input_img, attention, figure_id=i, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. {}'.format(cls,pred_cls,i), alpha=0.5)
             # plotNNFilterOverlay(input_img,fmap_0[:,:,i], figure_id=i, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat fmap. {}'.format(cls,pred_cls,i), alpha=0.5)
             attentions.append(attention)
+        elif 'modulelist' in layer_name:
+            fmap_0 = fmap[1][0].squeeze().permute(1,0).cpu().numpy()
+            fmap_size = fmap_0.shape
+            fmap_0 = fmap_0.reshape(fmap_size[0], int(math.sqrt(fmap_size[1])),-1)
+
+            attention = fmap[1][1].squeeze().permute(1,0,2).cpu().numpy()
+            att_size = attention.shape
+            attention = attention[:,:,i]
+
+            attention = resize(attention, (input_img.shape[0], input_img.shape[1]), mode='constant', preserve_range=True)
+
+            attentions.append(attention)
+        elif 'hybrid_model' in layer_name:
+
+            fmap_0 = fmap[1][0].squeeze().permute(1,0).cpu().numpy()
+            fmap_size = fmap_0.shape
+            fmap_0 = fmap_0.reshape(fmap_size[0], int(math.sqrt(fmap_size[1])),-1)
+            attention = fmap[0][0].squeeze().cpu().numpy()
+            attentions= attention
         else:
             fmap_0 = fmap[1].squeeze().cpu().numpy()
             attentions = (fmap[0][0].squeeze().cpu().numpy())

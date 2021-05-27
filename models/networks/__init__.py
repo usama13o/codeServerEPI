@@ -1,3 +1,4 @@
+from models.networks.vit_seg_modeling_att_gate import VisionTransformer_AG
 from .unet_2D import *
 from .unet_3D import *
 from .unet_nonlocal_2D import *
@@ -86,6 +87,7 @@ def _get_model_instance(name, tensor_dim):
         'ViT-H_14': {'2D':VisionTransformer},
         'R50-ViT-B_32': {'2D':VisionTransformer},
         'R50-ViT-B_16': {'2D':VisionTransformer},
+        'R50-ViT-B_16_AG': {'2D':VisionTransformer_AG},
         'R50-ViT-L_16': {'2D':VisionTransformer},
         'DeepLab':{'v3+':pws.deeplab_v3_plus.DeepLabv3_plus,"v2":pws.deeplab_v2_res.DeepLabv2_ASPP,"v3":pws.deeplab_v3.DeepLabv3}
     }[name][tensor_dim]
