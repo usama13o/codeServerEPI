@@ -80,6 +80,7 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
             # Visualise predictions
             visuals = model.get_current_visuals()
             visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
+            visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
 
     # Update the plots
     for split in ['validation']:

@@ -130,10 +130,17 @@ class FeedForwardSegmentation(BaseModel):
         self.loss_S = self.criterion(self.prediction, self.target)
 
     def get_segmentation_stats(self):
-        self.seg_scores, self.dice_score = segmentation_stats(self.prediction, self.target)
+        self.seg_scores, self.dice_score,self.precision,self.recall = segmentation_stats(self.prediction, self.target)
         seg_stats = [('Overall_Acc', self.seg_scores['overall_acc']), ('Mean_IOU', self.seg_scores['mean_iou'])]
         for class_id in range(self.dice_score.size):
-            seg_stats.append(('Class_{}'.format(class_id), self.dice_score[class_id]))
+            seg_stats.append(('Class_dice_{}'.format(class_id), self.dice_score[class_id]))
+        
+        for class_id in range(self.precision.size):
+            seg_stats.append(('Class_precision_{}'.format(class_id), self.precision[class_id]))
+        print(self.precision)
+        print(self.recall)
+        for class_id in range(self.recall.size):
+            seg_stats.append(('Class_recall_{}'.format(class_id), self.recall[class_id]))
         return OrderedDict(seg_stats)
 
     def get_current_errors(self):
