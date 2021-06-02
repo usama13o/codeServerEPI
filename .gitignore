@@ -118,3 +118,10 @@ kaggle
 training_PNG_annotation/training_PNG_annotation
 tumor_slides
 fixed
+artifacts/
+1024/
+test/
+train/
+full_slides/
+mask/
+512/
