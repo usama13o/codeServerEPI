@@ -4,6 +4,7 @@ import os
 import ntpath
 import time
 from utils import util, html
+import datetime
 
 
 from datetime import datetime
@@ -13,7 +14,7 @@ import wandb
 # python -m visdom.server
 
 class Visualiser():
-    def __init__(self, opt, save_dir, filename='loss_log.txt'):
+    def __init__(self, opt, save_dir, filename='loss_log.txt',resume=True):
         self.display_id = opt.display_id
         self.use_html = not opt.no_html
         self.lim = opt.lim
@@ -35,7 +36,7 @@ class Visualiser():
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
 
-            self.run=wandb.init(project='EPISEG',name=f'Attention_Unet{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=True)
+            self.run=wandb.init(project='EPISEG',name=f'Paperspace_{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=resume)
 
 
         if self.display_id > 0:
@@ -104,7 +105,12 @@ class Visualiser():
             else:
                 idx = 1
                 for label, image_numpy in visuals.items():
-                    self.vis.image(image_numpy.transpose([2, 0, 1]), opts=dict(title=label),
+                    image_numpy = image_numpy[0]
+                    if len(image_numpy.shape) > 2:
+                        image_numpy = image_numpy.transpose(2,0,1)
+                    else:
+                        image_numpy = image_numpy *255
+                    self.vis.image(image_numpy, opts=dict(title=label),
                                    win=self.display_id + idx)
                     idx += 1
 

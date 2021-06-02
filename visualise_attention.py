@@ -103,18 +103,16 @@ json_opts = json_file_to_pyobj(f'/mnt/data/Other/Projects/codeServerEPI/Attentio
 train_opts = json_opts.training
 
 dir_name = os.path.join('visualisation_debug', config_name)
+os.system(f"rm -r {dir_name}")
 if not os.path.isdir(dir_name):
     os.makedirs(dir_name)
     os.makedirs(os.path.join(dir_name,'pos'))
     os.makedirs(os.path.join(dir_name,'neg'))
 
-# Setup the NN Model
-model = get_model(json_opts.model)
-if hasattr(model.net, 'classification_mode'):
-    model.net.classification_mode = 'attention'
-if hasattr(model.net, 'deep_supervised'):
-    model.net.deep_supervised = False 
 
+=======
+# Setup the NN Model
+if hasattr(model.net, 'deep_supervised'):
 # Setup Dataset and Augmentation
 dataset_class = get_dataset(train_opts.arch_type)
 dataset_path = get_dataset_path(train_opts.arch_type, json_opts.data_path)
@@ -147,7 +145,7 @@ for iteration, data in enumerate(data_loader, 1):
     plotNNFilterOverlay(input_img,pred_class, figure_id=0, interp='bilinear',
                         colormap=cm.jet,save=False)
 
-    chance = np.random.random() < 0.01 if cls == 1 else 1
+    chance = np.random.random() < 0.5 if cls == 1 else 1
     if cls != pred_cls:
         plt.savefig('{}/neg/{:03d}.png'.format(dir_name,iteration))
         plotNNFilterOverlay(input_img,gt, figure_id=0, interp='bilinear',
@@ -161,11 +159,36 @@ for iteration, data in enumerate(data_loader, 1):
     #########################################################
     # Compatibility Scores overlay with input
     attentions = []
+<<<<<<< HEAD
+    layer_name = 'attentionblock4'
+=======
     layer_name = 'attentionblock2'
     for i in [0,1]:
-        fmap = model.get_feature_maps(layer_name, upscale=False)
-        if not fmap:
-            continue
+<<<<<<< HEAD
+        #if visulising attention blocks
+        if  "attention" in layer_name:
+            # Output of the attention block
+            fmap_0 = fmap[1][0].squeeze().permute(1,2,0).cpu().numpy()
+            fmap_size = fmap_0.shape
+            # Attention coefficient (b x c x w x h x s)
+            attention = fmap[1][1].squeeze().permute(1,2,0).cpu().numpy()
+            attention = attention[:, :,i]
+            #attention = numpy.expand_dims(resize(attention, (fmap_size[0], fmap_size[1]), mode='constant', preserve_range=True), axis=2)
+            attention = resize(attention, (input_img.shape[0], input_img.shape[1]), mode='constant', preserve_range=True)
+
+            # plotNNFilterOverlay(input_img, attention, figure_id=i, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. {}'.format(cls,pred_cls,i), alpha=0.5)
+            # plotNNFilterOverlay(input_img,fmap_0[:,:,i], figure_id=i, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat fmap. {}'.format(cls,pred_cls,i), alpha=0.5)
+            attentions.append(attention)
+        else:
+            fmap_0 = fmap[1].squeeze().permute(1,2,0).cpu().numpy()
+            attentions = (fmap[0][0].squeeze().cpu().numpy())
+            attentions =np.expand_dims(resize(numpy.mean(attentions,0),(input_img.shape[0],input_img.shape[1]),mode='constant',preserve_range=True),axis=0)
+
+    # this save everything , commented because its too un-organized 
+    # plotNNFilterOverlay(input_img, numpy.mean(attentions,0), figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all)'.format(cls, pred_cls), alpha=0.5,save=True)
+    fmap_0_resized = resize(numpy.mean(fmap_0,2)[:,:],(input_img.shape[0],input_img.shape[1]),mode='constant',preserve_range=True)
+    # plotNNFilterOverlay(input_img,fmap_0_resized, figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)
+=======
 
         # Output of the attention block
         fmap_0 = fmap[1][0].squeeze().permute(1,2,0).cpu().numpy()
@@ -183,6 +206,7 @@ for iteration, data in enumerate(data_loader, 1):
     plotNNFilterOverlay(input_img, numpy.mean(attentions,0), figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all)'.format(cls, pred_cls), alpha=0.5,save=True)
     fmap_0_resized = resize(numpy.mean(fmap_0,2)[:,:],(input_img.shape[0],input_img.shape[1]),mode='constant',preserve_range=True)
     plotNNFilterOverlay(input_img,fmap_0_resized, figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)
+>>>>>>> colab
 
     if cls != pred_cls:
         plotNNFilterOverlay(input_img,fmap_0_resized, figure_id=4, interp='bilinear', colormap=cm.jet, title='[GT:{}|P:{}] compat. (all_fmap)'.format(cls, pred_cls), alpha=0.5,save=True)

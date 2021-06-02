@@ -35,7 +35,7 @@ class FeedForwardSegmentation(BaseModel):
         self.net = get_network(opts.model_type, n_classes=opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
-                               attention_dsample=opts.attention_dsample)
+                               attention_dsample=opts.attention_dsample,img_size=opts.img_size)
         self.net.apply_argmax_softmax = self.apply_argmax_softmax
         if self.use_cuda: self.net = self.net.to(device='cuda')
 
@@ -44,7 +44,7 @@ class FeedForwardSegmentation(BaseModel):
             self.path_pre_trained_model = opts.path_pre_trained_model
             if self.path_pre_trained_model:
                 self.load_network_from_path(self.net, self.path_pre_trained_model, strict=False)
-                self.which_epoch = int(0)
+                self.which_epoch = self.which_epoch
             else:
                 self.which_epoch = opts.which_epoch
                 self.load_network(self.net, 'S', self.which_epoch)
@@ -90,10 +90,11 @@ class FeedForwardSegmentation(BaseModel):
         if split == 'train':
             self.prediction = self.net(Variable(self.input))
         elif split == 'test':
-            self.prediction = self.net(Variable(self.input, volatile=True))
-            # Apply a softmax and return a segmentation map
-            self.logits = self.net.apply_argmax_softmax(self.prediction)
-            self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1)
+            with torch.no_grad():
+                self.prediction = self.net(Variable(self.input))
+                # Apply a softmax and return a segmentation map
+                self.logits = self.net.apply_argmax_softmax(self.prediction)
+                self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1)
             
     def backward(self):
         self.loss_S = self.criterion(self.prediction, self.target)
@@ -109,7 +110,7 @@ class FeedForwardSegmentation(BaseModel):
 
     # This function updates the network parameters every "accumulate_iters"
     def optimize_parameters_accumulate_grd(self, iteration):
-        accumulate_iters = int(2)
+        accumulate_iters = int(4) # how many iters to wait before backprop
         if iteration == 0: self.optimizer_S.zero_grad()
         self.net.train()
         self.forward(split='train')
@@ -166,3 +167,14 @@ class FeedForwardSegmentation(BaseModel):
 
     def save(self, epoch_label):
         self.save_network(self.net, 'S', epoch_label, self.gpu_ids)
+    def freeze(self,layername="Transformer"):
+        print("Freezing ")
+        for layer in self.net.children():
+            for parameter in layer.parameters():
+                if layer._get_name() == layername:
+                    parameter.requires_grad = False
+    def unfreeze(self):
+        print("unfreezing . . . ")
+        for layer in self.net.children():
+            for parameter in layer.parameters():
+                parameter.requires_grad = True

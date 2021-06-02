@@ -96,7 +96,7 @@ def train(arguments):
 
                 # Visualise predictions
                 visuals = model.get_current_visuals()
-                visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
+            visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
 
         # Update the plots
         for split in ['validation']:
