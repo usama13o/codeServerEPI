@@ -18,8 +18,8 @@ list_datasets=[
 
 for link in list_datasets:
     subprocess.check_call(link.split())
-os.system('unzip staindata.zip')
-# os.system('unzip wsi-slides.zip')
+# os.system('unzip staindata.zip')
+os.system('unzip wsi-slides.zip')
 # os.system('pip install -r requriments.txt')
 os.system('rm staindata.zip')
 # os.system('python pywich_test.py')

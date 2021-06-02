@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from pywick.modules import ModuleTrainer
 import pywick.metrics as pwm
 from utils.error_logger import ErrorLogger
-
+import torch
 import numpy
 from tqdm import tqdm
 
@@ -58,20 +58,20 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
         model.unfreeze()
 
     # Training Iterations
-    for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
-        # Make a training update
-        model.set_input(images, labels)
-        # model.optimize_parameters()
-        model.optimize_parameters_accumulate_grd(epoch_iter)
-        lr = model.update_learning_rate()
+    # for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
+    #     # Make a training update
+    #     model.set_input(images, labels)
+    #     # model.optimize_parameters()
+    #     model.optimize_parameters_accumulate_grd(epoch_iter)
+    #     lr = model.update_learning_rate()
         
         
-        lr = {"lr":lr}
-        # Error visualisation
-        errors = model.get_current_errors()
-        stats = model.get_segmentation_stats()
-        error_logger.update({**errors, **stats,**lr}, split='train')
-        visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
+    #     lr = {"lr":lr}
+    #     # Error visualisation
+    #     errors = model.get_current_errors()
+    #     stats = model.get_segmentation_stats()
+    #     error_logger.update({**errors, **stats,**lr}, split='train')
+    #     visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
 
     # Validation and Testing Iterations
     for loader, split in zip([valid_loader], ['validation']):

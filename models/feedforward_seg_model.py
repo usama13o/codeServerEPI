@@ -110,7 +110,7 @@ class FeedForwardSegmentation(BaseModel):
 
     # This function updates the network parameters every "accumulate_iters"
     def optimize_parameters_accumulate_grd(self, iteration):
-        accumulate_iters = int(20)
+        accumulate_iters = int(4) # how many iters to wait before backprop
         if iteration == 0: self.optimizer_S.zero_grad()
         self.net.train()
         self.forward(split='train')
