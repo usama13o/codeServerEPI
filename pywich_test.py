@@ -58,6 +58,7 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
         model.unfreeze()
 
     # Training Iterations
+
     # for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
     #     # Make a training update
     #     model.set_input(images, labels)
@@ -72,6 +73,7 @@ for epoch in range(model.which_epoch, train_opts.n_epochs):
     #     stats = model.get_segmentation_stats()
     #     error_logger.update({**errors, **stats,**lr}, split='train')
     #     visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
+
 
     # Validation and Testing Iterations
     for loader, split in zip([valid_loader], ['validation']):

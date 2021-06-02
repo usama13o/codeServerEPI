@@ -24,6 +24,7 @@ class Visualiser():
         self.saved = False
         self.display_single_pane_ncols = opt.display_single_pane_ncols
         self.use_wandb = opt.use_wandb
+        self.upload_limit = 45
 
         now = datetime.now()
 
@@ -60,9 +61,13 @@ class Visualiser():
         if self.use_wandb:
             mask = []
             lim= self.lim 
+            self.upload_limit = self.upload_limit - lim
+            if self.upload_limit <= 0:
+                return
             for inp,pred,true in zip(visuals['inp_S'][:lim],visuals['out_S'][:lim],visuals['true_S'][:lim]):
                 mask.append(wb_mask(inp, pred,true))
             self.run.log({'predictions':mask})
+
         if self.display_id > 0:  # show images in the browser
             ncols = self.display_single_pane_ncols
             if ncols > 0:

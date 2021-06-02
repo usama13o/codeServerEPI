@@ -2,7 +2,7 @@
   "training":{
     "arch_type": "epi",
 
-    "n_epochs":50,
+    "n_epochs":100,
     "save_epoch_freq":2,
                                                                           
     "lr_policy": "one_cycle",
@@ -14,7 +14,7 @@
   "visualisation":{
     "display_port":9898,
     "no_html": true,
-    "lim":15,
+    "lim":2,
     "display_winsize": 256,
     "display_id": 0,
     "use_wandb": true,
@@ -38,14 +38,14 @@
   },
   "model":{
     "type":"seg",
-    "continue_train":false,
-    "which_epoch": -1,
+    "continue_train":true,
+    "which_epoch": 52,
     "model_type": "unet_ct_multi_att_dsv",
     "tensor_dim": "2D",
-    "division_factor": 100,
+    "division_factor": 1000,
     "input_nc": 3,
     "output_nc": 3,
-    "lr_rate": 1e-4,
+    "lr_rate": 1e-6,
     "max_lr":1e-2,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
