@@ -1,0 +1,37 @@
+import json
+
+from dataio.loader.ukbb_dataset import UKBBDataset
+from dataio.loader.test_dataset import TestDataset
+from dataio.loader.hms_dataset import HMSDataset
+from dataio.loader.cmr_3D_dataset import CMR3DDataset
+from dataio.loader.us_dataset import UltraSoundDataset
+from dataio.loader.stain_norm_dataset import stain_norm_dataset
+from dataio.loader.slides_dataset import slides_dataset
+
+
+def get_dataset(name):
+    """get_dataset
+
+    :param name:
+    """
+    return {
+        'ukbb_sax': CMR3DDataset,
+        'acdc_sax': CMR3DDataset,
+        'rvsc_sax': CMR3DDataset,
+        'hms_sax':  HMSDataset,
+        'test_sax': TestDataset,
+        'us': UltraSoundDataset,
+        'epi':stain_norm_dataset,
+        'epi_slides':slides_dataset
+
+    }[name]
+
+
+def get_dataset_path(dataset_name, opts):
+    """get_data_path
+
+    :param dataset_name:
+    :param opts:
+    """
+
+    return getattr(opts, dataset_name)
