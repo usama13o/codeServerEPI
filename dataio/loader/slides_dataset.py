@@ -6,7 +6,7 @@ from os import listdir
 from os.path import join
 from os.path import basename
 from os.path import splitext
-from .utils import load_nifti_img, check_exceptions, is_image_file, open_image_np,open_target_np;                   
+from .utils import load_nifti_img, check_exceptions, is_image_file, open_image_np,open_target_np, open_target_np_slides                   
 import random
 
 class slides_dataset(data.Dataset):
@@ -56,7 +56,7 @@ class slides_dataset(data.Dataset):
         if self.preload_data:
             print('Preloading the {0} dataset ...'.format(split))
             self.raw_images = [open_image_np(ii)[0] for ii in self.image_filenames]
-            self.raw_labels = [open_target_np(ii)[0] for ii in self.target_filenames]
+            self.raw_labels = [open_target_np_slides(ii)[0] for ii in self.target_filenames]
             print('Loading is done\n')
 
 
@@ -68,6 +68,7 @@ class slides_dataset(data.Dataset):
         if not self.preload_data:
             input  = open_image_np(self.image_filenames[index])
             target  = open_target_np(self.target_filenames[index])
+            target  = open_target_np_slides(self.target_filenames[index])
         else:
             input = np.copy(self.raw_images[index])
             target = np.copy(self.raw_labels[index])

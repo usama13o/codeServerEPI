@@ -42,8 +42,8 @@ def train(arguments):
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 
-    train_loader = DataLoader(dataset=train_dataset, num_workers=6, batch_size=train_opts.batchSize, shuffle=True)
-    valid_loader = DataLoader(dataset=valid_dataset, num_workers=2, batch_size=train_opts.batchSize, shuffle=False)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=14, batch_size=train_opts.batchSize, shuffle=True)
+    valid_loader = DataLoader(dataset=valid_dataset, num_workers=10, batch_size=train_opts.batchSize, shuffle=False)
 
     test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
 
@@ -57,29 +57,29 @@ def train(arguments):
 
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
-   
+        if epoch % 2 == 0:
+            print("freezing model")
+            model.freeze()
+        else:
+            model.unfreeze()
 
         # Training Iterations
+
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
             # Make a training update
             model.set_input(images, labels)
-            model.optimize_parameters()
-#             model.optimize_parameters_accumulate_grd(epoch_iter)
-
-            # Update the model learning rate
+            # model.optimize_parameters()
+            model.optimize_parameters_accumulate_grd(epoch_iter)
             lr = model.update_learning_rate()
-            lr = {'lr':lr}
-
+            
+            
+            lr = {"lr":lr}
             # Error visualisation
             errors = model.get_current_errors()
             stats = model.get_segmentation_stats()
             error_logger.update({**errors, **stats,**lr}, split='train')
-
-
-
             visualizer.plot_current_errors(epoch, error_logger.get_errors('train'), split_name='train')
-            
-        visualizer.upload_limit =45
+
 
         # Validation and Testing Iterations
         for loader, split in zip([valid_loader], ['validation']):
@@ -96,7 +96,7 @@ def train(arguments):
 
                 # Visualise predictions
                 visuals = model.get_current_visuals()
-            visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
+                visualizer.display_current_results(visuals, epoch=epoch, save_result=False)
 
         # Update the plots
         for split in ['validation']:
@@ -111,7 +111,11 @@ def train(arguments):
 
         # Update the model learning rate
         # model.update_learning_rate()
+
+
+
     visualizer.finish()
+
 
 
 if __name__ == '__main__':

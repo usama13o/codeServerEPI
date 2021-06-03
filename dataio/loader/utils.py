@@ -17,7 +17,7 @@ def open_image(filename):
     """
     image = Image.open(filename)
     return image
-def open_target_np(path):
+def open_target_np_slides(path):
     im = open_image(path)
     mask= np.array(im)
     li = (np.unique(mask))
@@ -33,6 +33,26 @@ def open_target_np(path):
     else:
        # print('found tumour slide' + path)
         mask = ~mask
+        mask[mask!=255]=0
+
+        mask[mask==255]=1
+    li = (np.unique(mask,return_counts=True))
+    # print(li)
+    return mask[:,:,0,np.newaxis]
+def open_target_np(path):
+    im = open_image(path)
+    mask= np.array(im)
+    li = (np.unique(mask))
+    if 29 in li:
+        mask[mask==29]=0
+    # normal case
+    if len(li)>5:
+        # print('found normal slide' + path)
+        mask[mask!=255]=0
+        mask[mask==255]=2
+    #tumour
+    else:
+        # print('found tumour slide' + path)
         mask[mask!=255]=0
 
         mask[mask==255]=1

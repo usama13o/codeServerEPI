@@ -6,7 +6,7 @@ import os
 import numpy as np
 import torch.optim as optim
 from torch.nn import CrossEntropyLoss
-from utils.metrics import segmentation_scores, dice_score_list
+from utils.metrics import precision_and_recall, segmentation_scores, dice_score_list
 from sklearn import metrics
 from .layers.loss import *
 
@@ -86,8 +86,9 @@ def segmentation_stats(pred_seg, target):
 
     iou = segmentation_scores(gts, preds, n_class=n_classes)
     dice = dice_score_list(gts, preds, n_class=n_classes)
+    precision, recall = precision_and_recall(gts,preds, n_class=int(n_classes))
 
-    return iou, dice
+    return iou, dice, precision, recall
 
 
 def classification_scores(gts, preds, labels):
