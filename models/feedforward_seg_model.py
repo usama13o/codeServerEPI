@@ -137,8 +137,8 @@ class FeedForwardSegmentation(BaseModel):
         
         for class_id in range(self.precision.size):
             seg_stats.append(('Class_precision_{}'.format(class_id), self.precision[class_id]))
-        print(self.precision)
-        print(self.recall)
+        # print(self.precision)
+        # print(self.recall)
         for class_id in range(self.recall.size):
             seg_stats.append(('Class_recall_{}'.format(class_id), self.recall[class_id]))
         return OrderedDict(seg_stats)

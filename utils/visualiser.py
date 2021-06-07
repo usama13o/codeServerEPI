@@ -14,7 +14,7 @@ import wandb
 # python -m visdom.server
 
 class Visualiser():
-    def __init__(self, opt, save_dir, filename='loss_log.txt',resume=True):
+    def __init__(self, opt, save_dir, filename='loss_log.txt',resume=False):
         self.display_id = opt.display_id
         self.use_html = not opt.no_html
         self.lim = opt.lim
@@ -60,7 +60,7 @@ class Visualiser():
     def display_current_results(self, visuals, epoch, save_result):
         if self.use_wandb:
             mask = []
-            lim= self.lim 
+            lim= len(visuals['inp_S'])
             self.upload_limit = self.upload_limit - lim
             if self.upload_limit <= 0:
                 return
