@@ -4,10 +4,11 @@ import subprocess
 import sys
 os.environ['KAGGLE_CONFIG_DIR'] = "./"
 os.system('pip install -r requriments.txt')
-
-os.system('git config --global user.email "osama.zadan@gmail.com"')
-os.system('git config --global user.name "usama13o"')
-
+try:
+    os.system('git config --global user.email "osama.zadan@gmail.com"')
+    os.system('git config --global user.name "usama13o"')
+except:
+    print("couldn't set up git ")
 list_datasets=[
 "kaggle datasets download -d usamann/staindata",
 
