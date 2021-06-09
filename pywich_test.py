@@ -41,8 +41,8 @@ ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation
 train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
 valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=True)
-valid_loader = DataLoader(dataset=valid_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=False)
+train_loader = DataLoader(dataset=train_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
+valid_loader = DataLoader(dataset=valid_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=False)
 
 # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
 # trainer = ModuleTrainer(model)
