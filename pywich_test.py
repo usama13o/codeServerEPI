@@ -10,7 +10,7 @@ from utils.error_logger import ErrorLogger
 import torch
 import numpy
 from tqdm import tqdm
-
+import json
 from utils.visualiser import Visualiser
 from utils.error_logger import ErrorLogger
 
@@ -25,6 +25,7 @@ json_filename ="configs\config_TransUnet_AG.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
+wanb_config= json.loads(open(json_filename).read())
 train_opts = json_opts.training
 
 # Architecture type
@@ -40,23 +41,23 @@ ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation
 train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
 valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-train_loader = DataLoader(dataset=train_dataset, num_workers=14, batch_size=train_opts.batchSize, shuffle=True)
-valid_loader = DataLoader(dataset=valid_dataset, num_workers=10, batch_size=train_opts.batchSize, shuffle=False)
+train_loader = DataLoader(dataset=train_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
+valid_loader = DataLoader(dataset=valid_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=False)
 
 # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
 # trainer = ModuleTrainer(model)
-visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False)
+visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False,config=wanb_config)
 error_logger = ErrorLogger()
 start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
 model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
 
 for epoch in range(model.which_epoch, train_opts.n_epochs):
     print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
-    if epoch % 2 == 0:
-        print("freezing model")
-        model.freeze()
-    else:
-        model.unfreeze()
+    # if epoch % 2 == 0:
+    #     print("freezing model")
+    #     model.freeze()
+    # else:
+    #     model.unfreeze()
 
     # Training Iterations
 

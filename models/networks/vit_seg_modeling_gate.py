@@ -165,6 +165,7 @@ class Embeddings(nn.Module):
         features.append(x)
         features = features[::-1]
         # done shgould have all fmaps now 
+
         x = self.patch_embeddings(x)  # (B, hidden. n_patches^(1/2), n_patches^(1/2))
         x = x.flatten(2)
         x = x.transpose(-1, -2)  # (B, n_patches, hidden)

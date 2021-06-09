@@ -14,7 +14,7 @@ import wandb
 # python -m visdom.server
 
 class Visualiser():
-    def __init__(self, opt, save_dir, filename='loss_log.txt',resume=False):
+    def __init__(self, opt, save_dir, filename='loss_log.txt',resume=False,config=None):
         self.display_id = opt.display_id
         self.use_html = not opt.no_html
         self.lim = opt.lim
@@ -36,7 +36,7 @@ class Visualiser():
             WANDB_API_KEY="4d3d06d5a500f0245b15ee14cc3b784a37e2d7e8"
             os.environ["WANDB_API_KEY"] = WANDB_API_KEY
 
-            self.run=wandb.init(project='EPISEG',name=f'Guacamole_{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=resume)
+            self.run=wandb.init(project='EPISEG',name=f'Guacamole_{opt.run_name}_{now.strftime("%m/%d/%Y, %H:%M")}',resume=resume,config=config)
 
 
         if self.display_id > 0:
