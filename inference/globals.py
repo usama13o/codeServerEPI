@@ -19,8 +19,8 @@ RECURSE=True
 #randomly choose idx of filtered if not then iterate thorugh all!
 RANDOM_RUN =False
 #model version
-MODEl_VERSION = '215'
+MODEl_VERSION = '419'
 ####GLOBALS####
-if SLIDES_PATH != 'any':
+if SLIDES_PATH is not 'any':
     RECURSE = False
     RANDOM_RUN = False

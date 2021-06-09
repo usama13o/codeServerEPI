@@ -268,9 +268,9 @@ for i in range(NUM_FILTERED):
       extra_path=''
     outs,num_rows,num_cols= get_outs("output")
     re_tile= get_stitched_slide(outs,num_rows,num_cols)
-    MessageTools.show_yellow(f"saving to ---> output_slides/{extra_path}{slide_num}_stitched_{MODEl_VERSION}.png")
+    MessageTools.show_yellow(f"saving to ---> output_slides/{extra_path}{slide_num}_stitched_model_{MODEl_VERSION}.png")
     if not os.path.exists('output_slides/'):
       os.makedirs('output_slides/')
-    np_to_pil(re_tile.astype('bool')).save(f"output_slides/{extra_path}{slide_num}_stitched_{MODEl_VERSION}.png")
+    np_to_pil(re_tile.astype('bool')).save(f"output_slides/{extra_path}{slide_num}_stitched_model_{MODEl_VERSION}.png")
 
 
