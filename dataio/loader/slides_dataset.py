@@ -26,15 +26,15 @@ class slides_dataset(data.Dataset):
 
     def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8):
         super( slides_dataset, self).__init__()
-        # image_dir_tum = "tumor_slides/"
-        image_dir_norm = "fixed/"
+        image_dir_tum = root_dir + "tumor_slides/"
+        image_dir_norm = root_dir + "fixed/"
         # targets are a comob of two dirs 1- normal 1024 patches 2- Tum 1024
-        norm_dir ="fixed/fixed"
-        # tum_dir = "training_PNG_annotation/training_PNG_annotation/"
-        # self.image_filenames  = sorted([join(image_dir_tum, x) for x in listdir(image_dir_tum) if is_image_file(x)])
-        self.image_filenames = (sorted([join(image_dir_norm, x) for x in listdir(image_dir_norm) if is_image_file(x)]))
+        norm_dir = root_dir + "fixed/fixed"
+        tum_dir = root_dir + "training_PNG_annotation/training_PNG_annotation/"
+        self.image_filenames  = sorted([join(image_dir_tum, x) for x in listdir(image_dir_tum) if is_image_file(x)])
+        self.image_filenames.extend(sorted([join(image_dir_norm, x) for x in listdir(image_dir_norm) if is_image_file(x)]))
         self.target_filenames = sorted([join(norm_dir, x) for x in listdir(norm_dir) if is_image_file(x)])
-        # self.target_filenames.extend(sorted([join(tum_dir, x) for x in listdir(tum_dir) if is_image_file(x)]))
+        self.target_filenames.extend(sorted([join(tum_dir, x) for x in listdir(tum_dir) if is_image_file(x)]))
         sp= self.target_filenames.__len__()
         sp= int(train_pct *sp)
         random.shuffle(self.image_filenames)

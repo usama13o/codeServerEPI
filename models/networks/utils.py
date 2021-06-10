@@ -488,3 +488,6 @@ class UnetDsv2(nn.Module):
 
     def forward(self, input):
         return self.dsv(input)
+class qkv_transform(nn.Conv1d):
+    """Conv1d for qkv_transform"""
+

@@ -21,7 +21,7 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 # Parse input arguments
-json_filename ="configs\config_TransUnet_AG.json"
+json_filename ="configs\config_MedT.json"
 
 # Load options
 json_opts = json_file_to_pyobj(json_filename)
@@ -40,7 +40,7 @@ ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation
 # Setup Data Loader
 train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
 valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
+# test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
 train_loader = DataLoader(dataset=train_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
 valid_loader = DataLoader(dataset=valid_dataset, num_workers=16, batch_size=train_opts.batchSize, shuffle=False)
 

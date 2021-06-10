@@ -1,3 +1,4 @@
+from models.networks.axialnet import axialunet, logo,MedT,gated
 from models.networks.vit_seg_modeling_gate import VisionTransformer_AG
 from .unet_2D import *
 from .unet_3D import *
@@ -56,6 +57,14 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       aggregation_mode=aggregation_mode)
     elif name in ['DeepLab','Deeplab']:
         model = model(num_classes=n_classes,pretrained=True)
+    elif name == "axialunet":
+        model = axialunet(img_size= img_size, imgchan = n_classes)
+    elif name == "medt":
+        model = MedT(img_size= img_size, imgchan = n_classes)
+    elif name== "gatedaxialunet":
+        model = gated(img_size= img_size, imgchan = n_classes)
+    elif name== "logo":
+        model = logo(img_size= img_size, imgchan = n_classes)
     elif name in CONFIGS_ViT_seg.keys():
         config_vit = CONFIGS_ViT_seg[name]
         config_vit.n_classes = n_classes
@@ -85,6 +94,10 @@ def _get_model_instance(name, tensor_dim):
         'ViT-B_32': {'2D':VisionTransformer},
         'ViT-L_16': {'2D':VisionTransformer},
         'ViT-H_14': {'2D':VisionTransformer},
+        'medt': {'2D':MedT},
+        'gatedaxialunet': {'2D':gated},
+        'axialunet': {'2D':axialunet},
+        'logo': {'2D':logo},
         'R50-ViT-B_32': {'2D':VisionTransformer},
         'R50-ViT-B_16': {'2D':VisionTransformer},
         'R50-ViT-B_16_AG': {'2D':VisionTransformer_AG},

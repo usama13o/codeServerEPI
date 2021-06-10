@@ -3,13 +3,13 @@ import os
 import subprocess
 import sys
 os.environ['KAGGLE_CONFIG_DIR'] = "./"
-os.system('pip install -r requriments.txt')
+# os.system('pip install -r requriments.txt')
 
 os.system('git config --global user.email "osama.zadan@gmail.com"')
 os.system('git config --global user.name "usama13o"')
 
 list_datasets=[
-"kaggle datasets download -d usamann/staindata",
+"kaggle datasets download -d usamann/wsi-slides",
 
 "kaggle datasets download -d usamann/epithelial-cells-ihc",
 "kaggle datasets download -d usamann/normal-epi",
