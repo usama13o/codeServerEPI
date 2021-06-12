@@ -40,7 +40,8 @@ def get_criterion(opts):
         criterion = CustomSoftDiceLoss(opts.output_nc, class_ids=[0, 2])
     elif opts.criterion == 'iou_loss':
         criterion = IoU_loss(opts.output_nc)
-
+    elif opts.criterion == 'ce_loss':
+        criterion = ce_loss
     return criterion
 
 def recursive_glob(rootdir='.', suffix=''):

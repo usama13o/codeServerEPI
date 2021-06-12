@@ -60,11 +60,11 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
     elif name == "axialunet":
         model = axialunet(img_size= img_size, imgchan = n_classes)
     elif name == "medt":
-        model = MedT(img_size= img_size, imgchan = n_classes)
+        model = MedT(img_size= img_size, num_classes = n_classes)
     elif name== "gatedaxialunet":
-        model = gated(img_size= img_size, imgchan = n_classes)
+        model = gated(img_size= img_size, num_classes = n_classes)
     elif name== "logo":
-        model = logo(img_size= img_size, imgchan = n_classes)
+        model = logo(img_size= img_size, num_classes = n_classes)
     elif name in CONFIGS_ViT_seg.keys():
         config_vit = CONFIGS_ViT_seg[name]
         config_vit.n_classes = n_classes

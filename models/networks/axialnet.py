@@ -508,9 +508,9 @@ class ResAxialAttentionUNet(nn.Module):
 
 class medt_net(nn.Module):
 
-    def __init__(self, block, block_2, layers, num_classes=2, zero_init_residual=True,
+    def __init__(self, block, block_2, layers, num_classes=3, zero_init_residual=True,
                  groups=8, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None, s=0.125, img_size = 128,imgchan = 3):
+                 norm_layer=None, s=0.125, img_size =256,imgchan = 3):
         super(medt_net, self).__init__()
     
         img_axis_parts=4 #could be used as param
