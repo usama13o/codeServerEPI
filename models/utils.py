@@ -42,7 +42,6 @@ def get_criterion(opts):
         criterion = IoU_loss(opts.output_nc)
     elif opts.criterion == 'ce_loss':
         criterion = ce_loss
-
     return criterion
 
 def recursive_glob(rootdir='.', suffix=''):
