@@ -7,7 +7,7 @@ from dataio.loader.cmr_3D_dataset import CMR3DDataset
 from dataio.loader.us_dataset import UltraSoundDataset
 from dataio.loader.stain_norm_dataset import stain_norm_dataset
 from dataio.loader.slides_dataset import slides_dataset
-
+from dataio.loader.peso_dataset import peso_dataset
 
 def get_dataset(name):
     """get_dataset
@@ -22,7 +22,8 @@ def get_dataset(name):
         'test_sax': TestDataset,
         'us': UltraSoundDataset,
         'epi':stain_norm_dataset,
-        'epi_slides':slides_dataset
+        'epi_slides':slides_dataset,
+        'peso':peso_dataset
 
     }[name]
 

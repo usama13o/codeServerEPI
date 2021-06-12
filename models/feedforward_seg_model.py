@@ -37,7 +37,10 @@ class FeedForwardSegmentation(BaseModel):
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
                                attention_dsample=opts.attention_dsample,img_size=opts.img_size)
         self.net.apply_argmax_softmax = self.apply_argmax_softmax
-        if self.use_cuda: self.net = self.net.to(device='cuda')
+        try:
+            if self.use_cuda: self.net = self.net.to(device='cuda')
+        except:
+            self.use_cuda = False
 
         # load the model if a path is specified or it is in inference mode
         if not self.isTrain or opts.continue_train:

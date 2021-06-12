@@ -54,6 +54,12 @@ def open_target_np(path):
         mask[mask!=255]=0
         mask[mask==255]=1
     return mask[:,:,0,np.newaxis]
+def open_target_np_peso(path):
+    im = open_image(path)
+    mask= np.array(im)
+    mask[mask==1]=0
+    mask[mask==2]=1
+    return mask[:,:,0,np.newaxis]
 
 def open_image_np(path):
     im = open_image(path)
