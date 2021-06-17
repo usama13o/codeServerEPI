@@ -24,7 +24,7 @@ if __name__ == '__main__':
     os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
     # Parse input arguments
-    json_filename ="configs\config_unet_epi_multi_att_dsv.json"
+    json_filename ="configs\config_SwinT.json"
 
     # Load options
     json_opts = json_file_to_pyobj(json_filename)

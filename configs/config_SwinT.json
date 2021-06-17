@@ -78,7 +78,7 @@
       "embed_dim":128,
       "depth":[ 2, 2, 18, 2 ],
       "num_heads": [ 4, 8, 16, 32 ],
-      "window_size": 7,
+      "window_size": 8,
       "checkpoints_dir": "./checkpoints",
       "experiment_name": "Swin Transformer",
       "criterion": "iou_loss",
