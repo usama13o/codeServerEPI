@@ -140,7 +140,12 @@ class IoU_loss(nn.Module):
         cardinality = torch.sum(probas + true_1_hot, dims)  # [class0,class1,class2,...]
         union = cardinality - intersection
         iou = (intersection / (union + eps)).mean()   # find mean of class IoU values
-        return (1-iou) + ce_loss(preds,targs)
+        #manage cases where num of calsses is less than 2  
+        if self.num_classes >2:
+            weight =[0.1,0.59,0.9]
+        else:
+            weight = [0.2,0.9]
+        return (1-iou) + ce_loss(preds,targs, weights=weight)
 class One_Hot(nn.Module):
     def __init__(self, depth):
         super(One_Hot, self).__init__()

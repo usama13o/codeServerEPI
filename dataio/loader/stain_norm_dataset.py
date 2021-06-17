@@ -14,8 +14,9 @@ class stain_norm_dataset(data.Dataset):
         match = [y for y in y_lis if x in y]
         return match[0]
 
-    def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8):
+    def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8,balance=False):
         super(stain_norm_dataset, self).__init__()
+        self.balance = balance
         image_dir = root_dir
         # targets are a comob of two dirs 1- normal 1024 patches 2- Tum 1024
         norm_dir ="kaggle/input/stain-normalisation/1024"
@@ -23,7 +24,18 @@ class stain_norm_dataset(data.Dataset):
         self.image_filenames  = sorted([join(image_dir, x) for x in listdir(image_dir) if is_image_file(x)])
         self.target_filenames = sorted([join(norm_dir, x) for x in listdir(norm_dir) if is_image_file(x)])
         self.target_filenames.extend(sorted([join(tum_dir, x) for x in listdir(tum_dir) if is_image_file(x)]))
-        sp= self.target_filenames.__len__()
+
+        if self.balance:
+            print("Balancing  data ... ")
+            only_norm = [x for x in self.image_filenames if "3IF" in x]
+            len_norm = len(only_norm)
+            tum_only = [x for x in self.image_filenames if "3IF" not in x]
+            tum_only = tum_only[:len_norm]
+            only_norm.extend(tum_only)
+            self.image_filenames = only_norm
+            print(f"Length of Normal Data :{len_norm} - all data: {len(self.image_filenames)}")
+
+        sp= self.image_filenames.__len__()
         sp= int(train_pct *sp)
         random.shuffle(self.image_filenames)
         if split == 'train':
