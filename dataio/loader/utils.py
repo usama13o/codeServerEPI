@@ -5,7 +5,7 @@ from utils.util import mkdir
 from PIL import Image
 
 def is_image_file(filename):
-    return any(filename.endswith(extension) for extension in [".nii.gz",'png','tiff','jpg'])
+    return any(filename.endswith(extension) for extension in [".nii.gz",'png','tiff','jpg',"bmp"])
 
 def open_image(filename):
     """
@@ -61,6 +61,11 @@ def open_target_np_peso(path):
     mask[mask==2]=1
     return mask[:,:,0,np.newaxis]
 
+def open_target_np_glas(path):
+    im = open_image(path)
+    mask= np.array(im)
+    mask[mask!=0]=1
+    return mask[:,:,0,np.newaxis]
 def open_image_np(path):
     im = open_image(path)
     array = np.array(im)

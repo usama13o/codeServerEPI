@@ -33,6 +33,7 @@ class Transformations:
             'epi':       self.epi_transform,
             'epi_slides': self.epi_transform,
             'peso': self.epi_transform,
+            'glas': self.epi_transform,
 
         }[self.name]()
 
