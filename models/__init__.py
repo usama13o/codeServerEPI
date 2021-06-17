@@ -59,6 +59,11 @@ class ModelOpts:
 
         if hasattr(opts, 'optim'): self.optim= opts.optim
         if hasattr(opts, 'img_size'): self.img_size= opts.img_size
+        if hasattr(opts, 'patch_size'): self.patch_size= opts.patch_size
+        if hasattr(opts, 'embed_dim'): self.embed_dim= opts.embed_dim
+        if hasattr(opts, 'depth'): self.depth = opts.depth
+        if hasattr(opts, 'num_heads'): self.num_heads = opts.num_heads
+        if hasattr(opts, 'window_size'): self.window_size = opts.window_size
 
 def get_model(json_opts):
 
