@@ -65,7 +65,7 @@ def open_target_np_glas(path):
     im = open_image(path)
     mask= np.array(im)
     mask[mask!=0]=1
-    return mask[:,:,0,np.newaxis]
+    return mask[:,:,np.newaxis]
 def open_image_np(path):
     im = open_image(path)
     array = np.array(im)

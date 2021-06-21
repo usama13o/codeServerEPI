@@ -31,7 +31,7 @@ class deconv2DBatchNorm(nn.Module):
 
 
 class conv2DBatchNormRelu(nn.Module):
-    def __init__(self, in_channels, n_filters, k_size,  stride, padding, bias=True):
+    def __init__(self, in_channels, n_filters, k_size,  stride=1, padding=0, bias=True):
         super(conv2DBatchNormRelu, self).__init__()
 
         self.cbr_unit = nn.Sequential(nn.Conv2d(int(in_channels), int(n_filters), kernel_size=k_size,

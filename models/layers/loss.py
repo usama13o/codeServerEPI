@@ -37,7 +37,8 @@ def ce_loss(logits, true, weights=[0.1,0.59,0.9], ignore=0):
     Returns:
         ce_loss: the weighted multi-class cross-entropy loss.
     """
-    weights = torch.FloatTensor(weights).cuda()
+
+    weights = torch.FloatTensor(weights).cuda() if torch.cuda.is_available() else torch.FloatTensor(weights)
     true = true.squeeze(1)
     ce_loss = F.cross_entropy(
         logits.float(),
