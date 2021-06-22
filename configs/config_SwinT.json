@@ -1,6 +1,6 @@
 {
     "training":{
-      "arch_type": "glas",
+      "arch_type": "peso",
       "n_epochs":40,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
@@ -23,7 +23,7 @@
       "epi": "kaggle/input/stain-normalisation/SN",
       "epi_slides":"C:\\Users\\Usama\\codeServerEPI\\codeServerEPI-colab\\",
       "peso":"F:\\Data\\peso_dataset",
-      "glas":"C:\\Users\\S20153191\\Downloads\\Warwick QU Dataset (Released 2016_07_08)"
+      "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)"
     },
     "augmentation": {
       "epi": {
@@ -77,7 +77,7 @@
       "division_factor": 1000,
       "img_size":256,
       "input_nc": 3,
-      "output_nc": 3,
+      "output_nc": 2,
       "lr_rate": 1e-4,
       "max_lr":1e-4,
       "feature_scale": 4,

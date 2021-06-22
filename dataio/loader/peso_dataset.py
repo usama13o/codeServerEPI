@@ -14,7 +14,7 @@ class peso_dataset(data.Dataset):
         match = [y for y in y_lis if x in y]
         return match[0]
 
-    def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8):
+    def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8,balance=True):
         super(peso_dataset, self).__init__()
         img_dir= root_dir
         # targets are a comob of two dirs 1- normal 1024 patches 2- Tum 1024

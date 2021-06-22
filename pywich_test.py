@@ -47,8 +47,6 @@ if __name__ == '__main__':
     train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=8,batch_size=train_opts.batchSize, shuffle=False)
 
-    # metrics = [pwm.DiceCoefficientMetric(is_binary=False)]
-    # trainer = ModuleTrainer(model)
     visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= True if json_opts.model.continue_train else False,config=wanb_config)
     error_logger = ErrorLogger()
     start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
