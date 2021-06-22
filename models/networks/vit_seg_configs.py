@@ -24,6 +24,19 @@ def get_b16_config():
     config.activation = 'softmax'
     return config
 
+def get_testing_swin():
+    """Returns a minimal configuration for testing."""
+    config = ml_collections.ConfigDict()
+    config.patches = ml_collections.ConfigDict({'size': (16, 16)})
+    config.transformer = ml_collections.ConfigDict()
+    config.transformer.mlp_dim = 1
+    config.transformer.num_heads = 1
+    config.transformer.num_layers = 1
+    config.hidden_size=1024
+    config.decoder_channels=[256,128,64,16]
+    config.skip_channels=[512,256,128,16]
+    config.n_skip=3
+    return config
 
 def get_testing():
     """Returns a minimal configuration for testing."""

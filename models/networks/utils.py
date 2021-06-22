@@ -31,13 +31,13 @@ class deconv2DBatchNorm(nn.Module):
 
 
 class conv2DBatchNormRelu(nn.Module):
-    def __init__(self, in_channels, n_filters, k_size,  stride=1, padding=0, bias=True):
+    def __init__(self, in_channels, n_filters, k_size,  stride=1, padding=0, bias=True,dilation=1,groups=1,**kwargs):
         super(conv2DBatchNormRelu, self).__init__()
 
         self.cbr_unit = nn.Sequential(nn.Conv2d(int(in_channels), int(n_filters), kernel_size=k_size,
-                                                padding=padding, stride=stride, bias=bias),
+                                                padding=padding, stride=stride, bias=bias,dilation=dilation, groups=groups,**kwargs),
                                  nn.BatchNorm2d(int(n_filters)),
-                                 nn.ReLU(inplace=True),)
+                                 nn.ReLU(inplace=False),)
 
     def forward(self, inputs):
         outputs = self.cbr_unit(inputs)
@@ -45,11 +45,11 @@ class conv2DBatchNormRelu(nn.Module):
 
 
 class deconv2DBatchNormRelu(nn.Module):
-    def __init__(self, in_channels, n_filters, k_size, stride, padding, bias=True):
+    def __init__(self, in_channels, n_filters, k_size, stride=1, padding=0,dilation=1, groups=1,bias=True):
         super(deconv2DBatchNormRelu, self).__init__()
 
         self.dcbr_unit = nn.Sequential(nn.ConvTranspose2d(int(in_channels), int(n_filters), kernel_size=k_size,
-                                                padding=padding, stride=stride, bias=bias),
+                                                padding=padding, stride=stride,dilation=dilation,groups=groups, bias=bias),
                                  nn.BatchNorm2d(int(n_filters)),
                                  nn.ReLU(inplace=True),)
 

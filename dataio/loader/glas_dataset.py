@@ -12,7 +12,7 @@ class glas_dataset(data.Dataset):
     def find_in_y(self,x):
         x = x.split(".")[0]
         y_lis = self.target_filenames
-        match = [y for y in y_lis if x in y]
+        match = [y for y in self.target_filenames if x ==y.split("_anno")[-2]]
         return match[0]
 
     def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8,balance=True):
@@ -29,7 +29,7 @@ class glas_dataset(data.Dataset):
         else:
             self.image_filenames = self.image_filenames[sp:]
             # find the mask for the image
-        self.target_filenames = [ self.find_in_y(basename(x)) for x in self.image_filenames]
+        self.target_filenames = [ self.find_in_y((x)) for x in self.image_filenames]
         assert len(self.image_filenames) == len(self.target_filenames)
 
         # report the number of images in the dataset

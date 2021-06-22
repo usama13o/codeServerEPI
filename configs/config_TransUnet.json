@@ -1,6 +1,6 @@
 {
   "training":{
-    "arch_type": "epi",
+    "arch_type": "glas",
     "n_epochs":40,
     "save_epoch_freq": 3,
     "lr_policy": "one_cycle",
@@ -16,13 +16,14 @@
     "display_id": 0,
     "lim":15,
     "run_name":"TransUnet",
-    "use_wandb": true,
+    "use_wandb":false,
     "display_single_pane_ncols": 0
   },
   "data_path": {
     "epi": "kaggle/input/stain-normalisation/SN",
-      "peso":"F:\\Data\\peso_dataset"
-
+    "epi_slides":"C:\\Users\\Usama\\codeServerEPI\\codeServerEPI-colab\\",
+    "peso":"F:\\Data\\peso_dataset",
+    "glas":"C:\\Users\\S20153191\\Downloads\\Warwick QU Dataset (Released 2016_07_08)"
   },
   "augmentation": {
     "epi": {
@@ -31,9 +32,33 @@
       "scale": [0.7,1.3],
       "intensity": [1.0,1.0],
       "random_flip_prob": 0.5,
-      "scale_size":256,
+      "scale_size": 256,
       "patch_size": [256,256]
-    },  "peso": {
+    },"epi_slides": {
+      "shift": [0.1,0.1],
+      "rotate":45.0,
+      "scale": [0.7,1.3],
+      "random_flip_prob": 0.5,
+      "scale_size": 256,
+      "patch_size": [256,256]
+    },
+    "test": {
+      "shift": [0.1,0.1],
+      "rotate": 15.0,
+      "scale": [0.7,1.3],
+      "intensity": [1.0,1.0],
+      "random_flip_prob": 0.5,
+      "scale_size":512,
+      "patch_size": [512,512]
+    }, "peso": {
+    "shift": [0.1,0.1],
+    "rotate": 15.0,
+    "scale": [0.7,1.3],
+    "intensity": [1.0,1.0],
+    "random_flip_prob": 0.5,
+    "scale_size":256,
+    "patch_size":[256,256]
+  }, "glas": {
       "shift": [0.1,0.1],
       "rotate": 15.0,
       "scale": [0.7,1.3],

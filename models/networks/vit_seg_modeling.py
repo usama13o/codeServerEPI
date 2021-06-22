@@ -354,11 +354,12 @@ class DecoderCup(nn.Module):
         self.blocks = nn.ModuleList(blocks)
 
     def forward(self, hidden_states, features=None):
-        B, n_patch, hidden = hidden_states.size()  # reshape from (B, n_patch, hidden) to (B, h, w, hidden)
-        h, w = int(np.sqrt(n_patch)), int(np.sqrt(n_patch))
-        x = hidden_states.permute(0, 2, 1)
-        x = x.contiguous().view(B, hidden, h, w)
-        x = self.conv_more(x)
+        # B, n_patch, hidden = hidden_states.size()  # reshape from (B, n_patch, hidden) to (B, h, w, hidden)
+        # h, w = int(np.sqrt(n_patch)), int(np.sqrt(n_patch))
+        # x = hidden_states.permute(0, 2, 1)
+        # x = x.contiguous().view(B, hidden, h, w)
+        features = features[::-1]
+        x = self.conv_more(hidden_states)
         for i, decoder_block in enumerate(self.blocks):
             if features is not None:
                 skip = features[i] if (i < self.config.n_skip) else None
@@ -450,6 +451,7 @@ CONFIGS = {
     'R50-ViT-B_16_AG': configs.get_r50_b16_config(),
     'R50-ViT-L_16': configs.get_r50_l16_config(),
     'testing': configs.get_testing(),
+    'testing_swin': configs.get_testing_swin(),
 }
 
 
