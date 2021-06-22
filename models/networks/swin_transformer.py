@@ -5,6 +5,8 @@
 # Written by Ze Liu
 # --------------------------------------------------------
 
+from models.networks.vit_seg_modeling import DecoderCup
+# from models.layers.sep_aspp_head import DepthwiseSeparableASPPHead
 from models.layers.decode_head import resize
 from models.layers.uper_head import UPerHead
 import torch
@@ -12,6 +14,7 @@ import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 import torch.nn.functional as F
+from .vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg, SegmentationHead
 
 
 import numpy as np
@@ -548,8 +551,18 @@ class SwinTransformer(nn.Module):
             layer_name = f'norm{i_layer}'
             self.add_module(layer_name, layer)
 
-        self.decoder = UPerHead(in_channels = [128,256,512,1024],channels = 512,num_classes = num_classes)
         self._freeze_stages()
+
+        # self.decoder = UPerHead(in_channels = [128,256,512,1024],channels = 512,num_classes = num_classes)
+        # self.decoder = DepthwiseSeparableASPPHead(c1_in_channels =[128,256,512,1024], in_channels = 1024,c1_channels = 12,channels =128,num_classes = num_classes)
+        config= CONFIGS_ViT_seg["testing_swin"]
+        self.decoder = DecoderCup(config)
+        self.segmentation_head = SegmentationHead(
+            in_channels=config['decoder_channels'][-1],
+            out_channels=num_classes,
+            kernel_size=3,
+        )
+
 
     def _freeze_stages(self):
         if self.frozen_stages >= 0:
@@ -616,7 +629,8 @@ class SwinTransformer(nn.Module):
     def forward_decode(self, x):
         h , w = x.size(2),x.size(3)
         x= self.forward_features(x)
-        x = self.decoder.forward(inputs= x)
+        x = self.decoder.forward(x[-1],x[:-1])
+        x=self.segmentation_head(x)
         x = resize(
             input=x,
             size=(h,w),
