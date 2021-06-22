@@ -1,6 +1,6 @@
 {
     "training":{
-      "arch_type": "peso",
+      "arch_type": "epi",
       "n_epochs":40,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
@@ -70,14 +70,14 @@
     },
     "model":{
       "type":"seg",
-      "continue_train":false,
-      "which_epoch":-1,
+      "continue_train":true,
+      "which_epoch":6,
       "model_type": "swin",
       "tensor_dim": "2D",
       "division_factor": 1000,
       "img_size":256,
       "input_nc": 3,
-      "output_nc": 2,
+      "output_nc": 3,
       "lr_rate": 1e-4,
       "max_lr":1e-4,
       "feature_scale": 4,

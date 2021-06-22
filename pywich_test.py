@@ -25,6 +25,7 @@ if __name__ == '__main__':
 
     # Parse input arguments
     json_filename ="configs\config_SwinT.json"
+    # json_filename ="configs\config_TransUnet.json"
 
     # Load options
     json_opts = json_file_to_pyobj(json_filename)
@@ -55,10 +56,13 @@ if __name__ == '__main__':
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
         if epoch % 10 == 0:
-            print("freezing model")
-            model.freeze()
-        else:
-            model.unfreeze()
+            if frozen:
+                model.unfreeze()
+                frozen = False
+            else: 
+                print("freezing model")
+                model.freeze()
+                frozen=True
 
         # Training Iterations
 

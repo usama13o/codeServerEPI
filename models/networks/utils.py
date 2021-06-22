@@ -37,7 +37,7 @@ class conv2DBatchNormRelu(nn.Module):
         self.cbr_unit = nn.Sequential(nn.Conv2d(int(in_channels), int(n_filters), kernel_size=k_size,
                                                 padding=padding, stride=stride, bias=bias),
                                  nn.BatchNorm2d(int(n_filters)),
-                                 nn.ReLU(inplace=True),)
+                                 nn.ReLU(inplace=False),)
 
     def forward(self, inputs):
         outputs = self.cbr_unit(inputs)

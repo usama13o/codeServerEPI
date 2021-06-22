@@ -501,7 +501,6 @@ class SwinTransformer(nn.Module):
         self.patch_norm = patch_norm
         self.num_features = int(embed_dim * 2 ** (self.num_layers - 1))
         self.mlp_ratio = mlp_ratio
-        self.decoder = UPerHead(in_channels = [128,256,512,1024],channels = 512,num_classes = num_classes)
         self.out_indices = out_indices
         self.frozen_stages = frozen_stages
         # split image into non-overlapping patches
@@ -549,6 +548,7 @@ class SwinTransformer(nn.Module):
             layer_name = f'norm{i_layer}'
             self.add_module(layer_name, layer)
 
+        self.decoder = UPerHead(in_channels = [128,256,512,1024],channels = 512,num_classes = num_classes)
         self._freeze_stages()
 
     def _freeze_stages(self):
