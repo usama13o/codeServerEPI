@@ -25,6 +25,7 @@ class Visualiser():
         self.display_single_pane_ncols = opt.display_single_pane_ncols
         self.use_wandb = opt.use_wandb
         self.upload_limit = 45
+        self.counter_ratio= 0
 
         now = datetime.now()
 
@@ -183,7 +184,8 @@ class Visualiser():
         else:
             self.vis.line(X=np.array([x]), Y=np.array([y]), win=self.error_plots[key], name=split_name,update='append')
     # errors: dictionary of error labels and values
-    def plot_current_errors(self, epoch, errors, split_name, counter_ratio=0.0, **kwargs):
+    def plot_current_errors(self, epoch, errors, split_name, counter_ratio=0.01, **kwargs):
+        self.counter_ratio+=0.01
         errors['epoch'] = epoch
         err={}
         for key in errors.keys():
@@ -192,7 +194,7 @@ class Visualiser():
             self.run.log(err)
         if self.display_id > 0:
             for key in errors.keys():
-                x = epoch + counter_ratio
+                x = epoch + self.counter_ratio
                 y = errors[key]
                 if isinstance(y, dict):
                     if y['type'] == 'table':

@@ -1,6 +1,6 @@
 {
     "training":{
-      "arch_type": "epi",
+      "arch_type": "glas",
       "n_epochs":40,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
@@ -15,7 +15,7 @@
       "display_winsize": 256,
       "display_id": 1,
       "lim":15,
-      "run_name":"Swin Transformer",
+      "run_name":"Swin Unet Transformer",
       "use_wandb":false,
       "display_single_pane_ncols": 0
     },
@@ -23,7 +23,7 @@
       "epi": "kaggle/input/stain-normalisation/SN",
       "epi_slides":"C:\\Users\\Usama\\codeServerEPI\\codeServerEPI-colab\\",
       "peso":"F:\\Data\\peso_dataset",
-      "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)"
+      "glas":"C:\\Users\\S20153191\\Downloads\\Warwick QU Dataset (Released 2016_07_08)"
     },
     "augmentation": {
       "epi": {
@@ -70,10 +70,9 @@
     },
     "model":{
       "type":"seg",
-      "continue_train":true,
-      "path_pre_trained_model":"C:\\Users\\S20153191\\Downloads\\upernet_swin_base_patch4_window7_512x512.pth",
+      "continue_train":false,
       "which_epoch":-1,
-      "model_type": "swin",
+      "model_type": "swin_unet",
       "tensor_dim": "2D",
       "division_factor": 1000,
       "img_size":256,
@@ -86,11 +85,11 @@
       "isTrain": true,
       "patch_size":4,
       "embed_dim":128,
-      "depth":[ 2, 2, 18, 2 ],
+      "depth":[ 2, 2,2, 2 ],
       "num_heads": [ 4, 8, 16, 32 ],
       "window_size": 8,
       "checkpoints_dir": "./checkpoints",
-      "experiment_name": "Swin Transformer",
+      "experiment_name": "Swin Unet Transformer",
       "criterion": "iou_loss",
       "nonlocal_mode":"concatenation_residual",
       "optim":"adam"

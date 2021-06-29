@@ -1,3 +1,4 @@
+from models.utils import load_checkpoint
 import os
 import numpy
 import torch
@@ -78,7 +79,10 @@ class BaseModel():
         network_label = os.path.basename(network_filepath)
         epoch_label = network_label.split('_')[0]
         print('Loading the model {0} - epoch {1}'.format(network_label, epoch_label))
-        network.load_state_dict(torch.load(network_filepath), strict=strict)
+        if "swin" in network_label:
+            load_checkpoint(network,filename=network_filepath)
+        else:
+            network.load_state_dict(torch.load(network_filepath), strict=strict)
 
     # update learning rate (called once every epoch)
     def update_learning_rate(self, metric=None, epoch=None):

@@ -72,7 +72,8 @@ if __name__ == '__main__':
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
             # Make a training update
             model.set_input(images, labels)
-            model.optimize_parameters()
+            with torch.autograd.set_detect_anomaly(True):
+                model.optimize_parameters()
             # model.optimize_parameters_accumulate_grd(epoch_iter)
             lr = model.update_learning_rate()
             
