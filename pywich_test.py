@@ -24,7 +24,7 @@ if __name__ == '__main__':
     os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
     # Parse input arguments
-    json_filename ="configs\config_SwinT.json"
+    json_filename ="configs\config_SwinT_unet.json"
     # json_filename ="configs\config_TransUnet.json"
 
     # Load options

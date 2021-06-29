@@ -1,3 +1,4 @@
+from models.networks.swin_unet import SwinTransformerSys
 from models.networks.swin_transformer import SwinTransformer
 from models.networks.axialnet import axialunet, logo,MedT,gated
 from models.networks.vit_seg_modeling_gate import VisionTransformer_AG
@@ -66,6 +67,8 @@ def get_network(name,config, n_classes, in_channels=3, feature_scale=4, tensor_d
         model = gated(img_size= img_size, num_classes = n_classes)
     elif name == "swin":
         model = model(img_size= img_size,patch_size=config.patch_size,in_channels=3,num_classes=n_classes,embed_dim=config.embed_dim,depths=config.depth,num_heads=config.num_heads,window_size=config.window_size)
+    elif name == "swin_unet":
+        model = model(img_size= img_size,patch_size=config.patch_size,in_chans=3,num_classes = n_classes,embed_dim=config.embed_dim,depths=config.depth,num_heads=config.num_heads,window_size=config.window_size)
     elif name== "logo":
         model = logo(img_size= img_size, num_classes = n_classes)
     elif name in CONFIGS_ViT_seg.keys():
@@ -105,6 +108,7 @@ def _get_model_instance(name, tensor_dim):
         'R50-ViT-B_16': {'2D':VisionTransformer},
         'R50-ViT-B_16_AG': {'2D':VisionTransformer_AG},
         'swin': {'2D':SwinTransformer},
+        'swin_unet': {'2D':SwinTransformerSys},
         'R50-ViT-L_16': {'2D':VisionTransformer},
         'DeepLab':{'v3+':pws.deeplab_v3_plus.DeepLabv3_plus,"v2":pws.deeplab_v2_res.DeepLabv2_ASPP,"v3":pws.deeplab_v3.DeepLabv3}
 
