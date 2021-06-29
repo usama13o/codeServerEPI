@@ -1,3 +1,4 @@
+import json
 import numpy
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -19,6 +20,7 @@ def train(arguments):
 
     # Load options
     json_opts = json_file_to_pyobj(json_filename)
+    wanb_config= json.loads(open(json_filename).read())
     train_opts = json_opts.training
 
     # Architecture type
@@ -37,22 +39,19 @@ def train(arguments):
         print('fp time: {0:.3f} sec\tbp time: {1:.3f} sec per sample'.format(*model.get_fp_bp_time()))
         exit()
 
+  
     # Setup Data Loader
-    train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData)
-    valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-    test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
+    train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData,balance=True)
+    valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData,balance=True)
+    # test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
+    valid_loader = DataLoader(dataset=valid_dataset, num_workers=8,batch_size=train_opts.batchSize, shuffle=False)
 
-    train_loader = DataLoader(dataset=train_dataset, num_workers=0, batch_size=train_opts.batchSize, shuffle=True)
-    valid_loader = DataLoader(dataset=valid_dataset, num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
-
-    test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
-
-    # Visualisation Parameters
-    visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir)
+    visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False,config=wanb_config)
     error_logger = ErrorLogger()
-
-    # Training Function
-
+    start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
+    model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
+    frozen=False
     model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=-1 if not json_opts.model.continue_train else (json_opts.model.which_epoch * len(train_loader)))
 
     for epoch in range(model.which_epoch, train_opts.n_epochs):

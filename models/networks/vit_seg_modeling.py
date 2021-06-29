@@ -354,11 +354,13 @@ class DecoderCup(nn.Module):
         self.blocks = nn.ModuleList(blocks)
 
     def forward(self, hidden_states, features=None):
-        # B, n_patch, hidden = hidden_states.size()  # reshape from (B, n_patch, hidden) to (B, h, w, hidden)
-        # h, w = int(np.sqrt(n_patch)), int(np.sqrt(n_patch))
-        # x = hidden_states.permute(0, 2, 1)
-        # x = x.contiguous().view(B, hidden, h, w)
-        features = features[::-1]
+        if len(hidden_states.shape) <= 3:
+            B, n_patch, hidden = hidden_states.size()  # reshape from (B, n_patch, hidden) to (B, h, w, hidden)
+            h, w = int(np.sqrt(n_patch)), int(np.sqrt(n_patch))
+            x = hidden_states.permute(0, 2, 1)
+            x = x.contiguous().view(B, hidden, h, w)
+        else:
+            features = features[::-1]
         x = self.conv_more(hidden_states)
         for i, decoder_block in enumerate(self.blocks):
             if features is not None:

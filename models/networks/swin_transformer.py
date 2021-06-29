@@ -5,8 +5,8 @@
 # Written by Ze Liu
 # --------------------------------------------------------
 
+from models.networks.utils import init_weightss
 from models.networks.vit_seg_modeling import DecoderCup
-# from models.layers.sep_aspp_head import DepthwiseSeparableASPPHead
 from models.layers.decode_head import resize
 from models.layers.uper_head import UPerHead
 import torch
@@ -15,8 +15,8 @@ import torch.utils.checkpoint as checkpoint
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 import torch.nn.functional as F
 from .vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg, SegmentationHead
-
-
+from typing import Tuple
+from einops.layers.torch import Rearrange
 import numpy as np
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
@@ -562,7 +562,18 @@ class SwinTransformer(nn.Module):
             out_channels=num_classes,
             kernel_size=3,
         )
-
+    
+        # after decoder 
+        self.mask_transformer = MaskTransformer(
+            num_classes,
+            128,
+            128*4,
+            num_layers = 6,
+            num_heads= 8,
+        )
+        self.upsample = Upsample(256, patch_size/2)
+        self.scale = 128 ** -0.5
+        self.mask_Transformer = MaskTransformer_2(d_model=128,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size/2,d_encoder=128)
 
     def _freeze_stages(self):
         if self.frozen_stages >= 0:
@@ -638,9 +649,25 @@ class SwinTransformer(nn.Module):
             align_corners=False)
         return x
 
+    def forward_decode_v2(self, x):
+        h , w = x.size(2),x.size(3)
+        x= self.forward_features(x)
+        x = self.decoder.forward(x[-1],x[:-1])
+        x = x.view(x.shape[0],x.shape[1],-1).permute(0,2,1)
+        z, c = self.mask_transformer(x)
+        masks = z @ c.transpose(1, 2)
+        masks = torch.softmax(masks / self.scale, dim=-1)
+        return self.upsample(masks)
+    def forward_decode_v3(self, x):
+        h , w = x.size(2),x.size(3)
+        x= self.forward_features(x)
+        x = self.decoder.forward(x[-1],x[:-1])
+        x = x.view(x.shape[0],x.shape[1],-1).permute(0,2,1)
+        masks = self.mask_Transformer(x,(128,128))
+        return masks
 
     def forward(self, x):
-        x= self.forward_decode(x)
+        x= self.forward_decode_v3(x)
         # x = self.head(x)
         return x
 
@@ -652,3 +679,120 @@ class SwinTransformer(nn.Module):
         flops += self.num_features * self.patches_resolution[0] * self.patches_resolution[1] // (2 ** self.num_layers)
         flops += self.num_features * self.num_classes
         return flops
+
+class MaskTransformer(nn.Module):
+
+    def __init__(
+        self,
+        num_classes: int,
+        emb_dim: int,
+        hidden_dim: int,
+        num_layers: int,
+        num_heads: int,
+    ):
+        super().__init__()
+        self.num_classes = num_classes
+        self.cls_tokens = nn.Parameter(torch.randn(1, num_classes, emb_dim))
+        layer = nn.TransformerEncoderLayer(
+            d_model=emb_dim,
+            nhead=num_heads,
+            dim_feedforward=hidden_dim,
+            activation="gelu"
+        )
+        self.transformer = nn.TransformerEncoder(
+            layer,
+            num_layers=num_layers
+        )
+
+    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        b = x.shape[0]
+        cls_tokens = self.cls_tokens.repeat(b, 1, 1)
+        x = torch.cat([cls_tokens, x], dim=1)
+        x = self.transformer(x)
+        c = x[:, :self.num_classes]
+        z = x[:, self.num_classes:]
+        return z, c
+
+
+class Upsample(nn.Module):
+
+    def __init__(self, image_size: int, patch_size):
+        super().__init__()
+        patch_size = int(patch_size)
+        self.model = nn.Sequential(
+            Rearrange("b (p1 p2) c -> b c p1 p2", p1=image_size//patch_size, p2=image_size//patch_size),
+            nn.Upsample(scale_factor=patch_size, mode="bilinear")
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.model(x)
+
+class MaskTransformer_2(nn.Module):
+    def __init__(
+        self,
+        n_cls,
+        patch_size,
+        d_encoder,
+        n_layers,
+        n_heads,
+        d_model,
+        d_ff,
+    ):
+        super().__init__()
+        self.d_encoder = d_encoder #dim of input from decoder 
+        self.patch_size = patch_size
+        self.n_cls = n_cls
+        self.d_model = d_model # hidden_dim
+        self.d_ff = d_ff # feedforward dim 
+        self.scale = d_model ** -0.5
+
+        layer = nn.TransformerEncoderLayer(
+            d_model=d_model,
+            nhead=n_heads,
+            dim_feedforward=d_ff,
+            activation="gelu"
+        )
+        self.transformer = nn.TransformerEncoder(
+            layer,
+            num_layers=n_layers
+        )
+
+        self.cls_emb = nn.Parameter(torch.randn(1, n_cls, d_model))
+        self.proj_dec = nn.Linear(d_encoder, d_model)
+
+        self.proj_patch = nn.Parameter(self.scale * torch.randn(d_model, d_model))
+        self.proj_classes = nn.Parameter(self.scale * torch.randn(d_model, d_model))
+
+        self.decoder_norm = nn.LayerNorm(d_model)
+        self.mask_norm = nn.LayerNorm(n_cls)
+        self.upsample = Upsample(256,2)
+
+        self.apply(init_weightss)
+        trunc_normal_(self.cls_emb, std=0.02)
+
+    @torch.jit.ignore
+    def no_weight_decay(self):
+        return {"cls_emb"}
+
+    def forward(self, x, im_size):
+        H, W = im_size
+        GS = H // self.patch_size
+
+        x = self.proj_dec(x)
+        cls_emb = self.cls_emb.expand(x.size(0), -1, -1)
+        x = torch.cat((x, cls_emb), 1)
+        x =  self.transformer(x)
+        x = self.decoder_norm(x)
+
+        patches, cls_seg_feat = x[:, : -self.n_cls], x[:, -self.n_cls :]
+        patches = patches @ self.proj_patch
+        cls_seg_feat = cls_seg_feat @ self.proj_classes
+
+        patches = patches / patches.norm(dim=-1, keepdim=True)
+        cls_seg_feat = cls_seg_feat / cls_seg_feat.norm(dim=-1, keepdim=True)
+
+        masks = patches @ cls_seg_feat.transpose(1, 2)
+        masks = self.mask_norm(masks)
+        masks = self.upsample(masks)
+
+        return masks

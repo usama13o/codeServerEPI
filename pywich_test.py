@@ -27,6 +27,8 @@ if __name__ == '__main__':
     json_filename ="configs\config_SwinT.json"
     json_filename ="configs\config_SwinT_v2_decoderCup.json"
     # json_filename ="configs\config_TransUnet.json"
+    # json_filename ="configs\config_TransUnet_AG.json"
+    # json_filename ="configs\config_deeplab.json"
 
     # Load options
     json_opts = json_file_to_pyobj(json_filename)
@@ -49,11 +51,11 @@ if __name__ == '__main__':
     train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=8,batch_size=train_opts.batchSize, shuffle=False)
 
-    visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= True if json_opts.model.continue_train else False,config=wanb_config)
+    visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False,config=wanb_config)
     error_logger = ErrorLogger()
     start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
     model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
-
+    frozen=False
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
         if epoch % 10 == 0:
