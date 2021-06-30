@@ -1,6 +1,6 @@
 {
     "training":{
-      "arch_type": "peso",
+      "arch_type": "epi",
       "n_epochs":40,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
@@ -73,12 +73,12 @@
       "continue_train":true,
       "which_epoch":-1,
       "model_type": "swin",
-      "path_pre_trained_model":"C:\\Users\\Usama\\Downloads\\upernet_swin_tiny_patch4_window7_512x512.pth",
+      "path_pre_trained_model":"C:\\Users\\Usama\\Downloads\\upernet_swin_base_patch4_window7_512x512.pth",
       "tensor_dim": "2D",
       "division_factor": 1000,
       "img_size":256,
       "input_nc": 3,
-      "output_nc":2,
+      "output_nc":3,
       "lr_rate": 1e-4,
       "max_lr":1e-4,
       "feature_scale": 4,

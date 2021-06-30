@@ -11,20 +11,19 @@
     },
     "visualisation":{
       "display_port":9898,
-      "no_html": true,
+      "no_html":true,
       "display_winsize": 256,
-      "display_id": 1,
+      "display_id": 0,
       "lim":15,
-      "run_name":"Swin Unet Transformer",
-      "use_wandb":false,
+      "run_name":"Swin Unet Transformer + segmentor_offical",
+      "use_wandb":true,
       "display_single_pane_ncols": 0
     },
     "data_path": {
       "epi": "kaggle/input/stain-normalisation/SN",
       "epi_slides":"C:\\Users\\Usama\\codeServerEPI\\codeServerEPI-colab\\",
       "peso":"F:\\Data\\peso_dataset",
-      "glas":"C:\\Users\\S20153191\\Downloads\\Warwick QU Dataset (Released 2016_07_08)"
-    },
+      "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)"},
     "augmentation": {
       "epi": {
         "shift": [0.1,0.1],

@@ -1,3 +1,4 @@
+from models.networks.swin_transformer import MaskTransformer_2
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
@@ -671,6 +672,8 @@ class SwinTransformerSys(nn.Module):
             print("---final upsample expand_first---")
             self.up = FinalPatchExpand_X4(input_resolution=(img_size//patch_size,img_size//patch_size),dim_scale=4,dim=embed_dim)
             self.output = nn.Conv2d(in_channels=embed_dim,out_channels=self.num_classes,kernel_size=1,bias=False)
+        self.mask_Transformer = MaskTransformer_2(img_size=img_size,d_model=128,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size,d_encoder=128)
+	
 
         self.apply(self._init_weights)
 
@@ -737,7 +740,8 @@ class SwinTransformerSys(nn.Module):
     def forward(self, x):
         x, x_downsample = self.forward_features(x)
         x = self.forward_up_features(x,x_downsample)
-        x = self.up_x4(x)
+        x = self.mask_Transformer(x,(64,64))
+        # x = self.up_x4(x)
 
         return x
 

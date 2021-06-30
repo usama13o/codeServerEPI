@@ -730,6 +730,7 @@ class Upsample(nn.Module):
 class MaskTransformer_2(nn.Module):
     def __init__(
         self,
+        img_size,
         n_cls,
         patch_size,
         d_encoder,
@@ -765,7 +766,7 @@ class MaskTransformer_2(nn.Module):
 
         self.decoder_norm = nn.LayerNorm(d_model)
         self.mask_norm = nn.LayerNorm(n_cls)
-        self.upsample = Upsample(256,2)
+        self.upsample = Upsample(img_size,patch_size)
 
         self.apply(init_weightss)
         trunc_normal_(self.cls_emb, std=0.02)

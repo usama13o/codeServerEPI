@@ -25,7 +25,8 @@ if __name__ == '__main__':
 
     # Parse input arguments
     json_filename ="configs\config_SwinT.json"
-    json_filename ="configs\config_SwinT_v2_decoderCup.json"
+    json_filename ="configs\config_SwinT_unet.json"
+    # json_filename ="configs\config_SwinT_v2_decoderCup.json"
     # json_filename ="configs\config_TransUnet.json"
     # json_filename ="configs\config_TransUnet_AG.json"
     # json_filename ="configs\config_deeplab.json"
