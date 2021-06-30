@@ -721,7 +721,7 @@ class Upsample(nn.Module):
         patch_size = int(patch_size)
         self.model = nn.Sequential(
             Rearrange("b (p1 p2) c -> b c p1 p2", p1=image_size//patch_size, p2=image_size//patch_size),
-            nn.Upsample(scale_factor=patch_size, mode="bilinear")
+            # nn.Upsample(scale_factor=patch_size, mode="bilinear")
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
