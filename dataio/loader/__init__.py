@@ -25,6 +25,7 @@ def get_dataset(name):
         'epi':stain_norm_dataset,
         'epi_slides':slides_dataset,
         'peso':peso_dataset,
+        'pesoL':peso_dataset,
         'glas':glas_dataset,
 
     }[name]

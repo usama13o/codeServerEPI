@@ -24,7 +24,7 @@ class slides_dataset(data.Dataset):
         match = [y for y in y_lis if self.get_num(x) in y]
         return match[0]
 
-    def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8):
+    def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8,balance=False):
         super( slides_dataset, self).__init__()
         image_dir_tum = root_dir + "tumor_slides/"
         image_dir_norm = root_dir + "fixed/"

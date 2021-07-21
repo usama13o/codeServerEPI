@@ -145,7 +145,7 @@ class IoU_loss(nn.Module):
         if self.num_classes >2:
             weight =[0.1,0.59,0.9]
         else:
-            weight = [0.2,0.9]
+            weight = [0.5,0.5]
         return (1-iou) + ce_loss(preds,targs, weights=weight)
 class One_Hot(nn.Module):
     def __init__(self, depth):

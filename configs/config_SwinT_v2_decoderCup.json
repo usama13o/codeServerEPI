@@ -1,11 +1,11 @@
 {
     "training":{
-      "arch_type": "epi",
+      "arch_type":"pesoL",
       "n_epochs":40,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
       "lr_decay_iters": 250,
-      "batchSize": 8,
+      "batchSize": 64,
       "preloadData": false,
       "split_pct":0.8
     },
@@ -15,14 +15,15 @@
       "display_winsize": 256,
       "display_id": 0,
       "lim":15,
-      "run_name":"Swin Transformer v3 : decoder cup + segmentor ",
-      "use_wandb": true,
+      "run_name":"Swin Transformer DecoderCup",
+      "use_wandb": true, 
       "display_single_pane_ncols": 0
     },
     "data_path": {
       "epi": "kaggle/input/stain-normalisation/SN",
       "epi_slides":"C:\\Users\\Usama\\codeServerEPI\\codeServerEPI-colab\\",
       "peso":"F:\\Data\\peso_dataset",
+      "pesoL":"F:\\Data\\peso_dataset\\scaled_slides_tif",
       "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)"
     },
     "augmentation": {
@@ -32,7 +33,7 @@
         "scale": [0.7,1.3],
         "intensity": [1.0,1.0],
         "random_flip_prob": 0.5,
-        "scale_size": 256,
+        "scale_size":1024,
         "patch_size": [256,256]
       },"epi_slides": {
         "shift": [0.1,0.1],
@@ -57,28 +58,35 @@
       "intensity": [1.0,1.0],
       "random_flip_prob": 0.5,
       "scale_size":256,
-      "patch_size":[256,256]
+      "patch_size":[224,224]
     }, "glas": {
         "shift": [0.1,0.1],
         "rotate": 15.0,
         "scale": [0.7,1.3],
         "intensity": [1.0,1.0],
         "random_flip_prob": 0.5,
-        "scale_size": 256,
-        "patch_size": [256,256]
-      }
+        "scale_size":224,
+        "patch_size": [224,224]
+      } ,"pesoL": {
+        "shift": [0.1,0.1],
+        "rotate": 15.0,
+        "scale": [0.7,1.3],
+        "intensity": [1.0,1.0],
+        "random_flip_prob": 0.5,
+        "scale_size":224,
+        "patch_size":[224,224]
+      } 
     },
     "model":{
       "type":"seg",
       "continue_train":true,
-      "which_epoch":-1,
+      "which_epoch":8,
       "model_type": "swin",
-      "path_pre_trained_model":"C:\\Users\\Usama\\Downloads\\upernet_swin_base_patch4_window7_512x512.pth",
       "tensor_dim": "2D",
       "division_factor": 1000,
-      "img_size":256,
+      "img_size":224,
       "input_nc": 3,
-      "output_nc":3,
+      "output_nc":2,
       "lr_rate": 1e-4,
       "max_lr":1e-4,
       "feature_scale": 4,
@@ -88,9 +96,9 @@
       "embed_dim":128,
       "depth":[ 2, 2, 18, 2 ],
       "num_heads": [ 4, 8, 16, 32 ],
-      "window_size": 8,
+      "window_size": 7,
       "checkpoints_dir": "./checkpoints",
-      "experiment_name": "Swin Transformer v3 decoder cup + segemntor",
+      "experiment_name": "Swin Transformer DecoderCup L pretrained",
       "criterion": "iou_loss",
       "nonlocal_mode":"concatenation_residual",
       "optim":"adam"

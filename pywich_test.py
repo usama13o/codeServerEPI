@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # Parse input arguments
     json_filename ="configs\config_SwinT.json"
     json_filename ="configs\config_SwinT_unet.json"
-    # json_filename ="configs\config_SwinT_v2_decoderCup.json"
+    json_filename ="configs\config_SwinT_v2_decoderCup.json"
     # json_filename ="configs\config_TransUnet.json"
     # json_filename ="configs\config_TransUnet_AG.json"
     # json_filename ="configs\config_deeplab.json"
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData,balance=True)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData,balance=True)
     # test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-    train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=False,persistent_workers=False)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=True,persistent_workers=False)
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=8,batch_size=train_opts.batchSize, shuffle=False)
 
     visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False,config=wanb_config)
@@ -59,22 +59,22 @@ if __name__ == '__main__':
     frozen=False
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
-        if epoch % 10 == 0:
-            if frozen:
-                model.unfreeze()
-                frozen = False
-            else: 
-                print("freezing model")
-                model.freeze()
-                frozen=True
+        # if epoch % 10 == 0:
+        #     if frozen:
+        #         model.unfreeze()
+        #         frozen = False
+        #     else: 
+        #         print("freezing model")
+        #         model.freeze()
+        #         frozen=True
 
         # Training Iterations
 
         for epoch_iter, (images, labels) in tqdm(enumerate(train_loader, 1), total=len(train_loader)):
             # Make a training update
             model.set_input(images, labels)
-            with torch.autograd.set_detect_anomaly(True):
-                model.optimize_parameters()
+            # with torch.autograd.set_detect_anomaly(True):
+            model.optimize_parameters()
             # model.optimize_parameters_accumulate_grd(epoch_iter)
             lr = model.update_learning_rate()
             

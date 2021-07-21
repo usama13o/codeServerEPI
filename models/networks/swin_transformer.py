@@ -5,7 +5,7 @@
 # Written by Ze Liu
 # --------------------------------------------------------
 
-from models.networks.utils import init_weightss
+from models.networks.utils import UnetDsv2, init_weightss
 from models.networks.vit_seg_modeling import DecoderCup
 from models.layers.decode_head import resize
 from models.layers.uper_head import UPerHead
@@ -553,10 +553,10 @@ class SwinTransformer(nn.Module):
 
         self._freeze_stages()
 
-        # self.decoder = UPerHead(in_channels = [128,256,512,1024],channels = 512,num_classes = num_classes)
+        self.upperhead= UPerHead(in_channels = [128,256,512,1024],channels = 512,num_classes = num_classes)
         # self.decoder = DepthwiseSeparableASPPHead(c1_in_channels =[128,256,512,1024], in_channels = 1024,c1_channels = 12,channels =128,num_classes = num_classes)
         config= CONFIGS_ViT_seg["testing_swin"]
-        self.decoder = DecoderCup(config)
+        self.decodercup = DecoderCup(config)
         self.segmentation_head = SegmentationHead(
             in_channels=config['decoder_channels'][-1],
             out_channels=num_classes,
@@ -573,7 +573,28 @@ class SwinTransformer(nn.Module):
         )
         self.upsample = Upsample(256, patch_size/2)
         self.scale = 128 ** -0.5
-        self.mask_Transformer = MaskTransformer_2(d_model=128,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size/2,d_encoder=128)
+        # self.mask_Transformer = MaskTransformer_2(d_model=128,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size/2,d_encoder=128)
+
+        self.mask_Transformer_16 = MaskTransformer_2(img_size=img_size,d_model=512,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size*4,d_encoder=512)
+        self.mask_Transformer_32 = MaskTransformer_2(img_size=img_size,d_model=256,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size*2,d_encoder=256)
+        self.mask_Transformer_64 = MaskTransformer_2(img_size=img_size,d_model=128,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size,d_encoder=128)
+        
+        self.dsv4 = UnetDsv2(in_size=512, out_size=num_classes, scale_factor=16)
+        self.dsv3 = UnetDsv2(in_size=256, out_size=num_classes, scale_factor=8)
+        self.dsv2 = UnetDsv2(in_size=128, out_size=num_classes, scale_factor=4)
+        self.up3= nn.Sequential(
+            Rearrange("b (p1 p2) c -> b c p1 p2",p1=img_size//4,p2=img_size//4),
+        )
+
+        self.up2= nn.Sequential(
+            Rearrange("b (p1 p2) c -> b c p1 p2",p1=img_size//8,p2=img_size//8),
+        )
+
+        self.up1= nn.Sequential(
+            Rearrange("b (p1 p2) c -> b c p1 p2",p1=img_size//16,p2=img_size//16),
+        )
+        # final conv (without any concat)
+        self.final = nn.Conv2d(num_classes*3,num_classes, 1)
 
     def _freeze_stages(self):
         if self.frozen_stages >= 0:
@@ -631,7 +652,7 @@ class SwinTransformer(nn.Module):
             if i in self.out_indices:
                 norm_layer = getattr(self, f'norm{i}')
                 x_out = norm_layer(x_out)
-
+                # reshap into a 4d tensor for decoder cup 
                 out = x_out.view(-1, H, W, self.num_features[i]).permute(0, 3, 1, 2).contiguous()
                 outs.append(out)
 
@@ -640,7 +661,7 @@ class SwinTransformer(nn.Module):
     def forward_decode(self, x):
         h , w = x.size(2),x.size(3)
         x= self.forward_features(x)
-        x = self.decoder.forward(x[-1],x[:-1])
+        x = self.decodercup.forward(x[-1],x[:-1])
         x=self.segmentation_head(x)
         x = resize(
             input=x,
@@ -648,7 +669,16 @@ class SwinTransformer(nn.Module):
             mode='bilinear',
             align_corners=False)
         return x
-
+    def forward_decode_upperhead(self, x):
+        h , w = x.size(2),x.size(3)
+        x= self.forward_features(x)
+        x = self.upperhead.forward(x)
+        x = resize(
+            input=x,
+            size=(h,w),
+            mode='bilinear',
+            align_corners=False)
+        return x
     def forward_decode_v2(self, x):
         h , w = x.size(2),x.size(3)
         x= self.forward_features(x)
@@ -665,9 +695,25 @@ class SwinTransformer(nn.Module):
         x = x.view(x.shape[0],x.shape[1],-1).permute(0,2,1)
         masks = self.mask_Transformer(x,(128,128))
         return masks
+    def forward_decode_v4(self, x):
+        h , w = x.size(2),x.size(3)
+        x= self.forward_features(x)
 
+        # x1,p1 = self.mask_Transformer_16(x[2],(16,16))
+        # x2,p2 = self.mask_Transformer_32(x[1],(32,32))
+        # x3,p3 = self.mask_Transformer_64(x[0],(64,64))
+        # p3 = self.up3(x[0])
+        # p2 = self.up2(x[1])
+        # p1 = self.up1(x[2])
+
+        dsv4 = self.dsv4(x[2])
+        dsv3 = self.dsv3(x[1])
+        dsv2 = self.dsv2(x[0])
+        x = self.final(torch.cat([dsv2,dsv3,dsv4],dim=1))
+
+        return x 
     def forward(self, x):
-        x= self.forward_decode_v3(x)
+        x= self.forward_decode(x)
         # x = self.head(x)
         return x
 
@@ -796,4 +842,4 @@ class MaskTransformer_2(nn.Module):
         masks = self.mask_norm(masks)
         masks = self.upsample(masks)
 
-        return masks
+        return masks,patches
