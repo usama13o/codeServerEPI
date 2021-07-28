@@ -1,11 +1,11 @@
 {
     "training":{
-      "arch_type":"pesoL",
-      "n_epochs":40,
+      "arch_type":"siim",
+      "n_epochs":100,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
       "lr_decay_iters": 250,
-      "batchSize": 64,
+      "batchSize":64,
       "preloadData": false,
       "split_pct":0.8
     },
@@ -24,7 +24,8 @@
       "epi_slides":"C:\\Users\\Usama\\codeServerEPI\\codeServerEPI-colab\\",
       "peso":"F:\\Data\\peso_dataset",
       "pesoL":"F:\\Data\\peso_dataset\\scaled_slides_tif",
-      "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)"
+      "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)",
+      "siim":"F:\\Data\\SIIM acr"
     },
     "augmentation": {
       "epi": {
@@ -33,7 +34,7 @@
         "scale": [0.7,1.3],
         "intensity": [1.0,1.0],
         "random_flip_prob": 0.5,
-        "scale_size":1024,
+        "scale_size":224,
         "patch_size": [256,256]
       },"epi_slides": {
         "shift": [0.1,0.1],
@@ -75,17 +76,27 @@
         "random_flip_prob": 0.5,
         "scale_size":224,
         "patch_size":[224,224]
+      } ,"siim": {
+        "shift": [0.1,0.1],
+        "rotate": 15.0,
+        "scale": [0.7,1.3],
+        "intensity": [1.0,1.0],
+        "random_flip_prob": 0.5,
+        "scale_size":224,
+        "patch_size":[224,224]
       } 
+      
     },
     "model":{
       "type":"seg",
       "continue_train":true,
-      "which_epoch":8,
+      "which_epoch":-1,
       "model_type": "swin",
+      "path_pre_trained_model":"C:\\Users\\Usama\\Downloads\\upernet_swin_base_patch4_window7_512x512.pth",
       "tensor_dim": "2D",
       "division_factor": 1000,
       "img_size":224,
-      "input_nc": 3,
+      "input_nc": 1,
       "output_nc":2,
       "lr_rate": 1e-4,
       "max_lr":1e-4,

@@ -9,6 +9,7 @@ from dataio.loader.stain_norm_dataset import stain_norm_dataset
 from dataio.loader.slides_dataset import slides_dataset
 from dataio.loader.peso_dataset import peso_dataset
 from dataio.loader.glas_dataset import glas_dataset
+from dataio.loader.siim_acr_dataset import siim_acr_dataset
 
 def get_dataset(name):
     """get_dataset
@@ -27,6 +28,7 @@ def get_dataset(name):
         'peso':peso_dataset,
         'pesoL':peso_dataset,
         'glas':glas_dataset,
+        'siim':siim_acr_dataset,
 
     }[name]
 

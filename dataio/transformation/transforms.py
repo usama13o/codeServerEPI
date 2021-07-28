@@ -35,6 +35,7 @@ class Transformations:
             'peso': self.epi_transform,
             'pesoL': self.epi_transform,
             'glas': self.epi_transform,
+            'siim': self.epi_transform,
 
         }[self.name]()
 
