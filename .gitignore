@@ -131,3 +131,4 @@ pywich_test.py
 pywich_test.py
 configs/config_SwinT_v2_decoderCup.json
 .gitignore
+configs/config_SwinT_v2_decoderCup.json
