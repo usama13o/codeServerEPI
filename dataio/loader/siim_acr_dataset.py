@@ -1,3 +1,4 @@
+import os
 import torch.utils.data as data
 import numpy as np
 import datetime
@@ -20,8 +21,11 @@ class siim_acr_dataset(data.Dataset):
         img_dir = join(root_dir , 'train')
         mask_dir = join(root_dir , 'masks')
         # targets are a comob of two dirs 1- normal 1024 patches 2- Tum 1024
-        self.image_filenames  = sorted([join(img_dir, x) for x in listdir(img_dir) if is_image_file(x) if "_anno" not in x])
+        self.image_filenames  = sorted([join(img_dir, x) for x in listdir(img_dir) if is_image_file(x)])
         self.target_filenames = sorted([join(mask_dir, x) for x in listdir(mask_dir) if is_image_file(x)])
+        if balance:
+            self.target_filenames = [x for x in self.target_filenames if os.stat(x).st_size > 461]
+            self.image_filenames = [x.replace("masks","train") for x in self.target_filenames]
         sp= self.target_filenames.__len__()
         sp= int(train_pct *sp)
         random.shuffle(self.image_filenames)

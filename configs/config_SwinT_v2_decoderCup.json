@@ -1,7 +1,7 @@
 {
     "training":{
-      "arch_type":"monuseg",
-      "n_epochs":4,
+      "arch_type":"siim",
+      "n_epochs":39,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
       "lr_decay_iters": 250,
