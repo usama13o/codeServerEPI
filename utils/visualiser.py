@@ -61,14 +61,14 @@ class Visualiser():
     def display_current_results(self, visuals, epoch, save_result):
         if self.use_wandb:
             mask = []
-            lim= len(visuals['inp_S'])
-            self.upload_limit = self.upload_limit - lim
+            lim= self.upload_limit if len(visuals['inp_S']) > self.upload_limit else len(visuals['inp_S'])
+
             if self.upload_limit <= 0:
                 return
             for inp,pred,true in zip(visuals['inp_S'][:lim],visuals['out_S'][:lim],visuals['true_S'][:lim]):
                 mask.append(wb_mask(inp, pred,true))
             self.run.log({'predictions':mask})
-
+            self.upload_limit = self.upload_limit - lim
         if self.display_id > 0:  # show images in the browser
             ncols = self.display_single_pane_ncols
             if ncols > 0:

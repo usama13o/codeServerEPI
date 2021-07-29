@@ -1,3 +1,6 @@
+import os
+# TODO fix mkl problem 
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import pywick 
 from pywick.models.segmentation import deeplab_v3_plus
 from utils.util import json_file_to_pyobj
@@ -17,11 +20,8 @@ from utils.error_logger import ErrorLogger
 from models import get_model
 
 
-import os
-
 if __name__ == '__main__':
 
-    os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
     # Parse input arguments
     json_filename ="configs\config_SwinT.json"
