@@ -1,3 +1,4 @@
+from dataio.loader.monuseg_dataset import monuseg_dataset
 import json
 
 from dataio.loader.ukbb_dataset import UKBBDataset
@@ -10,6 +11,8 @@ from dataio.loader.slides_dataset import slides_dataset
 from dataio.loader.peso_dataset import peso_dataset
 from dataio.loader.glas_dataset import glas_dataset
 from dataio.loader.siim_acr_dataset import siim_acr_dataset
+from dataio.loader.monuseg_dataset import monuseg_dataset
+
 
 def get_dataset(name):
     """get_dataset
@@ -29,6 +32,7 @@ def get_dataset(name):
         'pesoL':peso_dataset,
         'glas':glas_dataset,
         'siim':siim_acr_dataset,
+        'monuseg':monuseg_dataset,
 
     }[name]
 

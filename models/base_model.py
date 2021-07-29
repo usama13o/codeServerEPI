@@ -10,7 +10,7 @@ class BaseModel():
         self.input = None
         self.net = None
         self.isTrain = False
-        self.use_cuda =True
+        self.use_cuda =True if torch.cuda.device_count() > 0 else False
         self.schedulers = []
         self.optimizers = []
         self.save_dir = None
