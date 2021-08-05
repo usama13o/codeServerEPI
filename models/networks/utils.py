@@ -1,3 +1,5 @@
+import os
+import PIL
 from timm.models.layers.weight_init import trunc_normal_
 import torch
 import torch.nn as nn
@@ -473,6 +475,19 @@ class HookBasedFeatureExtractor(nn.Module):
         return self.inputs, self.outputs
 
 
+# function to save the feature map channels at a given layer
+def get_fmap_channels(fmap):
+    ''' 
+    iterate through the fmaps in each batch elment and save all the channels as PNGs in a folder 
+
+    fmap: Tensor (B, C, H, W)
+    '''
+    if os.path.exists(f"{os.path.dirname(os.path.realpath(__file__))}\\output_featuresmaps\\in_x_forward_features\\") is not True:
+        os.makedirs(f"{os.path.dirname(os.path.realpath(__file__))}\\output_featuresmaps\\in_x_forward_features")
+    else:
+        for idxx,xx in enumerate(fmap):
+            for idx,x in enumerate(xx):
+                PIL.Image.fromarray(x[:,:].detach().numpy()).convert("L").save(f"{idxx}_{idx}.png")
 class UnetDsv3(nn.Module):
     def __init__(self, in_size, out_size, scale_factor):
         super(UnetDsv3, self).__init__()
