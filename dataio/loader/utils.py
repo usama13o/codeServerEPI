@@ -74,7 +74,7 @@ def open_image_np(path):
 def open_image_np_bw(path):
     im = open_image(path)
     array = np.array(im)
-    return array[:,:,np.newaxis]
+    return array[:,:,np.newaxis].repeat(3,axis=2)
 def load_nifti_img(filepath, dtype):
     '''
     NIFTI Image Loader
