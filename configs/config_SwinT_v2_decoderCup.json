@@ -1,11 +1,11 @@
 {
     "training":{
       "arch_type":"siim",
-      "n_epochs":100,
+      "n_epochs":39,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
       "lr_decay_iters": 250,
-      "batchSize":128,
+      "batchSize":64,
       "preloadData": false,
       "split_pct":0.8
     },
@@ -90,7 +90,8 @@
     "model":{
       "type":"seg",
       "continue_train":true,
-      "which_epoch":38,
+      "which_epoch":-1,
+      "path_pre_trained_model":"C:\\Users\\Usama\\Downloads\\upernet_swin_base_patch4_window7_512x512.pth",
       "model_type": "swin",
       "tensor_dim": "2D",
       "division_factor": 1000,
@@ -108,7 +109,7 @@
       "num_heads": [ 4, 8, 16, 32 ],
       "window_size": 7,
       "checkpoints_dir": "./checkpoints",
-      "experiment_name": "Swin Transformer DecoderCup L pretrained",
+      "experiment_name": "Swin Transformer DecoderCup pretrained",
       "criterion": "iou_loss",
       "nonlocal_mode":"concatenation_residual",
       "optim":"adam"
