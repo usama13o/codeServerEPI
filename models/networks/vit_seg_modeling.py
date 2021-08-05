@@ -6,6 +6,7 @@ from __future__ import print_function
 import copy
 import logging
 import math
+from models.layers.carafe import CARAFE
 
 from os.path import join as pjoin
 
@@ -306,9 +307,11 @@ class DecoderBlock(nn.Module):
             use_batchnorm=use_batchnorm,
         )
         self.up = nn.UpsamplingBilinear2d(scale_factor=2)
+        self.carafe = CARAFE(c=in_channels)
 
     def forward(self, x, skip=None):
-        x = self.up(x)
+        # x = self.up(x)
+        x = self.carafe(x)
         if skip is not None:
             x = torch.cat([x, skip], dim=1)
         x = self.conv1(x)

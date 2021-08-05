@@ -130,7 +130,6 @@ pywich_test.py
 pywich_test.py
 pywich_test.py
 configs/config_SwinT_v2_decoderCup.json
-.gitignore
 configs/config_SwinT_v2_decoderCup.json
 models/networks/output_featuresmaps/in_x_forward_features/
 configs/config_SwinT_v2_decoderCup.json
