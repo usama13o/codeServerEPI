@@ -130,5 +130,7 @@ pywich_test.py
 pywich_test.py
 pywich_test.py
 configs/config_SwinT_v2_decoderCup.json
-.gitignore
 configs/config_SwinT_v2_decoderCup.json
+dataio/loader/utils.py
+configs/config_unet_epi_multi_att_dsv.json
+configs/config_deeplab.json
