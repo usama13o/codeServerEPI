@@ -1,7 +1,7 @@
 {
     "training":{
       "arch_type":"siim",
-      "n_epochs":39,
+      "n_epochs":40,
       "save_epoch_freq": 2,
       "lr_policy": "one_cycle",
       "lr_decay_iters": 250,
@@ -13,10 +13,10 @@
       "display_port":9898,
       "no_html": true,
       "display_winsize": 256,
-      "display_id": 1,
+      "display_id": 0,
       "lim":15,
-      "run_name":"Swin Transformer DecoderCup",
-      "use_wandb": false, 
+      "run_name":"Swin Transformer UupperHead ",
+      "use_wandb":true, 
       "display_single_pane_ncols": 0
     },
     "data_path": {
@@ -25,7 +25,7 @@
       "peso":"F:\\Data\\peso_dataset",
       "pesoL":"F:\\Data\\peso_dataset\\scaled_slides_tif",
       "glas":"F:\\Data\\Warwick QU Dataset (Released 2016_07_08)",
-      "siim":"C:\\Data\\siim_acr\\256",
+      "siim":"F:\\Data\\SIIM acr",
       "monuseg":"C:\\Data\\MoNuSeg"
     },
     "augmentation": {
@@ -106,7 +106,7 @@
       "tensor_dim": "2D",
       "division_factor": 1000,
       "img_size":224,
-      "input_nc": 1,
+      "input_nc": 3,
       "output_nc":2,
       "lr_rate": 1e-4,
       "max_lr":1e-4,
