@@ -12,6 +12,7 @@ from dataio.loader.peso_dataset import peso_dataset
 from dataio.loader.glas_dataset import glas_dataset
 from dataio.loader.siim_acr_dataset import siim_acr_dataset
 from dataio.loader.monuseg_dataset import monuseg_dataset
+from dataio.loader.isic_dataset import isic_dataset
 
 
 def get_dataset(name):
@@ -33,6 +34,7 @@ def get_dataset(name):
         'glas':glas_dataset,
         'siim':siim_acr_dataset,
         'monuseg':monuseg_dataset,
+        'isic':isic_dataset,
 
     }[name]
 
