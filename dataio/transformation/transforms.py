@@ -37,6 +37,7 @@ class Transformations:
             'glas': self.epi_transform,
             'siim': self.epi_transform,
             'monuseg': self.epi_transform,
+            'isic': self.epi_transform,
 
         }[self.name]()
 
