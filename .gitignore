@@ -129,8 +129,5 @@ epithelial-cells-ihc.zip
 pywich_test.py
 models/networks/output_featuresmaps/in_x_forward_features/
 configs/*
-configs/
-dataio/loader/utils.py
-pywich_test.py
 .vscode/launch.json
 models/networks/output_featuresmaps/
