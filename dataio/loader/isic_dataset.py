@@ -63,8 +63,10 @@ class isic_dataset(data.Dataset):
             target = np.copy(self.raw_labels[index])
 
         # handle exceptions
+        check_exceptions(input, target)
         if self.transform:
             input, target = self.transform(input, target)
+        check_exceptions(input, target)
 
         check_exceptions(input, target)
         
