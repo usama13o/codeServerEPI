@@ -1,4 +1,6 @@
 import numpy as np
+import numpy
+import torchvision.transforms as tt
 import scipy
 import scipy.ndimage
 from scipy.ndimage.filters import gaussian_filter
@@ -77,22 +79,21 @@ class Resize:
             self._size = (size, size)
         else:
             self._size = size
+        
+        self.toPil = tt.ToPILImage()
+        self.resize = tt.Resize(self._size)
 
     def __call__(self,x,y=None):
-        _input=x
-        _input = skimage.transform.resize(_input, self._size)
-        _input = skimage.util.img_as_ubyte(_input)
+        
+        _input=self.toPil(x)
+        _input = self.resize(_input)
+        # _input = skimage.util.img_as_ubyte(_input)
         if y is not None:
-            _input_y=y
-            _input_y = skimage.transform.resize(_input_y, self._size)
-            _input_y = skimage.util.img_as_ubyte(_input_y)
-            if 2 in y :
-                # print(np.unique(_input_y))
-                _input_y[_input_y == 1 ] = 2
-                # print(np.unique(_input_y))
-            return _input, _input_y
+            _input_y=self.toPil(y)
+            _input_y = self.resize(_input_y)
+            return numpy.array(_input), numpy.array(_input_y)[:,:,np.newaxis]
         else:
-            return _input
+            return numpy.array(_input)
 
 class Merge(object):
     """Merge a group of images

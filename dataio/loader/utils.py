@@ -111,7 +111,7 @@ def write_nifti_img(input_nii_array, meta, savedir):
 
 def check_exceptions(image, label=None):
     if label is not None:
-        if image.shape != label.shape:
+        if image.shape[:-1] != label.shape[:-1]:
             print('Error: mismatched size, image.shape = {0}, '
                   'label.shape = {1}'.format(image.shape, label.shape))
             #print('Skip {0}, {1}'.format(image_name, label_name))
@@ -121,3 +121,8 @@ def check_exceptions(image, label=None):
         print('Error: blank image, image.max = {0}'.format(image.max()))
         #print('Skip {0} {1}'.format(image_name, label_name))
         raise (Exception('blank image exception'))
+
+    if label.max() < 1e-6:
+        print('Error:  label blank, image.max = {0}'.format(label.max()))
+        #print('Skip {0} {1}'.format(image_name, label_name))
+        raise (Exception('blank label exception'))
