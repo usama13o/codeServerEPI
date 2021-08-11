@@ -121,3 +121,8 @@ def check_exceptions(image, label=None):
         print('Error: blank image, image.max = {0}'.format(image.max()))
         #print('Skip {0} {1}'.format(image_name, label_name))
         raise (Exception('blank image exception'))
+
+    if label.max() < 1e-6:
+        print('Error:  label blank, image.max = {0}'.format(label.max()))
+        #print('Skip {0} {1}'.format(image_name, label_name))
+        raise (Exception('blank label exception'))

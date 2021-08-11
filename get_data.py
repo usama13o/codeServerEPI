@@ -25,3 +25,10 @@ os.system('tar -xf epithelial-ihc.zip')
 os.system('tar -xf normal.zip')
 os.system('rm staindata.zip')
 os.system('python3 pywich_test.py')
+
+"""
+Running pip install on all line in requriments file on windows: 
+
+FOR /F %k in (requirements.txt) DO pip install %k
+
+"""
