@@ -86,11 +86,16 @@ class Resize:
     def __call__(self,x,y=None):
         
         _input=self.toPil(x)
+        if x.ndim < 3:
+           _input=  _input.convert("L")
         _input = self.resize(_input)
         # _input = skimage.util.img_as_ubyte(_input)
         if y is not None:
-            _input_y=self.toPil(y)
+            _input_y=self.toPil(y).convert("L")
             _input_y = self.resize(_input_y)
+            if x.ndim < 3:
+
+                return numpy.array(_input)[:,:,np.newaxis].repeat(3,axis=2), numpy.array(_input_y)[:,:,np.newaxis]
             return numpy.array(_input), numpy.array(_input_y)[:,:,np.newaxis]
         else:
             return numpy.array(_input)
