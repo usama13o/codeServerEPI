@@ -13,7 +13,6 @@ class isic_dataset(data.Dataset):
         x = basename(x)
         match = [y for y in self.target_filenames if x.split("_")[1][:-4] in y.split("_")[-2]]
         assert len(match) == 1 , f"Found more than one target for image: {x}"
-
         return match[0]
 
     def __init__(self, root_dir, split, transform=None, preload_data=False,train_pct=0.8,balance=True):
@@ -69,6 +68,8 @@ class isic_dataset(data.Dataset):
             input, target = self.transform(input, target)
         check_exceptions(input, target)
 
+        check_exceptions(input, target)
+        
         return input, target
 
     def __len__(self):
