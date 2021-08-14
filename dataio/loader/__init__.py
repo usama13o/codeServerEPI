@@ -1,3 +1,4 @@
+from torch.utils.data import dataset
 from dataio.loader.monuseg_dataset import monuseg_dataset
 import json
 
@@ -45,5 +46,14 @@ def get_dataset_path(dataset_name, opts):
     :param dataset_name:
     :param opts:
     """
-
-    return getattr(opts, dataset_name)
+    return {
+     "epi": "kaggle/input/stain-normalisation/sn",
+      "epi_slides":"c:\\users\\usama\\codeserverepi\\codeserverepi-colab\\",
+      "peso":"F:\\data\\peso_dataset",
+      "pesol":"F:\\data\\peso_dataset\\scaled_slides_tif",
+      "glas":"F:\\data\\warwick qu dataset (released 2016_07_08)",
+      "siim":"F:\\data\\siim acr",
+      "monuseg":"c:\\data\\monuseg",
+      "isic":"F:\\data\\isic"
+    }[dataset_name]
+    # return getattr(opts, dataset_name)

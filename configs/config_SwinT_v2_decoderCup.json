@@ -110,8 +110,7 @@
     "model":{
       "type":"seg",
       "continue_train":true,
-      "which_epoch":-1,
-      "path_pre_trained_model":"c:\\users\\usama\\downloads\\upernet_swin_base_patch4_window7_512x512.pth",
+      "which_epoch":32,
       "model_type": "swin",
       "tensor_dim": "2D",
       "division_factor": 1000,

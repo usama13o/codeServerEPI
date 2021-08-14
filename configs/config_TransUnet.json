@@ -1,11 +1,11 @@
 {
   "training":{
-    "arch_type": "glas",
+    "arch_type": "isic",
     "n_epochs":40,
     "save_epoch_freq": 3,
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
-    "batchSize": 8,
+    "batchSize":16,
     "preloadData": false,
     "split_pct":0.8
   },
@@ -66,15 +66,16 @@
       "random_flip_prob": 0.5,
       "scale_size":256,
       "patch_size": [256,256]
-    }, "glas": {
-      "shift": [0.1,0.1],
-      "rotate": 15.0,
-      "scale": [0.7,1.3],
-      "intensity": [1.0,1.0],
-      "random_flip_prob": 0.5,
-      "scale_size":224,
-      "patch_size": [224,224]
-    }
+    } ,
+    "isic": {
+"shift": [0.1,0.1],
+"rotate": 15.0,
+"scale": [0.7,1.3],
+"intensity": [1.0,1.0],
+"random_flip_prob": 0.5,
+"scale_size":224,
+"patch_size":[224,224]
+}
   },
   "model":{
     "type":"seg",

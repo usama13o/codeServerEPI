@@ -58,7 +58,7 @@ def get_network(name,config, n_classes, in_channels=3, feature_scale=4, tensor_d
                       nonlocal_mode=nonlocal_mode,
                       aggregation_mode=aggregation_mode)
     elif name in ['DeepLab','Deeplab']:
-        model = model(num_classes=n_classes,pretrained=True)
+        model = model(num_classes=n_classes,pretrained=True,in_channels = in_channels)
     elif name == "axialunet":
         model = axialunet(img_size= img_size, imgchan = n_classes)
     elif name == "medt":
