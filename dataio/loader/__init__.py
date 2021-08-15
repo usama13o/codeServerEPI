@@ -1,3 +1,4 @@
+from dataio.loader.cc_dataset import cc_dataset
 from dataio.loader.asdc_dataset import asdc_dataset
 from dataio.loader.monuseg_dataset import monuseg_dataset
 import json
@@ -37,6 +38,7 @@ def get_dataset(name):
         'monuseg':monuseg_dataset,
         'isic':isic_dataset,
         'asdc':asdc_dataset,
+        'cc':cc_dataset,
 
     }[name]
 

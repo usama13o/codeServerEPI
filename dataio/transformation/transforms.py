@@ -39,6 +39,7 @@ class Transformations:
             'monuseg': self.epi_transform,
             'isic': self.epi_transform,
             'asdc': self.ASDC_3d,
+            'cc': self.epi_transform,
 
         }[self.name]()
 
