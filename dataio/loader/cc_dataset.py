@@ -53,7 +53,7 @@ class cc_dataset(data.Dataset):
         if self.preload_data:
             print('Preloading the {0} dataset ...'.format(split))
             self.raw_images = [open_image_np(ii)[0] for ii in self.image_filenames]
-            self.raw_labels = [open_target_np_glas(ii)[0] for ii in self.target_filenames]
+            self.raw_labels = [open_image_np(ii)[0] for ii in self.target_filenames]
             print('Loading is done\n')
 
 
@@ -64,7 +64,7 @@ class cc_dataset(data.Dataset):
         # load the nifti images
         if not self.preload_data:
             input  = open_image_np(self.image_filenames[index])
-            target  =open_target_np_glas(self.target_filenames[index])
+            target  =open_image_np(self.target_filenames[index])
         else:
             input = np.copy(self.raw_images[index])
             target = np.copy(self.raw_labels[index])
