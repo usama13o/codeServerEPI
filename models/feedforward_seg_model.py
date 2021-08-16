@@ -79,6 +79,8 @@ class FeedForwardSegmentation(BaseModel):
             bs = _input.size()
             if (len(bs) > 4):
                 _input = _input.permute(0,1,4,2,3).contiguous().view(bs[0]*bs[1], bs[4], bs[2], bs[3])
+            if (len(bs) >3):
+                _input = _input.permute(0,3,1,2)
 
             # Define that it's a cuda array
             if idx == 0:

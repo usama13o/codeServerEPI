@@ -24,7 +24,7 @@ def train(arguments):
     train_opts = json_opts.training
 
     # Architecture type
-    arch_type = train_opts.arch_type
+    arch_type = train_opts.arch_type if args.arch_type is not None else train_opts.arch_type
 
     # Setup Dataset and Augmentation
     ds_class = get_dataset(arch_type)
@@ -124,6 +124,9 @@ if __name__ == '__main__':
 
     parser.add_argument('-c', '--config',  help='training config file', required=True)
     parser.add_argument('-d', '--debug',   help='returns number of parameters and bp/fp runtime', action='store_true')
+    parser.add_argument('-a', '--arch_type',   help='wich architecture type', action='store_true')
+    parser.add_argument('-bs', '--batch_size',   help='batch size', action='store_true')
+    parser.add_argument('-ep', '--n_epochs',   help='number of epochs', action='store_true')
     args = parser.parse_args()
 
     train(args)

@@ -40,6 +40,7 @@ class Transformations:
             'isic': self.epi_transform,
             'asdc': self.ASDC_3d,
             'cc': self.epi_transform,
+            'cc_test': self.epi_transform_TEST,
 
         }[self.name]()
 
@@ -86,6 +87,27 @@ class Transformations:
                                       ts.ChannelsLast(),
                                       ts.AddChannel(axis=0),
                                     #   ts.SpecialCrop(size=self.patch_size, crop_type=0),
+                                      ts.TypeCast(['float', 'long'])
+                                ])
+
+        return {'train': train_transform, 'valid': valid_transform}
+
+    def epi_transform_TEST(self):
+        train_transform = ts.Compose([Resize(size=self.scale_size),
+                                      ts.ToTensor(),
+                                      ts.ChannelsFirst(),
+                                      ts.TypeCast(['float', 'float']),
+                                      ts.ChannelsLast(),
+                                      ts.AddChannel(axis=0),
+                                      ts.TypeCast(['float', 'long'])
+                                ])
+
+        valid_transform = ts.Compose([Resize(size=self.scale_size),
+                                      ts.ToTensor(),
+                                      ts.ChannelsFirst(),
+                                      ts.TypeCast(['float', 'float']),
+                                      ts.ChannelsLast(),
+                                      ts.AddChannel(axis=0),
                                       ts.TypeCast(['float', 'long'])
                                 ])
 
