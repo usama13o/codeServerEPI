@@ -77,6 +77,8 @@ class FeedForwardSegmentation(BaseModel):
         for idx, _input in enumerate(inputs):
             # If it's a 5D array and 2D model then (B x C x H x W x Z) -> (BZ x C x H x W)
             bs = _input.size()
+            if (len(bs) == 4):
+                _input = _input.permute(0,3,1,2)
             if (len(bs) > 4):
                 _input = _input.permute(0,1,4,2,3).contiguous().view(bs[0]*bs[1], bs[4], bs[2], bs[3])
 

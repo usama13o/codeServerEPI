@@ -83,23 +83,6 @@ def mkdir(path):
         os.makedirs(path)
 
 
-
-def json_file_to_dict_args(filename,args):
-    def _json_object_hook(d,args=args): 
-        if args is not None :
-            not_found = {}
-            args= args.__dict__
-            for k,v in zip(args.keys(),args.values()):
-                if k in d.keys() and v is not None:
-                    d[k]=v
-                #TODO find a better way to handle this 
-                else:
-                    not_found[k]=v
-            args=not_found.copy()
-        return d
-    def json2obj(data): return json.loads(data, object_hook=_json_object_hook)
-
-    return json2obj(open(filename).read())
 def json_file_to_pyobj(filename,args):
     def _json_object_hook(d,args=args): 
         if args is not None :
