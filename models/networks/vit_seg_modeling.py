@@ -458,6 +458,7 @@ CONFIGS = {
     'R50-ViT-L_16': configs.get_r50_l16_config(),
     'testing': configs.get_testing(),
     'testing_swin': configs.get_testing_swin(),
+    'testing_nest': configs.get_testing_nest(),
 }
 
 

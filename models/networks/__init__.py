@@ -1,3 +1,4 @@
+from models.networks.nestedT import Nest
 from models.networks.swin_unet import SwinTransformerSys
 from models.networks.swin_transformer import SwinTransformer
 from models.networks.axialnet import axialunet, logo,MedT,gated
@@ -61,6 +62,8 @@ def get_network(name,config, n_classes, in_channels=3, feature_scale=4, tensor_d
         model = model(num_classes=n_classes,pretrained=True)
     elif name == "axialunet":
         model = axialunet(img_size= img_size, imgchan = n_classes)
+    elif name == "nest":
+        model = model(img_size= img_size, patch_size=config.patch_size,num_classes=n_classes,embed_dims=config.embed_dims,num_heads=config.num_heads,num_levels=config.num_levels)
     elif name == "medt":
         model = MedT(img_size= img_size, num_classes = n_classes)
     elif name== "gatedaxialunet":
@@ -110,6 +113,7 @@ def _get_model_instance(name, tensor_dim):
         'swin': {'2D':SwinTransformer},
         'swin_unet': {'2D':SwinTransformerSys},
         'R50-ViT-L_16': {'2D':VisionTransformer},
+        'nest': {'2D':Nest},
         'DeepLab':{'v3+':pws.deeplab_v3_plus.DeepLabv3_plus,"v2":pws.deeplab_v2_res.DeepLabv2_ASPP,"v3":pws.deeplab_v3.DeepLabv3}
 
     }[name][tensor_dim]
