@@ -124,6 +124,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-c', '--config',  help='training config file', required=True)
     parser.add_argument('-d', '--debug',   help='returns number of parameters and bp/fp runtime', action='store_true')
+    parser.add_argument('-a', '--arch_type',   help='which dataset architecture to run', action='store_true')
     args = parser.parse_args()
 
     train(args)

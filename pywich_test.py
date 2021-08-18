@@ -3,7 +3,7 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import pywick 
 from pywick.models.segmentation import deeplab_v3_plus
-from utils.util import json_file_to_pyobj
+from utils.util import json_file_to_dict_args, json_file_to_pyobj
 from dataio.loader import get_dataset, get_dataset_path
 from dataio.transformation import get_dataset_transformation
 from torch.utils.data import DataLoader
@@ -20,25 +20,24 @@ from utils.error_logger import ErrorLogger
 from models import get_model
 
 
-if __name__ == '__main__':
-
+def train(args):
 
     # Parse input arguments
-    json_filename ="configs\config_SwinT.json"
-    json_filename ="configs\config_SwinT_unet.json"
-    json_filename ="configs\config_SwinT_v2_decoderCup.json"
-    json_filename ="configs\config_TransUnet.json"
+    # json_filename ="configs\config_SwinT.json"
+    # json_filename ="configs\config_SwinT_unet.json"
+    # json_filename ="configs\config_SwinT_v2_decoderCup.json"
+    # json_filename ="configs\config_TransUnet.json"
     # json_filename ="configs\config_TransUnet_AG.json"
     # json_filename ="configs\config_deeplab.json"
     # json_filename ="configs\config_unet_epi_multi_att_dsv.json"
 
     # Load options
-    json_opts = json_file_to_pyobj(json_filename)
-    wanb_config= json.loads(open(json_filename).read())
+    json_opts = json_file_to_pyobj(args.config,args)
+    wanb_config= json_file_to_dict_args(args.config,args)
     train_opts = json_opts.training
 
     # Architecture type
-    arch_type = train_opts.arch_type
+    arch_type =  train_opts.arch_type
     model = get_model(json_opts.model)
 
     # Setup Dataset and Augmentation
@@ -50,7 +49,7 @@ if __name__ == '__main__':
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData,balance=True)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData,balance=True)
     # test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
-    train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size=train_opts.batchSize, shuffle=True,pin_memory=True,persistent_workers=False)
+    train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size= train_opts.batchSize, shuffle=True,pin_memory=True,persistent_workers=False)
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=8,batch_size=train_opts.batchSize, shuffle=False)
 
     visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False,config=wanb_config)
@@ -123,3 +122,21 @@ if __name__ == '__main__':
 
 
     visualizer.finish()
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='CNN Seg Training Function')
+    parser.add_argument('-c', '--config',  help='training config file', required=False)
+
+    parser.add_argument('-d', '--debug',   help='returns number of parameters and bp/fp runtime', action='store_true')
+    parser.add_argument('-a', '--arch_type',   help='wich architecture type')
+    parser.add_argument('-wandb', '--use_wandb',   help='use wandb to log the training',type=bool)
+    parser.add_argument('-cont', '--continue_train',   help='Should contine training?',type=bool)
+    parser.add_argument('-wep', '--which_epoch',   help='which epoch to continue training from?',type=int)
+    parser.add_argument('-maxlr', '--max_lr',   help='maximum learning rate for cyclic learning',  type=float)
+    parser.add_argument('-bs', '--batchSize',   help='batch size',type=int)
+    parser.add_argument('-ep', '--n_epochs',   help='number of epochs', type=int)
+    args = parser.parse_args()
+
+    train(args)

@@ -251,7 +251,7 @@ class Visualiser():
         self.run.finish()
   
 def labels(): 
-    segmentation_classes = ['BG','Tumour','Normal']
+    segmentation_classes = ['BG','Tumour','Normal',' left ventricular cavity']
     l = {}
     for i, label in enumerate(segmentation_classes):
         l[i] = label

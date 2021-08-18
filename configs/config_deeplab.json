@@ -1,8 +1,8 @@
 {
   "training":{
-    "arch_type": "isic",
-    "n_epochs":40,
-    "save_epoch_freq": 2,
+    "arch_type": "asdc",
+    "n_epochs":100,
+    "save_epoch_freq": 5,
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
     "batchSize":64,
@@ -68,7 +68,25 @@
 "random_flip_prob": 0.5,
 "scale_size":224,
 "patch_size":[224,224]
-} 
+} ,
+"asdc": {
+"shift": [0.1,0.1],
+"rotate": 15.0,
+"scale": [0.7,1.3],
+"intensity": [1.0,1.0],
+"random_flip_prob": 0.5,
+"scale_size":224,
+"patch_size":[224,224]
+}  ,
+"cc": {
+"shift": [0.1,0.1],
+"rotate": 15.0,
+"scale": [0.7,1.3],
+"intensity": [1.0,1.0],
+"random_flip_prob": 0.5,
+"scale_size":224,
+"patch_size":[224,224]
+}
   },
   "model":{
     "type":"seg",
@@ -78,9 +96,9 @@
     "tensor_dim": "v3+",
     "division_factor": 100,
     "input_nc": 3,
-    "output_nc": 2,
+    "output_nc": 4,
     "lr_rate": 7e-4,
-    "max_lr":1e-4,
+    "max_lr":1e-3,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
     "gpu_ids": [0],

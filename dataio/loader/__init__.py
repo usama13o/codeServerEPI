@@ -57,6 +57,8 @@ def get_dataset_path(dataset_name, opts):
       "glas":"F:\\data\\warwick qu dataset (released 2016_07_08)",
       "siim":"F:\\data\\siim acr",
       "monuseg":"c:\\data\\monuseg",
-      "isic":"F:\\data\\isic"
+      "isic":"F:\\data\\isic",
+      "asdc":"F:\\Data\ASDC",
+      "cc":"F:\Data\ct_lesion_seg"
     }[dataset_name]
     # return getattr(opts, dataset_name)
