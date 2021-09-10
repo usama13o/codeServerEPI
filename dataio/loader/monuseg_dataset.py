@@ -30,6 +30,10 @@ class monuseg_dataset(data.Dataset):
         random.shuffle(self.image_filenames)
         if split == 'train':
             self.image_filenames = self.image_filenames
+        elif split == 'test':
+
+            self.image_filenames = [join(test_dir,x) for x in listdir(test_dir) if is_image_file(x)]
+            self.target_filenames = sorted([join(test_dir.replace("img","labelcol"),x) for x in listdir(test_dir.replace("img","labelcol")) if is_image_file(x)])
         else:
             self.image_filenames = [join(validation_dir,x) for x in listdir(validation_dir) if is_image_file(x)]
             self.target_filenames = sorted([join(validation_dir.replace("img","labelcol"),x) for x in listdir(validation_dir.replace("img","labelcol")) if is_image_file(x)])

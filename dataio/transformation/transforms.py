@@ -33,7 +33,7 @@ class Transformations:
             'epi':       self.epi_transform,
             'epi_slides': self.epi_transform,
             'peso': self.epi_transform,
-            'pesoL': self.epi_transform,
+            'pesol': self.epi_transform,
             'glas': self.epi_transform,
             'siim': self.epi_transform,
             'monuseg': self.epi_transform,

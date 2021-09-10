@@ -45,9 +45,9 @@ def get_testing_nest():
     config.transformer.mlp_dim = 1
     config.transformer.num_heads = 1
     config.transformer.num_layers = 1
-    config.hidden_size=512
-    config.decoder_channels=[256,128]
-    config.skip_channels=[256,128,16,16]
+    config.hidden_size=1024
+    config.decoder_channels=[512,256,128]
+    config.skip_channels=[512,256,128,16,16]
     config.n_skip=2
     return config
 

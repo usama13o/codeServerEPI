@@ -63,7 +63,7 @@ def get_network(name,config, n_classes, in_channels=3, feature_scale=4, tensor_d
     elif name == "axialunet":
         model = axialunet(img_size= img_size, imgchan = n_classes)
     elif name == "nest":
-        model = model(img_size= img_size, patch_size=config.patch_size,num_classes=n_classes,embed_dims=config.embed_dims,num_heads=config.num_heads,num_levels=config.num_levels)
+        model = model(img_size= img_size, patch_size=config.patch_size,num_classes=n_classes,embed_dims=config.embed_dims,num_heads=config.num_heads,depths=config.depths,num_levels=config.num_levels)
     elif name == "medt":
         model = MedT(img_size= img_size, num_classes = n_classes)
     elif name== "gatedaxialunet":

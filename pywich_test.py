@@ -1,4 +1,6 @@
 import os
+
+from torch.utils.data.dataloader import T
 # TODO fix mkl problem 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import pywick 
@@ -46,7 +48,7 @@ def train(args):
     ds_transform = get_dataset_transformation(arch_type, opts=json_opts.augmentation)
 
     # Setup Data Loader
-    train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData,balance=True)
+    train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData,balance=False)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData,balance=True)
     # test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData)
     train_loader = DataLoader(dataset=train_dataset, num_workers=8, batch_size= train_opts.batchSize, shuffle=True,pin_memory=True,persistent_workers=False)
@@ -55,7 +57,10 @@ def train(args):
     visualizer = Visualiser(json_opts.visualisation, save_dir=model.save_dir,resume= False if json_opts.model.continue_train else False,config=wanb_config)
     error_logger = ErrorLogger()
     start_epoch = False if json_opts.training.n_epochs < json_opts.model.which_epoch else json_opts.model.continue_train
-    model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
+    if train_opts.lr_policy == "one_cycle":
+        model.set_scheduler(train_opts,len_train=len(train_loader),max_lr=json_opts.model.max_lr,division_factor=json_opts.model.division_factor,last_epoch=json_opts.model.which_epoch * len(train_loader) if start_epoch else -1)
+    else:
+        model.set_scheduler(train_opts)
     frozen=False
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
@@ -117,7 +122,7 @@ def train(args):
             visualizer.save_model(epoch)
 
         # Update the model learning rate
-        # model.update_learning_rate()
+        # model.update_learning_rate(errors['Seg_Loss'])
 
 
 
@@ -137,6 +142,9 @@ if __name__ == '__main__':
     parser.add_argument('-maxlr', '--max_lr',   help='maximum learning rate for cyclic learning',  type=float)
     parser.add_argument('-bs', '--batchSize',   help='batch size',type=int)
     parser.add_argument('-ep', '--n_epochs',   help='number of epochs', type=int)
+    parser.add_argument('-img', '--img_size',   help='number of epochs', type=int)
+    parser.add_argument('-out', '--output_nc',   help='Number of output classes', type=int)
+    parser.add_argument('-pretrain', '--path_pre_trained_model',   help='pat to pre trained model', type=str)
     args = parser.parse_args()
 
     train(args)

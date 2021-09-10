@@ -15,6 +15,7 @@ Acknowledgments:
 Copyright 2021 Alexander Soare
 """
 
+from typing import Callable
 from .vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg, SegmentationHead
 import collections.abc
 import logging
@@ -28,7 +29,7 @@ import torch.nn.functional as F
 from torch import nn
 
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from timm.models.helpers import build_model_with_cfg, named_apply
+from timm.models.helpers import build_model_with_cfg
 from timm.models.layers import PatchEmbed, Mlp, DropPath, create_classifier, trunc_normal_
 from timm.models.layers import create_conv2d, create_pool2d, to_ntuple
 # from .registry import register_model
@@ -45,7 +46,15 @@ def _cfg(url='', **kwargs):
         'first_conv': 'patch_embed.proj', 'classifier': 'head',
         **kwargs
     }
-
+def named_apply(fn: Callable, module: nn.Module, name='', depth_first=True, include_root=False) -> nn.Module:
+    if not depth_first and include_root:
+        fn(module=module, name=name)
+    for child_name, child_module in module.named_children():
+        child_name = '.'.join((name, child_name)) if name else child_name
+        named_apply(fn=fn, module=child_module, name=child_name, depth_first=depth_first, include_root=True)
+    if depth_first and include_root:
+        fn(module=module, name=name)
+    return module
 
 default_cfgs = {
     # (weights from official Google JAX impl)
@@ -179,7 +188,7 @@ class NestLevel(nn.Module):
             norm_layer=None, act_layer=None, pad_type=''):
         super().__init__()
         self.block_size = block_size
-        self.pos_embed = nn.Parameter(torch.zeros(1, num_blocks, seq_length, embed_dim))
+        self.pos_embed = nn.Parameter(torch.zeros(1, num_blocks, seq_length, embed_dim).to("cuda"))
 
         if prev_embed_dim is not None:
             self.pool = ConvPool(prev_embed_dim, embed_dim, norm_layer=norm_layer, pad_type=pad_type)
@@ -288,7 +297,7 @@ class Nest(nn.Module):
         self.seq_length = self.num_patches // self.num_blocks[0]
 
         # Build up each hierarchical level
-        levels = []
+        levels = nn.ModuleList()
         dp_rates = [x.tolist() for x in torch.linspace(0, drop_path_rate, sum(depths)).split(depths)]
         prev_dim = None
         curr_stride = 4

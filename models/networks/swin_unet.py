@@ -1,5 +1,3 @@
-from models.networks.utils import UnetDsv2
-from models.networks.swin_transformer import MaskTransformer_2
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
@@ -643,7 +641,6 @@ class SwinTransformerSys(nn.Module):
         # build decoder layers
         self.layers_up = nn.ModuleList()
         self.concat_back_dim = nn.ModuleList()
-        self.norm_layers = nn.ModuleList()
         for i_layer in range(self.num_layers):
             concat_linear = nn.Linear(2*int(embed_dim*2**(self.num_layers-1-i_layer)),
             int(embed_dim*2**(self.num_layers-1-i_layer))) if i_layer > 0 else nn.Identity()
@@ -664,7 +661,6 @@ class SwinTransformerSys(nn.Module):
                                 norm_layer=norm_layer,
                                 upsample=PatchExpand if (i_layer < self.num_layers - 1) else None,
                                 use_checkpoint=use_checkpoint)
-                self.norm_layers.append(norm_layer(embed_dim *2 **(self.num_layers-1-i_layer)))
             self.layers_up.append(layer_up)
             self.concat_back_dim.append(concat_linear)
 
@@ -674,18 +670,7 @@ class SwinTransformerSys(nn.Module):
         if self.final_upsample == "expand_first":
             print("---final upsample expand_first---")
             self.up = FinalPatchExpand_X4(input_resolution=(img_size//patch_size,img_size//patch_size),dim_scale=4,dim=embed_dim)
-        #     self.output = nn.Conv2d(in_channels=embed_dim,out_channels=self.num_classes,kernel_size=1,bias=False)
-        self.mask_Transformer_16 = MaskTransformer_2(img_size=img_size,d_model=512,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size*4,d_encoder=512)
-        self.mask_Transformer_32 = MaskTransformer_2(img_size=img_size,d_model=256,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size*2,d_encoder=256)
-        self.mask_Transformer_64 = MaskTransformer_2(img_size=img_size,d_model=128,d_ff=128*4,n_cls=num_classes,n_layers=6,n_heads=8,patch_size=patch_size,d_encoder=128)
-        
-        self.dsv4 = UnetDsv2(in_size=2, out_size=num_classes, scale_factor=16)
-        self.dsv3 = UnetDsv2(in_size=2, out_size=num_classes, scale_factor=8)
-        self.dsv2 = UnetDsv2(in_size=2, out_size=num_classes, scale_factor=4)
-
-        # final conv (without any concat)
-        self.final = nn.Conv2d(num_classes*3,num_classes, 1)
-
+            self.output = nn.Conv2d(in_channels=embed_dim,out_channels=self.num_classes,kernel_size=1,bias=False)
 
         self.apply(self._init_weights)
 
@@ -724,19 +709,17 @@ class SwinTransformerSys(nn.Module):
 
     #Dencoder and Skip connection
     def forward_up_features(self, x, x_downsample):
-        x_ups=[]
         for inx, layer_up in enumerate(self.layers_up):
             if inx == 0:
                 x = layer_up(x)
             else:
                 x = torch.cat([x,x_downsample[3-inx]],-1)
                 x = self.concat_back_dim[inx](x)
-                x_ups.append(self.norm_layers[inx-1](x))
                 x = layer_up(x)
 
         x = self.norm_up(x)  # B L C
   
-        return x,x_ups
+        return x
 
     def up_x4(self, x):
         H, W = self.patches_resolution
@@ -745,24 +728,16 @@ class SwinTransformerSys(nn.Module):
 
         if self.final_upsample=="expand_first":
             x = self.up(x)
-        #     x = x.view(B,4*H,4*W,-1)
-        #     x = x.permute(0,3,1,2) #B,C,H,W
-        #     x = self.output(x)
+            x = x.view(B,4*H,4*W,-1)
+            x = x.permute(0,3,1,2) #B,C,H,W
+            x = self.output(x)
             
         return x
 
     def forward(self, x):
         x, x_downsample = self.forward_features(x)
-        # x,x_ups = self.forward_up_features(x,x_downsample)
-        # x = self.up_x4(x)
-        x1 = self.mask_Transformer_16(x_downsample[2],(16,16))
-        x2 = self.mask_Transformer_32(x_downsample[1],(32,32))
-        x3 = self.mask_Transformer_64(x_downsample[0],(64,64))
-
-        dsv4 = self.dsv4(x1)
-        dsv3 = self.dsv3(x2)
-        dsv2 = self.dsv2(x3)
-        x = self.final(torch.cat([dsv2,dsv3,dsv4],dim=1))
+        x = self.forward_up_features(x,x_downsample)
+        x = self.up_x4(x)
 
         return x
 

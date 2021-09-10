@@ -142,7 +142,7 @@ class IoU_loss(nn.Module):
         union = cardinality - intersection
         iou = (intersection / (union + eps)).mean()   # find mean of class IoU values
         #manage cases where num of calsses is less than 2  
-        if self.num_classes ==2:
+        if self.num_classes ==3:
             weight =[0.1,0.59,0.9]
         if self.num_classes ==4:
             weight = [0.5,0.5,0.5,0.5]

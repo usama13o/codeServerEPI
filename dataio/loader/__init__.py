@@ -33,7 +33,7 @@ def get_dataset(name):
         'epi':stain_norm_dataset,
         'epi_slides':slides_dataset,
         'peso':peso_dataset,
-        'pesoL':peso_dataset,
+        'pesol':peso_dataset,
         'glas':glas_dataset,
         'siim':siim_acr_dataset,
         'monuseg':monuseg_dataset,
@@ -58,7 +58,7 @@ def get_dataset_path(dataset_name, opts):
       "pesol":"F:\\data\\peso_dataset\\scaled_slides_tif",
       "glas":"F:\\data\\warwick qu dataset (released 2016_07_08)",
       "siim":"F:\\data\\siim acr",
-      "monuseg":"c:\\data\\monuseg",
+      "monuseg":"F:\Data\MoNuSeg",
       "isic":"F:\\data\\isic",
       "asdc":"F:\\Data\ASDC",
       "cc":"F:\Data\ct_lesion_seg"
