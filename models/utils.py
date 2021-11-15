@@ -419,9 +419,12 @@ def load_moco_checkpoint(network,pretrained=""):
                     # remove prefix
                 state_dict[k[len("encoder_q."):]] = state_dict[k]
                 # delete renamed or unused k
+            if k.startswith('encoder_q.norm.weight'): 
+                state_dict['norm3.weight'] = state_dict[k]
+            if k.startswith('encoder_q.norm.bias'): 
+                state_dict['norm3.bias'] = state_dict[k]
             del state_dict[k]
 
-        start_epoch = 0
         msg = network.load_state_dict(state_dict, strict=False)
         # assert set(msg.missing_keys) == {"head.weight", "head.bias"}
 
