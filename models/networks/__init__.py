@@ -69,7 +69,8 @@ def get_network(name,config, n_classes, in_channels=3, feature_scale=4, tensor_d
     elif name== "gatedaxialunet":
         model = gated(img_size= img_size, num_classes = n_classes)
     elif name == "swin":
-        model = model(img_size= img_size,patch_size=config.patch_size,in_chans=in_channels,num_classes=n_classes,embed_dim=config.embed_dim,depths=config.depth,num_heads=config.num_heads,window_size=config.window_size)
+        # model = model(img_size= img_size,patch_size=config.patch_size,in_chans=in_channels,num_classes=n_classes,embed_dim=config.embed_dim,depths=config.depth,num_heads=config.num_heads,window_size=config.window_size)
+        model = model(img_size= img_size,num_classes=n_classes)
     elif name == "swin_unet":
         model = model(img_size= img_size,patch_size=config.patch_size,in_chans=in_channels,num_classes = n_classes,embed_dim=config.embed_dim,depths=config.depth,num_heads=config.num_heads,window_size=config.window_size)
     elif name== "logo":

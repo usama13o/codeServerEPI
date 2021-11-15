@@ -405,6 +405,30 @@ def _load_checkpoint(filename, map_location=None):
     return checkpoint
 
 
+def load_moco_checkpoint(network,pretrained=""):
+    
+    if os.path.isfile(pretrained):
+        print("=> loading checkpoint '{}'".format(pretrained))
+        checkpoint = torch.load(pretrained, map_location="cpu")
+
+            # rename moco pre-trained keys
+        state_dict = checkpoint['state_dict']
+        for k in list(state_dict.keys()):
+                # retain only encoder_q up to before the embedding layer
+            if k.startswith('encoder_q') and not k.startswith('encoder_q.head'):
+                    # remove prefix
+                state_dict[k[len("encoder_q."):]] = state_dict[k]
+                # delete renamed or unused k
+            del state_dict[k]
+
+        start_epoch = 0
+        msg = network.load_state_dict(state_dict, strict=False)
+        # assert set(msg.missing_keys) == {"head.weight", "head.bias"}
+
+        print("=> loaded pre-trained model '{}'".format(pretrained))
+    else:
+        print("=> no checkpoint found at '{}'".format(pretrained))
+
 def load_checkpoint(model,
                     filename,
                     map_location='cpu',

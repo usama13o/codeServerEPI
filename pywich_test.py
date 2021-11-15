@@ -144,7 +144,7 @@ if __name__ == '__main__':
     parser.add_argument('-ep', '--n_epochs',   help='number of epochs', type=int)
     parser.add_argument('-img', '--img_size',   help='number of epochs', type=int)
     parser.add_argument('-out', '--output_nc',   help='Number of output classes', type=int)
-    parser.add_argument('-pretrain', '--path_pre_trained_model',   help='pat to pre trained model', type=str)
+    parser.add_argument('-pretrain', '--path_pre_trained_model',   help='path to pre trained model', type=str)
     args = parser.parse_args()
 
     train(args)
