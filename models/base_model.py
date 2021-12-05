@@ -82,7 +82,7 @@ class BaseModel():
         print('Loading the model {0} - epoch {1}'.format(network_label, epoch_label))
         if "swin" in network_label:
             load_checkpoint(network,filename=network_filepath)
-        if 'checkpoint' in network_label:
+        if 'epoch' in network_label:
             load_moco_checkpoint(network,network_filepath)
         else:
             network.load_state_dict(torch.load(network_filepath), strict=strict)

@@ -183,7 +183,7 @@ class FeedForwardSegmentation(BaseModel):
         print("Freezing ")
         for layer in self.net.children():
             for parameter in layer.parameters():
-                if layer._get_name() == layername:
+                if layer._get_name() in ['PatchEmbed','Dropout','ModuleList']:
                     parameter.requires_grad = False
     def unfreeze(self):
         print("unfreezing . . . ")

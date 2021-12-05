@@ -9,6 +9,7 @@ from models.networks.utils import UnetDsv2, init_weightss
 from models.networks.vit_seg_modeling import DecoderCup
 from models.layers.decode_head import resize
 from models.layers.uper_head import UPerHead
+from math import sqrt
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
@@ -409,8 +410,9 @@ class BasicLayer(nn.Module):
             else:
                 x = blk(x)
         if self.downsample is not None:
-            x = self.downsample(x)
-        return x
+            x_dwon = self.downsample(x)
+            return x,x_dwon
+        return x,x
 
     def extra_repr(self) -> str:
         return f"dim={self.dim}, input_resolution={self.input_resolution}, depth={self.depth}"
@@ -645,25 +647,21 @@ class SwinTransformer(nn.Module):
         """Forward function."""
         x = self.patch_embed(x)
 
-        Wh, Ww = x.size(2), x.size(3)
+        H = W = sqrt(int(x.shape[1]))
         if self.ape:
-            # interpolate the position embedding to the corresponding size
-            absolute_pos_embed = F.interpolate(self.absolute_pos_embed, size=(Wh, Ww), mode='bicubic')
-            x = (x + absolute_pos_embed).flatten(2).transpose(1, 2)  # B Wh*Ww C
-        else:
-            x = x.flatten(2).transpose(1, 2)
+            x = x + self.absolute_pos_embed
         x = self.pos_drop(x)
 
         outs = []
         for i in range(self.num_layers):
             layer = self.layers[i]
-            x_out, H, W, x, Wh, Ww = layer(x, Wh, Ww)
-
+            x_out, x = layer(x)
+            H = W = sqrt(int(x_out.shape[1]))
             if i in self.out_indices:
                 norm_layer = getattr(self, f'norm{i}')
                 x_out = norm_layer(x_out)
                 # reshap into a 4d tensor for decoder cup 
-                out = x_out.view(-1, H, W, self.num_features[i]).permute(0, 3, 1, 2).contiguous()
+                out = x_out.view(-1, int(H), int(W), self.num_features[i]).permute(0, 3, 1, 2).contiguous()
                 outs.append(out)
 
         return tuple(outs)

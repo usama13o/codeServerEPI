@@ -1,11 +1,11 @@
 {
     "training":{
-      "arch_type":"glas",
+      "arch_type":"peso",
       "n_epochs":40,
       "save_epoch_freq": 10,
       "lr_policy": "one_cycle",
       "lr_decay_iters": 250,
-      "batchSize":64,
+      "batchSize":8,
       "preloadData": false,
       "split_pct":0.8
     },
@@ -60,7 +60,7 @@
       "scale": [0.7,1.3],
       "intensity": [1.0,1.0],
       "random_flip_prob": 0.5,
-      "scale_size":256,
+      "scale_size":224,
       "patch_size":[224,224]
     }, "glas": {
         "shift": [0.1,0.1],
@@ -68,7 +68,7 @@
         "scale": [0.7,1.3],
         "intensity": [1.0,1.0],
         "random_flip_prob": 0.5,
-        "scale_size":256,
+        "scale_size":224,
         "patch_size": [224,224]
       } ,"pesol": {
         "shift": [0.1,0.1],
@@ -128,7 +128,7 @@
     "model":{
       "type":"seg",
       "continue_train":false,
-      "path_pre_trained_model":"",
+      "path_pre_trained_model":"C:\\Users\\Usama\\moco_saved\\mod_moco_\\lightning_logs\\version_29\\checkpoints\\epoch=243-step=29523.ckpt",
       "which_epoch":0,
       "model_type": "swin",
       "tensor_dim": "2D",

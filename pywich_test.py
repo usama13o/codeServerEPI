@@ -64,14 +64,14 @@ def train(args):
     frozen=False
     for epoch in range(model.which_epoch, train_opts.n_epochs):
         print('(epoch: %d, total # iters: %d)' % (epoch, len(train_loader)))
-        # if epoch % 10 == 0:
-        #     if frozen:
-        #         model.unfreeze()
-        #         frozen = False
-        #     else: 
-        #         print("freezing model")
-        #         model.freeze()
-        #         frozen=True
+        if epoch % 10 == 0:
+            if frozen:
+                model.unfreeze()
+                frozen = False
+            else: 
+                print("freezing model")
+                model.freeze()
+                frozen=True
 
         # Training Iterations
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     parser.add_argument('-ep', '--n_epochs',   help='number of epochs', type=int)
     parser.add_argument('-img', '--img_size',   help='number of epochs', type=int)
     parser.add_argument('-out', '--output_nc',   help='Number of output classes', type=int)
-    parser.add_argument('-pretrain', '--path_pre_trained_model',   help='path to pre trained model', type=str)
+    parser.add_argument('--pretrain', '--path_pre_trained_model',   help='path to pre trained model', type=str)
     args = parser.parse_args()
 
     train(args)
