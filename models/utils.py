@@ -432,6 +432,40 @@ def load_moco_checkpoint(network,pretrained=""):
     else:
         print("=> no checkpoint found at '{}'".format(pretrained))
 
+def load_byol_checkpoint(network,pretrained=""):
+    
+    if os.path.isfile(pretrained):
+        print("=> loading checkpoint '{}'".format(pretrained))
+        checkpoint = torch.load(pretrained, map_location="cpu")
+
+            # rename moco pre-trained keys
+        state_dict = checkpoint['state_dict']
+        for k in list(state_dict.keys()):
+                # retain only encoder_q up to before the embedding layer
+            if k.startswith('backbone') and not k.startswith('backbone.head'):
+                    # remove prefix
+                state_dict[k[len("backbone."):]] = state_dict[k]
+                # delete renamed or unused k
+            if k.startswith('backbone.norm.weight'): 
+                state_dict['norm3.weight'] = state_dict[k]
+            if k.startswith('backbone.norm.bias'): 
+                state_dict['norm3.bias'] = state_dict[k]
+            del state_dict[k]
+
+        count=1
+        for key in network.state_dict().keys():
+            if key in state_dict.keys():
+                if network.state_dict()[key].shape == state_dict[key].shape:
+                    print(key)
+                    count=count+1
+        print('*** matched ',count,' layers ***')
+        msg = network.load_state_dict(state_dict, strict=False)
+        # assert set(msg.missing_keys) == {"head.weight", "head.bias"}
+
+        print("=> loaded pre-trained model '{}'".format(pretrained))
+    else:
+        print("=> no checkpoint found at '{}'".format(pretrained))
+
 def load_checkpoint(model,
                     filename,
                     map_location='cpu',

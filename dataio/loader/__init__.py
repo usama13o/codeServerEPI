@@ -56,7 +56,7 @@ def get_dataset_path(dataset_name, opts):
       "epi_slides":"c:\\users\\usama\\codeserverepi\\codeserverepi-colab\\",
       "peso":"F:\\data\\peso_dataset",
       "pesol":"F:\\data\\peso_dataset\\scaled_slides_tif",
-      "glas":"F:\\data\\warwick qu dataset (released 2016_07_08)",
+      "glas":"/data1/uz1/glas",
       "siim":"F:\\data\\siim acr",
       "monuseg":"F:\Data\MoNuSeg",
       "isic":"F:\\data\\isic",

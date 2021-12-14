@@ -26,6 +26,8 @@ class glas_dataset(data.Dataset):
         random.shuffle(self.image_filenames)
         if split == 'train':
             self.image_filenames = self.image_filenames[:sp]
+        elif split =='all':
+            self.image_filenames = self.image_filenames
         else:
             self.image_filenames = self.image_filenames[sp:]
             # find the mask for the image

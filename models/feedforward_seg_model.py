@@ -38,7 +38,7 @@ class FeedForwardSegmentation(BaseModel):
                                attention_dsample=opts.attention_dsample,img_size=opts.img_size,config=opts)
         self.net.apply_argmax_softmax = self.apply_argmax_softmax
         try:
-            if self.use_cuda: self.net = self.net.to(device='cuda')
+            if self.use_cuda: self.net = self.net.to(device='cuda:{}'.format(self.gpu_ids))
         except:
             self.use_cuda = False
 
@@ -65,7 +65,7 @@ class FeedForwardSegmentation(BaseModel):
             # print the network details
             if kwargs.get('verbose', True):
                 print('Network is initialized')
-                print_network(self.net)
+                # print_network(self.net)
 
     def set_scheduler(self, train_opt, **kwargs):
         for optimizer in self.optimizers:

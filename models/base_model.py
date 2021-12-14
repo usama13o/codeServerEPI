@@ -1,4 +1,4 @@
-from models.utils import load_moco_checkpoint
+from models.utils import load_byol_checkpoint, load_moco_checkpoint
 from models.utils import load_checkpoint
 import os
 import numpy
@@ -67,7 +67,7 @@ class BaseModel():
         save_path = os.path.join(self.save_dir, save_filename)
         torch.save(network.cpu().state_dict(), save_path)
         if gpu_ids!=-1 and torch.cuda.is_available():
-            network.cuda(gpu_ids[0])
+            network.cuda(gpu_ids)
 
     # helper loading function that can be used by subclasses
     def load_network(self, network, network_label, epoch_label):
@@ -80,9 +80,11 @@ class BaseModel():
         network_label = os.path.basename(network_filepath)
         epoch_label = network_label.split('_')[0]
         print('Loading the model {0} - epoch {1}'.format(network_label, epoch_label))
-        if "swin" in network_label:
+        if 'ep=' in network_label:
+            load_byol_checkpoint(network,network_filepath)
+        elif "swin" in network_label:
             load_checkpoint(network,filename=network_filepath)
-        if 'epoch' in network_label:
+        elif 'epoch' in network_label:
             load_moco_checkpoint(network,network_filepath)
         else:
             network.load_state_dict(torch.load(network_filepath), strict=strict)

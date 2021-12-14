@@ -1,11 +1,11 @@
 {
   "training":{
-    "arch_type": "asdc",
-    "n_epochs":100,
+    "arch_type": "glas",
+    "n_epochs":40,
     "save_epoch_freq": 10,
     "lr_policy": "one_cycle",
     "lr_decay_iters": 250,
-    "batchSize":64,
+    "batchSize":8,
     "preloadData": false,
     "split_pct":0.8
   },
@@ -105,7 +105,7 @@
     "tensor_dim": "v3+",
     "division_factor": 100,
     "input_nc": 3,
-    "output_nc": 4,
+    "output_nc": 2,
     "lr_rate": 7e-4,
     "max_lr":1e-3,
     "l2_reg_weight": 1e-6,

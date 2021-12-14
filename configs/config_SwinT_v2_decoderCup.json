@@ -1,6 +1,6 @@
 {
     "training":{
-      "arch_type":"peso",
+      "arch_type":"glas",
       "n_epochs":40,
       "save_epoch_freq": 10,
       "lr_policy": "one_cycle",
@@ -128,7 +128,7 @@
     "model":{
       "type":"seg",
       "continue_train":false,
-      "path_pre_trained_model":"C:\\Users\\Usama\\moco_saved\\mod_moco_\\lightning_logs\\version_29\\checkpoints\\epoch=243-step=29523.ckpt",
+      "path_pre_trained_model":"",
       "which_epoch":0,
       "model_type": "swin",
       "tensor_dim": "2D",
@@ -139,12 +139,12 @@
       "lr_rate": 1e-3,
       "max_lr":1e-4,
       "feature_scale": 4,
-      "gpu_ids": [0],
+      "gpu_ids": [0,1],
       "isTrain": true,
       "patch_size":4,
-      "embed_dim":128,
+      "embed_dim":192,
       "depth":[ 2, 2, 18, 2 ],
-      "num_heads": [ 4, 8, 16, 32 ],
+      "num_heads":[6, 12, 24, 48],
       "window_size": 7,
       "checkpoints_dir": "./checkpoints",
       "experiment_name": "swin transformer decodercup pretrained on pesol",

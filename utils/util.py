@@ -83,6 +83,12 @@ def mkdir(path):
         os.makedirs(path)
 
 
+def get_tags(config,args):
+    if not args.tag =='':
+        config['tags']=args.tag
+    else:
+        config['tags'] = ""
+    return config
 def json_file_to_dict_args(filename,args):
     def _json_object_hook(d,args=args): 
         if args is not None :
